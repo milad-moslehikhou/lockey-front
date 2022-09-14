@@ -1,0 +1,87 @@
+.login-wraper {
+    display: flex;
+    margin: auto;
+    width: 800px;
+    height: 500px;
+    margin-top: calc((100vh - 500px)  / 2);
+}
+
+.logo-wraper {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    padding: 1rem;
+    border-radius: .5rem;
+    box-shadow: 10px 10px 20px 0px #adadad;
+    /* background-color: #272262; */
+    background-image: linear-gradient(to right bottom, #201c5a, #221e62, #24206a, #272172, #29237a);
+}
+
+.form-wraper {
+    position: relative;
+    width: 500px;
+    padding: 3rem;
+    margin: 1rem 0;
+    border-radius: 0 .5rem .5rem 0;
+    box-shadow: 10px 10px 20px 0px #dddddd;
+}
+
+.form-control,
+.form-button {
+    display: block !important;
+    margin-top: 1rem !important;
+}
+
+.form-control .MuiInputBase-root {
+    width: 100%;
+}
+
+.form-button {
+    margin-top: 3rem !important;
+    width: 100%;
+}
+
+.form-header {
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    color: #29237A;
+}
+
+.form-footer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    height: 40px;
+    text-align: center;
+    font-style: italic;
+    font-size: .7em;
+    color: #808080;
+}
+
+.form-footer a {
+    margin-left: .2rem;
+}
+
+.login-wraper img {
+    width: 100px;
+    align-self: center;
+    margin-top: 4rem;
+    filter: invert(1);
+}
+
+.logo-header {
+    align-self: center;
+    margin-top: 3rem;
+    color: #ffffff;
+    font-size: 1.2em;
+}
+
+.logo-desc {
+    align-self: center;
+    color: #ffffff;
+    font-size: .9em;
+    text-align: center;
+}
