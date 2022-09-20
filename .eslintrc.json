@@ -9,6 +9,7 @@
         "plugin:react/recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:react-redux/recommended",
         "prettier"
     ],
     "overrides": [],
@@ -21,6 +22,7 @@
         "react",
         "@typescript-eslint",
         "react-hooks",
+        "react-redux",
         "prettier"
     ],
     "rules": {
@@ -38,10 +40,12 @@
             "error",
             "single"
         ],
+        "semi": ["error", "never"],
         "no-duplicate-imports": "error",
         "import/prefer-default-export": "off",
         "react/jsx-filename-extension": "off",
-        "@typescript-eslint/no-empty-function": "off"
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-explicit-any": "off"
     },
     "settings": {
         "import/resolver": {

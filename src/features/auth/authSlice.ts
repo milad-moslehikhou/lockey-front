@@ -1,25 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-
-import type { RootState } from '../../app/store'
-import type { AuthState } from '../../types/auth'
-import type { User } from '../../types/user'
+import type { RootStateType } from '../../app/store'
+import type { AuthStateType, LoginResponseType } from '../../types/auth'
 
 
-const slice = createSlice({
+const authSlice = createSlice({
   name: 'auth',
-  initialState: { user: null, token: null } as AuthState,
+  initialState: { user: null, token: null } as AuthStateType,
   reducers: {
-    setCredentials: (
-      state,
-      { payload: { user, token } }: PayloadAction<{ user: User; token: string }>
-    ) => {
-      state.user = user
-      state.token = token
+    setAuthState: (state, action: PayloadAction<LoginResponseType>) => {
+      state.user = action.payload.user
+      state.token = { 'token': action.payload.token, 'expiry': action.payload.expiry }
+      sessionStorage.setItem('auth', JSON.stringify(state))
     },
   },
 })
 
-export default slice.reducer
-export const { setCredentials } = slice.actions
-export const selectCurrentUser = (state: RootState) => state.auth.user
+export default authSlice.reducer
+export const { setAuthState } = authSlice.actions
+export const selectCurrentUser = (state: RootStateType) => state.auth.user
+export const selectToken = (state: RootStateType) => state.auth.token
+

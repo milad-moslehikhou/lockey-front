@@ -4,7 +4,7 @@ import {
   Alert
 } from '@mui/material'
 import Slide from '@mui/material/Slide';
-import { SnackbarContextType, AlertStateType } from '../types/component';
+import type { SnackbarContextType, AlertStateType } from '../types/component';
 
 
 const SnackbarContext = React.createContext<SnackbarContextType>({

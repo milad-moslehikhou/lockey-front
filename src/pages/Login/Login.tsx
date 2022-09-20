@@ -1,47 +1,50 @@
 import * as React from 'react'
-import { TextField, Button } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { setCredentials } from '../../features/auth/authSlice'
-import { useLoginMutation } from '../../app/services/auth'
-import { LoginRequest } from '../../types/auth'
+import { TextField } from '@mui/material'
+import LoadingButton from '@mui/lab/LoadingButton'
+import { useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { useLoginMutation } from '../../features/api/apiSlice'
+import { setStringOrNull, handleError } from '../../helpers/form'
 import useSnackbar from '../../hooks/useSnackbar'
+import { setAuthState } from '../../features/auth/authSlice'
 
 import './Login.css'
 
 
-export function Login() {
+type FormInputsType = {
+  username: string,
+  password: string
+}
+
+export const Login: React.FC = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const openSnackbar = useSnackbar()
-  const [formState, setFormState] = React.useState<LoginRequest>({
-    username: '',
-    password: '',
-  })
-
   const [login, { isLoading }] = useLoginMutation()
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors }
+  } = useForm<FormInputsType>()
 
-  const handleChange = ({ target: { name, value } }: React.ChangeEvent<HTMLInputElement>) => {
-    setFormState((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = async () => {
+  const onSubmit = handleSubmit(async (data: FormInputsType) => {
     try {
-      const user = await login(formState).unwrap()
-      dispatch(setCredentials(user))
+      console.log('form', data)
+      const auth = await login(data).unwrap()
+      dispatch(setAuthState(auth))
       navigate('/dashboard')
-    } catch (err) {
-      console.log(err)
-      openSnackbar({
-        severity: 'error',
-        message: 'A problem has occurd!'
-      })
+    } catch (e) {
+      const msg = handleError(e, setError)
+      if (msg) {
+        openSnackbar({
+          severity: 'error',
+          message: msg
+        })
+      }
     }
-  }
-
-  const clearError = async (event: React.FocusEvent<HTMLInputElement>) => {
-    event.preventDefault();
-  }
+  })
 
   return (
     <div className="login-wraper">
@@ -52,28 +55,34 @@ export function Login() {
       </div>
       <div className="form-wraper">
         <div className="form-header">Welcome Back!</div>
-        <form>
-          <TextField id="username"
+        <form onSubmit={onSubmit}>
+          <TextField
+            id="username"
             label="Username"
             variant="standard"
             className="form-control"
-            onChange={handleChange}
-            onFocus={clearError} />
-          <TextField id="password"
+            error={'username' in errors}
+            helperText={errors.username && errors.username.message as string}
+            {...register('username', { setValueAs: setStringOrNull })} />
+          <TextField
+            id="password"
             label="Password"
             variant="standard"
             type="password"
             className="form-control"
             autoComplete="current-password"
-            onChange={handleChange}
-            onFocus={clearError} />
-          <Button
+            error={'password' in errors}
+            helperText={errors.password && errors.password.message as string}
+            {...register('password', { setValueAs: setStringOrNull })} />
+          <LoadingButton
             variant="contained"
             type="submit"
             className="form-button"
             disabled={isLoading}
-            onClick={handleSubmit}
-          >Login</Button>
+            loading={isLoading}
+            loadingIndicator="LOGIN..."
+          >LOGIN
+          </LoadingButton>
         </form>
         <div className="form-footer">
           <p>Developed by

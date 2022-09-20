@@ -1,16 +1,16 @@
 import { User } from './user'
 
-export type UserResponse = {
+
+export type LoginResponseType = {
   user: User
   token: string
+  expiry: Date
 }
 
-export type LoginRequest = {
-  username: string
-  password: string
-}
-
-export type AuthState = {
+export type AuthStateType = {
   user: User | null
-  token: string | null
+  token: {
+    token: string,
+    expiry: Date
+  } | null
 }
