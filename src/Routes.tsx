@@ -1,10 +1,10 @@
 import React from 'react'
 import { useRoutes } from 'react-router-dom'
-import { PrivateOutlet } from './utils/PrivateOutlet';
+import { PrivateOutlet } from './utils/PrivateOutlet'
 
-const Login = React.lazy(() => import('./pages/Login/Login'));
-const Dashboard = React.lazy(() => import('./pages/Dashboard/Dashboard'));
-const Preferences = React.lazy(() => import('./pages/Preferences/Preferences'));
+const Login = React.lazy(() => import('./pages/Login/Login'))
+const Dashboard = React.lazy(() => import('./pages/Dashboard/Dashboard'))
+const Preferences = React.lazy(() => import('./pages/Preferences/Preferences'))
 
 const Routes = () => useRoutes([
   {
@@ -27,4 +27,4 @@ const Routes = () => useRoutes([
   },
 ])
 
-export default Routes;
+export default Routes

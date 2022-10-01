@@ -8,16 +8,11 @@ import { useLoginMutation } from '../../features/api/apiSlice'
 import { setStringOrNull, handleError } from '../../helpers/form'
 import useSnackbar from '../../hooks/useSnackbar'
 import { setAuthState } from '../../features/auth/authSlice'
-
+import type { LoginRequestType } from '../../types/auth'
 import './Login.css'
 
 
-type FormInputsType = {
-  username: string,
-  password: string
-}
-
-export const Login: React.FC = () => {
+const Login = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const openSnackbar = useSnackbar()
@@ -27,9 +22,9 @@ export const Login: React.FC = () => {
     handleSubmit,
     setError,
     formState: { errors }
-  } = useForm<FormInputsType>()
+  } = useForm<LoginRequestType>()
 
-  const onSubmit = handleSubmit(async (data: FormInputsType) => {
+  const onSubmit = handleSubmit(async (data: LoginRequestType) => {
     try {
       console.log('form', data)
       const auth = await login(data).unwrap()
