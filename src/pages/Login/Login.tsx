@@ -26,7 +26,6 @@ const Login = () => {
 
   const onSubmit = handleSubmit(async (data: LoginRequestType) => {
     try {
-      console.log('form', data)
       const auth = await login(data).unwrap()
       dispatch(setAuthState(auth))
       navigate('/dashboard')
@@ -44,7 +43,7 @@ const Login = () => {
   return (
     <div className="login-wraper">
       <div className="logo-wraper">
-        <img src={window.location.origin + '/logo512.png'} alt="logo" />
+        <img src={window.location.origin + '/logo-sm-512.png'} alt="logo" />
         <p className="logo-header">Lockey secure pass store</p>
         <p className="logo-desc">safely store important passwords in a safe place.</p>
       </div>

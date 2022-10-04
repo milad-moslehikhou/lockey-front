@@ -1,6 +1,6 @@
 import * as React from 'react'
 import _ from 'lodash'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   Box,
   Table,
@@ -21,11 +21,15 @@ import ForwardIcon from '@mui/icons-material/Forward'
 import { getComparator, humanizeDate } from '../../helpers/common'
 import type { CredentialType } from '../../types/credential'
 import type { DataTableHeaderType, OrderType } from '../../types/component'
-import { selectCredentials } from '../../features/credential/credentialSlice'
+import { selectCredentials, setCredentials } from '../../features/credential/credentialSlice'
+import { useAddCredentialFavoriteMutation, useDeleteCredentialFavoriteMutation } from '../../features/api/apiSlice'
 
 
 const CredentialsDataTable = () => {
+  const dispatch = useDispatch()
   const credentials = useSelector(selectCredentials)
+  const [addFavoritre, { isLoading: addFavoriteIsLoading }] = useAddCredentialFavoriteMutation()
+  const [delFavoritre, { isLoading: delFavoriteIsLoading }] = useDeleteCredentialFavoriteMutation()
   const [order, setOrder] = React.useState<OrderType>('asc')
   const [orderBy, setOrderBy] = React.useState<keyof CredentialType>('id')
   const [selected, setSelected] = React.useState<readonly string[]>([])
@@ -99,7 +103,16 @@ const CredentialsDataTable = () => {
     setSelected([])
   }
 
-  const handleOnSetFavorite = (event: React.MouseEvent<unknown>, id: number) => {
+  const handleOnFavorite = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    if (event.target.checked) {
+      addFavoritre(id)
+      // eslint-disable-next-line camelcase
+      dispatch(setCredentials(credentials.map(c => c.id == id ? { ...c, is_favorite: true } : c)))
+    } else {
+      delFavoritre(id)
+      // eslint-disable-next-line camelcase
+      dispatch(setCredentials(credentials.map(c => c.id == id ? { ...c, is_favorite: false } : c)))
+    }
   }
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1
@@ -192,7 +205,7 @@ const CredentialsDataTable = () => {
                         checkedIcon={<StarIcon color='action' />}
                         color="primary"
                         checked={row.is_favorite}
-                        onClick={(event) => handleOnSetFavorite(event, row.id)}
+                        onChange={(event) => handleOnFavorite(event, row.id)}
                       />
                     </TableCell>
 

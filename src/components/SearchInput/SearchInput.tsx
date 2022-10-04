@@ -13,7 +13,7 @@ const SearchInput = () => {
         p: '2px 4px',
         display: 'flex',
         alignItems: 'center',
-        width: '250px',
+        width: '450px',
       }}
     >
       <InputBase

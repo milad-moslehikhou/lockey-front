@@ -2,8 +2,9 @@ import * as React from 'react'
 import {
   Box, Button,
 } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import SearchInput from '../SearchInput/SearchInput'
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import ShareIcon from '@mui/icons-material/Share'
 
 
 const Toolbar = () => {
@@ -11,28 +12,51 @@ const Toolbar = () => {
     <Box sx={{
       display: 'flex',
       alignItems: 'center',
-      minHeight: '4rem',
-      padding: '0 24px',
-      backgroundColor: 'grey.200',
+      minHeight: '3rem',
+      padding: '1rem',
+      backgroundColor: 'grey.100',
       borderBottomColor: 'grey.300',
       borderBottomStyle: 'solid',
       borderBottomWidth: 1,
     }}>
+      <Box>
+        <Button
+          variant="contained"
+          size='small'
+          startIcon={<AddCircleIcon />}
+          sx={{
+            marginRight: '1rem'
+          }}
+        >
+          Create
+        </Button>
+      </Box>
       <Box sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        width: 'calc(100% - 240px - 24px)',
+        width: 'calc(100% - 320px - 24px)',
         alignItems: 'center',
         position: 'absolute',
-        left: '240px'
+        left: '320px'
       }}>
-        <Box>
-          <Button variant="contained" startIcon={<DeleteIcon />}>Delete</Button>
-        </Box>
-        <Box>
-          <SearchInput />
-        </Box>
-
+        <Button
+          variant="contained"
+          size='small'
+          startIcon={<DriveFileMoveIcon />}
+          sx={{
+            marginRight: '1rem'
+          }}
+        >
+          Move
+        </Button>
+        <Button
+          variant="contained"
+          size='small'
+          startIcon={<ShareIcon />}
+          sx={{
+            marginRight: '1rem'
+          }}
+        >
+          Share
+        </Button>
       </Box>
     </Box>
   )

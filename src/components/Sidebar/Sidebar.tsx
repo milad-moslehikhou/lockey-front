@@ -14,18 +14,10 @@ const Sidebar = () => {
     <Box sx={{
       display: 'flex',
       flexDirection: 'column',
-      width: '100%',
-      maxWidth: '240px',
+      width: '320px',
+      minWidth: '320px',
       position: 'relative',
       borderRight: '1px solid rgba(0, 0, 0, 0.1)',
-      '::after': {
-        content: '""',
-        position: 'absolute',
-        right: 0,
-        width: '2px',
-        height: '100%',
-        cursor: 'ew-resize',
-      }
     }}>
       <List component='nav' style={{ 'width': '100%' }}>
         <SidebarListItem

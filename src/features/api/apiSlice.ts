@@ -77,6 +77,20 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
     }),
+    addCredentialFavorite: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `credentials/${id}/favorite/`,
+        method: 'POST'
+      }),
+      invalidatesTags: ['Credential'],
+    }),
+    deleteCredentialFavorite: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `credentials/${id}/favorite/`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
+    }),
   }),
 })
 
@@ -92,4 +106,6 @@ export const {
   useGetCredentialByIdQuery,
   useEditCredentialMutation,
   useDeleteCredentialMutation,
+  useAddCredentialFavoriteMutation,
+  useDeleteCredentialFavoriteMutation,
 } = apiSlice
