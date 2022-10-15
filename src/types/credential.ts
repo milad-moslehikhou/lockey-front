@@ -1,3 +1,5 @@
+import { FormsStateType } from './component'
+
 export type CredentialType = {
     id: number,
     name: string,
@@ -19,15 +21,6 @@ export type CredentialType = {
 }
 
 export type CredentialStateType = {
-    credentials: CredentialType[]
-}
-
-export type CredentialQueryParamType = {
-    importancy?: 'HIGH' | 'MEDIUM' | 'LOW',
-    is_public?: boolean,
-    auto_genpass?: boolean,
-    tags?: string,
-    folder?: number,
-    created_by?: number,
-    modified_by?: number,
+    credentials: CredentialType[],
+    formsState: FormsStateType
 }

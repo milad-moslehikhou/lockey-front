@@ -1,13 +1,18 @@
 import * as React from 'react'
+import { useDispatch } from 'react-redux'
 import {
-  Box, Button,
+  Box,
+  Button,
 } from '@mui/material'
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ShareIcon from '@mui/icons-material/Share'
+import { setFormsState } from '../../features/credential/credentialSlice'
 
 
 const Toolbar = () => {
+  const dispatch = useDispatch()
+
   return (
     <Box sx={{
       display: 'flex',
@@ -27,6 +32,7 @@ const Toolbar = () => {
           sx={{
             marginRight: '1rem'
           }}
+          onClick={() => dispatch(setFormsState({ add: true }))}
         >
           Create
         </Button>

@@ -28,3 +28,9 @@ export type DataTableHeaderType = {
   label: string,
   type: 'string' | 'number'
 }
+
+export type FormsStateType = {
+  add?: boolean,
+  edit?: boolean,
+  delete?: boolean
+}

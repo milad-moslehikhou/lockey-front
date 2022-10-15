@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useSelector } from 'react-redux'
 import {
   Box,
 } from '@mui/material'
@@ -11,9 +12,13 @@ import Footer from '../../components/Footer/Footer'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import FolderBreadcrumbs from '../../components/FolderBreadcrumbs/FolderBreadcrumbs'
 import CredentialsDataTable from '../../components/CredentialDataTable/CredentialDataTable'
+import CredentialAddForm from '../../components/Forms/Credential/CredentialAddForm'
+import { selectFormsState } from '../../features/credential/credentialSlice'
 
 
 export default function Dashboard() {
+  const credentialFormsState = useSelector(selectFormsState)
+
   return (
     <Box sx={{
       display: 'flex',
@@ -36,6 +41,7 @@ export default function Dashboard() {
             margin: '0 6px',
           }}>
             <CredentialsDataTable />
+            {credentialFormsState.add ? <CredentialAddForm/> : ''}
           </Box>
         </Box>
       </Box>

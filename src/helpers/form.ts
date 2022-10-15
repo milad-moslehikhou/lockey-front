@@ -10,6 +10,9 @@ export const setStringOrNull = (v: unknown) => {
 
 export const handleError = (e: any, setError: any) => {
   const err = e.data
+  console.log(typeof err, err)
+  if (typeof err === 'string')
+    return 'Something has wrong!'
   if ('non_field_errors' in err)
     return err.non_field_errors.join(' ')
   if ('message' in err)

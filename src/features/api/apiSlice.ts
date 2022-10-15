@@ -40,7 +40,7 @@ export const apiSlice = createApi({
     }),
 
     // Credential
-    addCredential: builder.mutation<void, CredentialType>({
+    addCredential: builder.mutation<CredentialType, Partial<CredentialType>>({
       query: (data) => ({
         url: 'credentials/',
         method: 'POST',
