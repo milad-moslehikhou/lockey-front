@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import * as React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
@@ -11,18 +10,18 @@ import {
   InputLabel,
   FormControl
 } from '@mui/material'
-import FormDialog from '../../FormDialog/FormDialog'
-import InputChips from '../../InputChips/InputChips'
-import { useAddCredentialMutation } from '../../../features/api/apiSlice'
-import useSnackbar from '../../../hooks/useSnackbar'
-import type { CredentialType } from '../../../types/credential'
+import FormDialog from '../FormDialog/FormDialog'
+import InputChips from '../InputChips/InputChips'
+import { useAddCredentialMutation, useGetFoldersQuery } from '../../features/api/apiSlice'
+import useSnackbar from '../../hooks/useSnackbar'
+import type { CredentialType } from '../../types/credential'
 import {
   selectCredentials,
   setCredentials,
-  setFormsState,
-} from '../../../features/credential/credentialSlice'
-import { setStringOrNull, handleError } from '../../../helpers/form'
-import { selectCurrentUser } from '../../../features/auth/authSlice'
+  setCredentialFormsState,
+} from '../../features/credential/credentialSlice'
+import { setStringOrNull, handleError } from '../../helpers/form'
+import { selectCurrentUser } from '../../features/auth/authSlice'
 
 
 const CredentialAddForm = () => {
@@ -30,6 +29,7 @@ const CredentialAddForm = () => {
   const openSnackbar = useSnackbar()
   const currentUser = useSelector(selectCurrentUser)
   const credentials = useSelector(selectCredentials)
+  const { data: folders } = useGetFoldersQuery()
   const [add, { isLoading }] = useAddCredentialMutation()
   const [tags, setTags] = React.useState<string[]>([])
   const {
@@ -41,13 +41,16 @@ const CredentialAddForm = () => {
   } = useForm<Partial<CredentialType>>({
     defaultValues: {
       importancy: 'LOW',
+      // eslint-disable-next-line camelcase
       auto_genpass: false,
+      // eslint-disable-next-line camelcase
       is_public: false,
+      folder: -1,
     }
   })
 
   const handleCloseForm = () => {
-    dispatch(setFormsState({ add: false }))
+    dispatch(setCredentialFormsState({ add: false }))
   }
 
   const onSubmit = async (data: Partial<CredentialType>) => {
@@ -55,10 +58,13 @@ const CredentialAddForm = () => {
       ...data,
       tags: tags.join(','),
       team: currentUser?.team,
+      // eslint-disable-next-line camelcase
       created_by: currentUser?.id,
+      // eslint-disable-next-line camelcase
       modified_by: currentUser?.id,
+      folder: data.folder === -1 ? null : data.folder
     }
-    console.log(data)
+
     try {
       const credential = await add(data).unwrap()
       handleCloseForm()
@@ -180,6 +186,24 @@ const CredentialAddForm = () => {
       </FormControl>
       <FormControl fullWidth sx={{ mt: 2 }}>
         <InputChips inputLable="Tags" chips={tags} setChips={setTags} />
+      </FormControl>
+      <FormControl fullWidth sx={{ mt: 2 }}>
+        <InputLabel id="folder-label">Folder</InputLabel>
+        <Controller
+          name="folder"
+          control={control}
+          render={({ field }) => (
+            <Select
+              id="folder"
+              label="Folder"
+              labelId="folder-label"
+              {...field}
+            >
+              <MenuItem value={-1}>--</MenuItem>
+              {folders && folders.map(folder => <MenuItem key={folder.id} value={folder.id}>{folder.name}</MenuItem>)}
+            </Select>
+          )}
+        />
       </FormControl>
     </>
   )

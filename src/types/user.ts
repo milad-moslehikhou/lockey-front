@@ -1,4 +1,4 @@
-export type User = {
+export type UserType = {
   id: number,
   username: string,
   is_superuser: boolean,
@@ -8,10 +8,10 @@ export type User = {
   user_permissions: Array<any>,
   last_login: string,
   date_joined: string,
-  profile: UserProfile
+  profile: UserProfileType
 }
 
-export type UserProfile = {
+export type UserProfileType = {
   first_name: string,
   last_name: string,
   avatar: string

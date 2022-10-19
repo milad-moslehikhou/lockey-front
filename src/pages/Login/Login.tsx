@@ -28,7 +28,7 @@ const Login = () => {
     try {
       const auth = await login(data).unwrap()
       dispatch(setAuthState(auth))
-      navigate('/dashboard')
+      navigate('/app/passwords')
     } catch (e) {
       const msg = handleError(e, setError)
       if (msg) {

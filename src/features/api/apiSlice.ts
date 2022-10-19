@@ -3,6 +3,7 @@ import type { RootStateType } from '../../app/store'
 import type { LoginRequestType, LoginResponseType } from '../../types/auth'
 import type { CredentialType } from '../../types/credential'
 import type { FolderType } from '../../types/folder'
+import type { UserType } from '../../types/user'
 
 
 export const apiSlice = createApi({
@@ -16,7 +17,7 @@ export const apiSlice = createApi({
       return headers
     },
   }),
-  tagTypes: ['Credential', 'Folder'],
+  tagTypes: ['User', 'Credential', 'Folder'],
   endpoints: (builder) => ({
     // Auth
     login: builder.mutation<LoginResponseType, LoginRequestType>({
@@ -25,6 +26,22 @@ export const apiSlice = createApi({
         method: 'POST',
         body,
       }),
+    }),
+
+    // User
+    getUsers: builder.query<UserType[], void>({
+      query: () => 'users/',
+      providesTags: (result) =>
+        result
+          ? [
+            ...result.map(({ id }) => ({ type: 'User' as const, id })),
+            { type: 'User', id: 'LIST' },
+          ]
+          : [{ type: 'User', id: 'LIST' }],
+    }),
+    getUserById: builder.query<UserType, number>({
+      query: (id) => `users/${id}/`,
+      providesTags: (result, error, arg) => [{ type: 'User', id: arg }],
     }),
 
     // Folder
@@ -37,6 +54,10 @@ export const apiSlice = createApi({
             { type: 'Folder', id: 'LIST' },
           ]
           : [{ type: 'Folder', id: 'LIST' }],
+    }),
+    getFolderById: builder.query<FolderType, number>({
+      query: (id) => `folders/${id}/`,
+      providesTags: (result, error, arg) => [{ type: 'Folder', id: arg }],
     }),
 
     // Credential
@@ -97,8 +118,12 @@ export const apiSlice = createApi({
 export const {
   // Auth
   useLoginMutation,
+  // User
+  useGetUsersQuery,
+  useGetUserByIdQuery,
   // Folder
   useGetFoldersQuery,
+  useGetFolderByIdQuery,
   // Credential
   useAddCredentialMutation,
   useGetCredentialsQuery,

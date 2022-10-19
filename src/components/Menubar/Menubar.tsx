@@ -17,7 +17,7 @@ const Menubar = () => {
     }}>
       <Box>
         <Link
-          href="#"
+          href="/app/passwords"
           sx={{ color: 'grey.50', marginRight: '1rem' }}
           underline='none'>
           passwords

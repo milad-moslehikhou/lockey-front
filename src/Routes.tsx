@@ -3,8 +3,9 @@ import { useRoutes } from 'react-router-dom'
 import { PrivateOutlet } from './utils/PrivateOutlet'
 
 const Login = React.lazy(() => import('./pages/Login/Login'))
-const Dashboard = React.lazy(() => import('./pages/Dashboard/Dashboard'))
+const Passwords = React.lazy(() => import('./pages/Passwords/Passwords'))
 const Preferences = React.lazy(() => import('./pages/Preferences/Preferences'))
+const NotFound = React.lazy(() => import('./pages/NotFound/NoutFound'))
 
 const Routes = () => useRoutes([
   {
@@ -16,14 +17,19 @@ const Routes = () => useRoutes([
     element: <PrivateOutlet />,
     children: [
       {
-        path: 'dashboard',
-        element: <Dashboard />
+        path: 'app/passwords',
+        element: <Passwords />,
+        index: true
       },
       {
-        path: 'preferences',
+        path: 'app/preferences',
         element: <Preferences />
       }
     ]
+  },
+  {
+    path: '*',
+    element: <NotFound />
   },
 ])
 

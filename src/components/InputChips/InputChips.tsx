@@ -44,7 +44,11 @@ const InputChips = ({ inputLable, chips, setChips }: IInputChipsProps) => {
         onChange={e => { setChip(e.target.value) }}
         onKeyUp={handleKeyUp}
       />
-      <Stack sx={{ mt: 2 }} direction="row" spacing={1}>
+      <Stack
+        sx={{ mt: 2 }}
+        direction="row"
+        spacing={.5}
+      >
         {
           chips.map(item => {
             return (

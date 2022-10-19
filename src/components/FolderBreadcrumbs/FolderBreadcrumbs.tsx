@@ -7,11 +7,16 @@ import {
   Typography
 } from '@mui/material'
 import { selectBreadcrumbs, setSelectedItem } from '../../features/breadcrumbs/breadcrumbsSlice'
+import { setCredentials } from '../../features/credential/credentialSlice'
+import { useGetCredentialsQuery } from '../../features/api/apiSlice'
+import { selectCurrentUser } from '../../features/auth/authSlice'
 
 
 const FolderBreadcrumbs = () => {
   const dispatch = useDispatch()
+  const currentUser = useSelector(selectCurrentUser)
   const breadcrumbs = useSelector(selectBreadcrumbs)
+  const { data: credentials } = useGetCredentialsQuery()
 
   const handleClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault()
@@ -20,6 +25,28 @@ const FolderBreadcrumbs = () => {
     const copy = [...(breadcrumbs.path)]
     copy.length = findIndex + 1
     dispatch(setSelectedItem(copy))
+  }
+
+  const selectedNodeId = breadcrumbs.path[breadcrumbs.path.length - 1].id
+  switch (selectedNodeId) {
+    case 'list:all':
+      dispatch(setCredentials(credentials))
+      break
+    case 'list:favorites':
+      dispatch(setCredentials(credentials?.filter(c => c.is_favorite)))
+      break
+    case 'list:owned_by_me':
+      dispatch(setCredentials(credentials?.filter(c => c.created_by === currentUser?.id)))
+      break
+    case 'list:shared_by_me':
+      dispatch(setCredentials(credentials?.filter(c => c.is_favorite)))
+      break
+    case 'list:shared_with_me':
+      dispatch(setCredentials(credentials?.filter(c => c.is_favorite)))
+      break
+    default:
+      dispatch(setCredentials(credentials?.filter(c => c.folder === _.toNumber(selectedNodeId.split(':')[1]))))
+      break
   }
 
   return (

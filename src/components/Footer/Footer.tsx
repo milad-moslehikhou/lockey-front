@@ -13,6 +13,7 @@ const Footer = () => {
       borderTopColor: 'grey.300',
       borderTopStyle: 'solid',
       borderTopWidth: 1,
+      zIndex: 2000,
     }}></Box>
   )
 }

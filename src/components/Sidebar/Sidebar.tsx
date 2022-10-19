@@ -9,7 +9,6 @@ import FolderTreeView from '../FolderTreeView/FolderTreeView'
 
 
 const Sidebar = () => {
-
   return (
     <Box sx={{
       display: 'flex',
@@ -21,23 +20,23 @@ const Sidebar = () => {
     }}>
       <List component='nav' style={{ 'width': '100%' }}>
         <SidebarListItem
-          id='list_1'
+          id='list:all'
           text='All Items'
         />
         <SidebarListItem
-          id='list_2'
+          id='list:favorites'
           text='Favorites'
         />
         <SidebarListItem
-          id='list_3'
+          id='list:owned_by_me'
           text='Owned by me'
         />
         <SidebarListItem
-          id='list_4'
+          id='list:shared_by_me'
           text='Shared by me'
         />
         <SidebarListItem
-          id='list_5'
+          id='list:shared_with_me'
           text='Shared with me'
         />
       </List>

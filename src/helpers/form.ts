@@ -9,8 +9,8 @@ export const setStringOrNull = (v: unknown) => {
 }
 
 export const handleError = (e: any, setError: any) => {
-  const err = e.data
-  console.log(typeof err, err)
+  const err = e.data || e.error
+  console.log(typeof err, e)
   if (typeof err === 'string')
     return 'Something has wrong!'
   if ('non_field_errors' in err)

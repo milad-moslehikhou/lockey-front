@@ -8,18 +8,23 @@ const credentialSlice = createSlice({
   name: 'credential',
   initialState: {
     credentials: [],
+    selected: [],
     formsState: {
       add: false,
       edit: false,
-      delete: false
+      delete: false,
+      detail: true
     }
   } as CredentialStateType,
   reducers: {
     setCredentials: (state, action: PayloadAction<CredentialType[] | undefined>) => {
       state.credentials = action.payload || []
     },
-    setFormsState: (state, action: PayloadAction<FormsStateType>) => {
+    setCredentialFormsState: (state, action: PayloadAction<FormsStateType>) => {
       state.formsState = action.payload
+    },
+    setSelectedCredentials: (state, action: PayloadAction<string[]>) => {
+      state.selected = action.payload
     },
   },
 })
@@ -27,7 +32,9 @@ const credentialSlice = createSlice({
 export default credentialSlice.reducer
 export const {
   setCredentials,
-  setFormsState
+  setSelectedCredentials,
+  setCredentialFormsState
 } = credentialSlice.actions
 export const selectCredentials = (state: RootStateType) => state.credential.credentials
-export const selectFormsState = (state: RootStateType) => state.credential.formsState
+export const selectSelectedCredentials = (state: RootStateType) => state.credential.selected
+export const selectCredentialFormsState = (state: RootStateType) => state.credential.formsState

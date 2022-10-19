@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { HashRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import { store } from './app/store'
 import { SnackbarProvider } from './context/Snackbar'
 import Routes from './Routes'
@@ -29,9 +29,9 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SnackbarProvider>
-          <HashRouter>
+          <BrowserRouter>
             <Routes />
-          </HashRouter>
+          </BrowserRouter>
         </SnackbarProvider>
       </ThemeProvider>
     </Provider>

@@ -1,4 +1,4 @@
-import { User } from './user'
+import { UserType } from './user'
 
 
 export type LoginRequestType = {
@@ -7,13 +7,13 @@ export type LoginRequestType = {
 }
 
 export type LoginResponseType = {
-  user: User
+  user: UserType
   token: string
   expiry: Date
 }
 
 export type AuthStateType = {
-  user: User | null
+  user: UserType | null
   token: {
     token: string,
     expiry: Date

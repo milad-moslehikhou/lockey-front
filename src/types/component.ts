@@ -32,5 +32,7 @@ export type DataTableHeaderType = {
 export type FormsStateType = {
   add?: boolean,
   edit?: boolean,
-  delete?: boolean
+  delete?: boolean,
+  move?: boolean,
+  detail?: boolean,
 }

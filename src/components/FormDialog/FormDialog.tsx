@@ -27,7 +27,12 @@ const FormDialog = ({ title, form, submitLable, isLoading, handleCloseForm, hand
   return (
     <Dialog open={true} onClose={handleClose} onKeyDown={e => { if (e.key === 'Enter') e.preventDefault() }}>
       <form onSubmit={handleSubmit}>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle sx={{
+          backgroundColor: '#f0f8ff'
+        }}
+        >
+          {title}
+        </DialogTitle>
         <DialogContent>
           <Paper elevation={0}  >
             {form}

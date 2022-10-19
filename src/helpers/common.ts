@@ -42,3 +42,8 @@ export const humanizeDate = (date: Date): string => {
   const diff =  pass.diff(now)
   return moment.duration(diff).humanize(true)
 }
+
+export const formatDate = (date: Date): string => {
+  const d = moment(date)
+  return d.format('YYYY-MM-DD hh:mm:ss')
+}

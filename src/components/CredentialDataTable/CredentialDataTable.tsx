@@ -10,7 +10,6 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Paper,
   Checkbox,
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
@@ -21,18 +20,23 @@ import ForwardIcon from '@mui/icons-material/Forward'
 import { getComparator, humanizeDate } from '../../helpers/common'
 import type { CredentialType } from '../../types/credential'
 import type { DataTableHeaderType, OrderType } from '../../types/component'
-import { selectCredentials, setCredentials } from '../../features/credential/credentialSlice'
+import {
+  selectCredentials,
+  selectSelectedCredentials,
+  setCredentials,
+  setSelectedCredentials
+} from '../../features/credential/credentialSlice'
 import { useAddCredentialFavoriteMutation, useDeleteCredentialFavoriteMutation } from '../../features/api/apiSlice'
 
 
 const CredentialsDataTable = () => {
   const dispatch = useDispatch()
   const credentials = useSelector(selectCredentials)
+  const selected = useSelector(selectSelectedCredentials)
   const [addFavoritre, { isLoading: addFavoriteIsLoading }] = useAddCredentialFavoriteMutation()
   const [delFavoritre, { isLoading: delFavoriteIsLoading }] = useDeleteCredentialFavoriteMutation()
   const [order, setOrder] = React.useState<OrderType>('asc')
   const [orderBy, setOrderBy] = React.useState<keyof CredentialType>('id')
-  const [selected, setSelected] = React.useState<readonly string[]>([])
   const headers: DataTableHeaderType[] = [
     {
       id: 'id',
@@ -78,7 +82,7 @@ const CredentialsDataTable = () => {
 
   const handleOnSelect = (event: React.MouseEvent<unknown>, id: string) => {
     const selectedIndex = selected.indexOf(id)
-    let newSelected: readonly string[] = []
+    let newSelected: string[] = []
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id)
     } else if (selectedIndex === 0) {
@@ -91,16 +95,16 @@ const CredentialsDataTable = () => {
         selected.slice(selectedIndex + 1),
       )
     }
-    setSelected(newSelected)
+    dispatch(setSelectedCredentials(newSelected))
   }
 
   const handleOnSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelected = credentials.map((n) => n.name)
-      setSelected(newSelected)
+      dispatch(setSelectedCredentials(newSelected))
       return
     }
-    setSelected([])
+    dispatch(setSelectedCredentials([]))
   }
 
   const handleOnFavorite = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
@@ -125,7 +129,7 @@ const CredentialsDataTable = () => {
       flexDirection: 'column'
     }}
     >
-      <Paper sx={{
+      <Box sx={{
         width: '100%',
         height: '100%'
       }}
@@ -192,14 +196,18 @@ const CredentialsDataTable = () => {
                     selected={itemIsSelected}
                     hover
                   >
-                    <TableCell padding="checkbox">
+                    <TableCell padding="checkbox" sx={{
+                      borderBottom: 0,
+                    }}>
                       <Checkbox
                         color="primary"
                         checked={itemIsSelected}
                         onClick={(event) => handleOnSelect(event, _.toString(row.id))}
                       />
                     </TableCell>
-                    <TableCell padding="checkbox">
+                    <TableCell padding="checkbox" sx={{
+                      borderBottom: 0,
+                    }}>
                       <Checkbox
                         icon={<StarBorderIcon />}
                         checkedIcon={<StarIcon color='action' />}
@@ -209,10 +217,14 @@ const CredentialsDataTable = () => {
                       />
                     </TableCell>
 
-                    <TableCell>
+                    <TableCell sx={{
+                      borderBottom: 0,
+                    }}>
                       {row.id}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{
+                      borderBottom: 0,
+                    }}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         {row.importancy === 'HIGH' ? <ForwardIcon
                           sx={{ fontSize: '1.2rem', transform: 'rotateZ(270deg)' }} color='error' /> : ''}
@@ -223,16 +235,24 @@ const CredentialsDataTable = () => {
                         {row.name}
                       </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{
+                      borderBottom: 0,
+                    }}>
                       {row.username}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{
+                      borderBottom: 0,
+                    }}>
                       {row.ip}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{
+                      borderBottom: 0,
+                    }}>
                       {row.uri}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{
+                      borderBottom: 0,
+                    }}>
                       {humanizeDate(row.modified_at)}
                     </TableCell>
                   </TableRow>
@@ -241,7 +261,7 @@ const CredentialsDataTable = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      </Paper>
+      </Box>
     </Box>
   )
 }

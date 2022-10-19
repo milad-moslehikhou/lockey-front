@@ -6,10 +6,8 @@ import FolderIcon from '@mui/icons-material/Folder'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { BREADCRUMBS_BASE_PATH } from '../../constant'
-import { useGetCredentialsQuery, useGetFoldersQuery } from '../../features/api/apiSlice'
-import { setFolders } from '../../features/folder/folderSlice'
+import { useGetFoldersQuery } from '../../features/api/apiSlice'
 import IconicTreeItem from '../IconicTreeItem/IconicTreeItem'
-import { setCredentials } from '../../features/credential/credentialSlice'
 import { setSelectedItem, selectBreadcrumbs } from '../../features/breadcrumbs/breadcrumbsSlice'
 import type { BreadcrumbsType } from '../../types/component'
 import type { FolderType } from '../../types/folder'
@@ -18,9 +16,8 @@ import type { FolderType } from '../../types/folder'
 const FolderTreeView = () => {
   const dispatch = useDispatch()
   const [prevSelectedNodeId, setPrevSelectedNodeId] = React.useState(0)
-  const { data: folders } = useGetFoldersQuery()
-  const { data: credentials } = useGetCredentialsQuery()
   const breadcrumbs = useSelector(selectBreadcrumbs)
+  const { data: folders } = useGetFoldersQuery()
 
   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
     const pathString = event.currentTarget.parentElement?.parentElement?.attributes.getNamedItem('data-path')?.value
@@ -28,14 +25,12 @@ const FolderTreeView = () => {
       const path = JSON.parse(pathString) as BreadcrumbsType[]
       dispatch(setSelectedItem([BREADCRUMBS_BASE_PATH, ...path]))
     }
-    const selectedNodeId = _.toInteger(nodeId.split('_')[1])
+    const selectedNodeId = _.toInteger(nodeId.split(':')[1])
     if (selectedNodeId != 0 && prevSelectedNodeId != selectedNodeId) {
-      dispatch(setCredentials(credentials?.filter(c => c.folder === selectedNodeId)))
       setPrevSelectedNodeId(selectedNodeId)
     }
   }
 
-  dispatch(setFolders(folders))
   return (
     <TreeView
       defaultCollapseIcon={<ExpandMoreIcon />}
@@ -60,7 +55,7 @@ const FolderTreeView = () => {
               key={folder.id}
               folder={folder}
               folders={folders}
-              path={[{ id: `folder_${folder.id}`, text: folder.name }]}
+              path={[{ id: `folder:${folder.id}`, text: folder.name }]}
             />
         })}
       </IconicTreeItem>
@@ -80,7 +75,7 @@ const Tree = ({ folder, folders, path }: ITreeProps) => {
   const folderChildren = getChildren(folders, folder.id)
   return (
     <IconicTreeItem
-      nodeId={`folder_${folder.id}`}
+      nodeId={`folder:${folder.id}`}
       labelIcon={FolderIcon}
       labelText={folder.name}
       color={folder.color}
@@ -91,7 +86,7 @@ const Tree = ({ folder, folders, path }: ITreeProps) => {
           key={f.id}
           folder={f}
           folders={folders}
-          path={[...path, { id: `folder_${f.id}`, text: f.name }]} />
+          path={[...path, { id: `folder:${f.id}`, text: f.name }]} />
       })}
     </IconicTreeItem>
   )
