@@ -31,9 +31,9 @@ const CredentialDetail = () => {
     const ValueElement = () => {
       if (typeof value === 'boolean') {
         if (value)
-          return <CheckCircleIcon fontSize='small' color='success' sx={{ marginLeft: '.2rem' }} />
+          return <CheckCircleIcon fontSize='small' color='primary'/>
         else
-          return <CancelIcon fontSize='small' color='error' sx={{ marginLeft: '.2rem' }} />
+          return <CancelIcon fontSize='small' color='disabled'/>
       } else {
         return <Typography>{_.toString(value)}</Typography>
       }
@@ -82,7 +82,7 @@ const CredentialDetail = () => {
         position: 'absolute',
         top: 0,
         right: '1rem',
-        zIndex: 1000,
+        zIndex: 900,
         height: '100%',
         backgroundColor: '#fff',
         boxShadow: '0 0 1rem 0 rgba(0,0,0,.3)',

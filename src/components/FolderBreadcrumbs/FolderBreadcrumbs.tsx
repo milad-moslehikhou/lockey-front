@@ -45,15 +45,15 @@ const FolderBreadcrumbs = () => {
       dispatch(setCredentials(credentials?.filter(c => c.is_favorite)))
       break
     default:
-      dispatch(setCredentials(credentials?.filter(c => c.folder === _.toNumber(selectedNodeId.split(':')[1]))))
+      if(selectedNodeId.split(':')[0] === 'folder')
+        dispatch(setCredentials(credentials?.filter(c => c.folder === _.toNumber(selectedNodeId.split(':')[1]))))
       break
   }
 
   return (
     <Breadcrumbs
       sx={{
-        padding: '4px 16px',
-        marginTop: '8px',
+        margin: '12px 0',
       }}>
       {breadcrumbs.path.map((item, index) => {
         if (index === breadcrumbs.path.length - 1) {

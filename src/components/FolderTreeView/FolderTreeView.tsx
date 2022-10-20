@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { TreeView } from '@mui/lab'
 import FolderIcon from '@mui/icons-material/Folder'
+import FolderSharedIcon from '@mui/icons-material/FolderShared'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { BREADCRUMBS_BASE_PATH } from '../../constant'
@@ -76,7 +77,7 @@ const Tree = ({ folder, folders, path }: ITreeProps) => {
   return (
     <IconicTreeItem
       nodeId={`folder:${folder.id}`}
-      labelIcon={FolderIcon}
+      labelIcon={folder.is_public? FolderSharedIcon: FolderIcon}
       labelText={folder.name}
       color={folder.color}
       data-path={JSON.stringify(path)}

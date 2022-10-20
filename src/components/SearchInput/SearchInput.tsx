@@ -5,7 +5,12 @@ import IconButton from '@mui/material/IconButton'
 import SearchIcon from '@mui/icons-material/Search'
 
 
-const SearchInput = () => {
+interface ISearchInputProps {
+  onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+}
+
+const SearchInput = ({ onChange }: ISearchInputProps) => {
+
   return (
     <Paper
       component="form"
@@ -17,10 +22,22 @@ const SearchInput = () => {
       }}
     >
       <InputBase
-        sx={{ ml: 1, flex: 1 }}
+        id='search'
         placeholder="Search"
+        onChange={onChange}
+        onKeyDown={e => { if (e.key === 'Enter') e.preventDefault() }}
+        sx={{
+          marginLeft: 1,
+          flex: 1
+        }}
       />
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+      <IconButton
+        type="button"
+        sx={{
+          padding: '10px'
+        }}
+        aria-label="search"
+      >
         <SearchIcon />
       </IconButton>
     </Paper>

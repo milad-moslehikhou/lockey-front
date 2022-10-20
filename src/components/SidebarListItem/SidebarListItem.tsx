@@ -8,12 +8,12 @@ import { selectBreadcrumbs, setSelectedItem } from '../../features/breadcrumbs/b
 import { BREADCRUMBS_BASE_PATH } from '../../constant'
 
 
-interface IPorps {
+interface ISidebarListItemPorps {
   id: string,
   text: string,
 }
 
-const SidebarListItem = ({ id, text }: IPorps) => {
+const SidebarListItem = ({ id, text }: ISidebarListItemPorps) => {
   const dispatch = useDispatch()
   const breadcrumbs = useSelector(selectBreadcrumbs)
 
@@ -28,7 +28,7 @@ const SidebarListItem = ({ id, text }: IPorps) => {
   return (
     <ListItemButton
       sx={{
-        padding: '0 16px',
+        padding: '0 1rem',
         fontSize: '14px',
         '&.Mui-selected': {
           fontWeight: 'bold'

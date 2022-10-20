@@ -42,12 +42,12 @@ export default function Passwords() {
         <Box sx={{
           position: 'relative',
           width: '100%',
+          padding: '0 1rem',
         }}
         >
           <FolderBreadcrumbs />
           <Box sx={{
             height: 'calc(100% - 48px)',
-            margin: '0 1rem',
           }}>
             <CredentialsDataTable />
             {credentialFormsState.add ? <CredentialAddForm /> : ''}

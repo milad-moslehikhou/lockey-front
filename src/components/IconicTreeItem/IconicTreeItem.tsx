@@ -55,6 +55,7 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCon
         [classes.disabled]: disabled,
       })}
       onMouseDown={handleMouseDown}
+      style={{ padding: '0 1rem' }}
       ref={ref as React.Ref<HTMLDivElement>}
     >
       <div onClick={handleExpansionClick} className={classes.iconContainer}>
@@ -64,6 +65,11 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCon
         onClick={handleSelectionClick}
         component="div"
         className={classes.label}
+        sx={{
+          '&.MuiTreeItem-label': {
+            padding: 0,
+          }
+        }}
       >
         {label}
       </Typography>
@@ -97,14 +103,15 @@ const IconicTreeItem = ({
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
-          '& svg': {
-            paddingRight: '4px',
-          },
-          '& Mui-focused': {
-            backgroundColor: 'warning'
-          }
         }}>
-          <Box component={LabelIcon} color={color} />
+          <Box
+            component={LabelIcon}
+            color={color}
+            sx={{
+              marginRight: '4px',
+              fontSize: '1.2rem',
+            }}
+          />
           <Typography>
             {labelText}
           </Typography>

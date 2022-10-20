@@ -21,7 +21,10 @@ const credentialSlice = createSlice({
       state.credentials = action.payload || []
     },
     setCredentialFormsState: (state, action: PayloadAction<FormsStateType>) => {
-      state.formsState = action.payload
+      if ('detail' in action.payload)
+        state.formsState = action.payload
+      else
+        state.formsState = { ...action.payload, detail: state.formsState.detail }
     },
     setSelectedCredentials: (state, action: PayloadAction<string[]>) => {
       state.selected = action.payload

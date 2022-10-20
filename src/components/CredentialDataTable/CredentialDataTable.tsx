@@ -11,14 +11,19 @@ import {
   TableContainer,
   TableRow,
   Checkbox,
+  Tooltip,
+  Chip,
+  Stack,
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 import StarIcon from '@mui/icons-material/Star'
 import StarHalfIcon from '@mui/icons-material/StarHalf'
 import StarBorderIcon from '@mui/icons-material/StarBorder'
 import ForwardIcon from '@mui/icons-material/Forward'
+import GroupsIcon from '@mui/icons-material/Groups'
+import LockResetIcon from '@mui/icons-material/LockReset'
 import { getComparator, humanizeDate } from '../../helpers/common'
-import type { CredentialType } from '../../types/credential'
+import type { CredentialImportancyType, CredentialType } from '../../types/credential'
 import type { DataTableHeaderType, OrderType } from '../../types/component'
 import {
   selectCredentials,
@@ -69,6 +74,43 @@ const CredentialsDataTable = () => {
       type: 'string'
     }
   ]
+
+  const Importancy = ({ level }: { level: CredentialImportancyType }) => {
+    let ImportancyIcon
+    switch (level) {
+      case 'HIGH':
+        ImportancyIcon = <ForwardIcon
+          color='error'
+          sx={{
+            fontSize: '1.2rem',
+            transform: 'rotateZ(270deg)',
+          }}
+        />
+        break
+      case 'MEDIUM':
+        ImportancyIcon = <ForwardIcon
+          color='warning'
+          sx={{
+            fontSize: '1.2rem',
+          }}
+        />
+        break
+      case 'LOW':
+        ImportancyIcon = <ForwardIcon
+          color='success'
+          sx={{
+            fontSize: '1.2rem',
+            transform: 'rotateZ(90deg)',
+          }}
+        />
+        break
+    }
+    return (
+      <Tooltip title={`${level} importancy`}>
+        {ImportancyIcon}
+      </Tooltip>
+    )
+  }
 
   const handleOnSort = (event: React.MouseEvent<unknown>, property: keyof CredentialType) => {
     const isAsc = orderBy === property && order === 'asc'
@@ -180,6 +222,8 @@ const CredentialsDataTable = () => {
                     </TableSortLabel>
                   </TableCell>
                 ))}
+                <TableCell padding="checkbox">
+                </TableCell>
               </TableRow>
             </TableHead>
 
@@ -225,15 +269,7 @@ const CredentialsDataTable = () => {
                     <TableCell sx={{
                       borderBottom: 0,
                     }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        {row.importancy === 'HIGH' ? <ForwardIcon
-                          sx={{ fontSize: '1.2rem', transform: 'rotateZ(270deg)' }} color='error' /> : ''}
-                        {row.importancy === 'MEDIUM' ? <ForwardIcon
-                          sx={{ fontSize: '1.2rem' }} color='warning' /> : ''}
-                        {row.importancy === 'LOW' ? <ForwardIcon
-                          sx={{ fontSize: '1.2rem', transform: 'rotateZ(90deg)' }} color='success' /> : ''}
-                        {row.name}
-                      </Box>
+                      {row.name}
                     </TableCell>
                     <TableCell sx={{
                       borderBottom: 0,
@@ -255,6 +291,47 @@ const CredentialsDataTable = () => {
                     }}>
                       {humanizeDate(row.modified_at)}
                     </TableCell>
+                    <TableCell sx={{
+                      borderBottom: 0,
+                      fontSize: '.5rem'
+                    }}
+                    >
+                      <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                      >
+                        <Chip
+                          variant='outlined'
+                          sx={{
+                            '& .MuiChip-label': {
+                              display: 'flex',
+                              alignItems: 'center',
+                            }
+                          }}
+                          label={
+                            <Stack direction="row" spacing={.1} alignItems='center'>
+                              <Importancy level={row.importancy} />
+                              <Tooltip title={row.is_public ? 'Public' : 'Private'}>
+                                <GroupsIcon
+                                  color={row.is_public ? 'primary' : 'disabled'}
+                                />
+                              </Tooltip>
+                              <Tooltip
+                                title={row.auto_genpass ?
+                                  'Auto generate password is active' :
+                                  'Auto generate password isn\'t active'
+                                }
+                              >
+                                <LockResetIcon
+                                  color={row.auto_genpass ? 'primary' : 'disabled'}
+                                />
+                              </Tooltip>
+                            </Stack>
+                          }
+                        />
+                      </Box>
+                    </TableCell>
                   </TableRow>
                 )
               })}
@@ -262,7 +339,7 @@ const CredentialsDataTable = () => {
           </Table>
         </TableContainer>
       </Box>
-    </Box>
+    </Box >
   )
 }
 

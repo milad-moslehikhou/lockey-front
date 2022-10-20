@@ -4,6 +4,9 @@ import {
   Box,
   Button,
   IconButton,
+  Tooltip,
+  Stack,
+  Typography,
 } from '@mui/material'
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
@@ -11,13 +14,18 @@ import ShareIcon from '@mui/icons-material/Share'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import InfoIcon from '@mui/icons-material/Info'
-import { selectCredentialFormsState, selectSelectedCredentials, setCredentialFormsState } from '../../features/credential/credentialSlice'
+import {
+  selectCredentialFormsState,
+  selectSelectedCredentials,
+  setCredentialFormsState
+} from '../../features/credential/credentialSlice'
 
 
 const Toolbar = () => {
   const dispatch = useDispatch()
   const selectedCredentials = useSelector(selectSelectedCredentials)
   const formsState = useSelector(selectCredentialFormsState)
+  const boxShadow = formsState.detail ? 'inset 0.1rem 0.1rem 0.2rem #c8d0e7, inset -0.1rem -0.1rem 1rem #fff' : 'unset'
 
   return (
     <Box sx={{
@@ -29,7 +37,7 @@ const Toolbar = () => {
       borderBottomColor: 'grey.300',
       borderBottomStyle: 'solid',
       borderBottomWidth: 1,
-      zIndex: 2000,
+      zIndex: 1000,
     }}>
       <Box>
         <Button
@@ -44,21 +52,21 @@ const Toolbar = () => {
           Create
         </Button>
       </Box>
-      <Box sx={{
-        width: 'calc(100% - 320px - 24px - 10px)',
-        alignItems: 'center',
-        position: 'absolute',
-        left: '320px'
-      }}>
+      <Stack
+        direction='row'
+        spacing='1rem'
+        sx={{
+          width: 'calc(100% - 320px - 24px - 10px)',
+          alignItems: 'center',
+          position: 'absolute',
+          left: '320px'
+        }}>
         <Button
           variant="outlined"
           size='small'
           startIcon={<DriveFileMoveIcon />}
           disabled={selectedCredentials.length <= 0}
           onClick={() => dispatch(setCredentialFormsState({ move: true }))}
-          sx={{
-            marginRight: '1rem'
-          }}
         >
           Move
         </Button>
@@ -67,9 +75,6 @@ const Toolbar = () => {
           size='small'
           startIcon={<ShareIcon />}
           disabled={selectedCredentials.length <= 0}
-          sx={{
-            marginRight: '1rem'
-          }}
         >
           Share
         </Button>
@@ -79,9 +84,6 @@ const Toolbar = () => {
           startIcon={<EditIcon />}
           disabled={selectedCredentials.length !== 1}
           onClick={() => dispatch(setCredentialFormsState({ edit: true }))}
-          sx={{
-            marginRight: '1rem'
-          }}
         >
           Edit
         </Button>
@@ -92,26 +94,34 @@ const Toolbar = () => {
           startIcon={<DeleteIcon />}
           disabled={selectedCredentials.length !== 1}
           onClick={() => dispatch(setCredentialFormsState({ delete: true }))}
-          sx={{
-            marginRight: '1rem'
-          }}
         >
           Delete
         </Button>
-      </Box>
+        {selectedCredentials.length > 0 ?
+          <Typography>
+            {`${selectedCredentials.length} row${selectedCredentials.length > 1 ? 's' : ''} selected`}
+          </Typography> : ''}
+      </Stack>
       <Box sx={{
         position: 'absolute',
         right: 0,
-        marginRight: '.5rem'
+        marginRight: '1rem'
       }}>
-        <IconButton
-          color="primary"
-          component="label"
-          disabled={selectedCredentials.length !== 1}
-          onClick={() => dispatch(setCredentialFormsState({ detail: !formsState.detail }))}
-        >
-          <InfoIcon />
-        </IconButton>
+        <Tooltip title={formsState.detail ? 'Hide details' : 'Show details'}>
+          <IconButton
+            color="primary"
+            component="label"
+            disabled={selectedCredentials.length !== 1}
+            onClick={() => dispatch(setCredentialFormsState({ detail: !formsState.detail }))}
+            sx={{
+              padding: '3px',
+              boxShadow: boxShadow,
+              borderRadius: '4px',
+            }}
+          >
+            <InfoIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
     </Box>
   )

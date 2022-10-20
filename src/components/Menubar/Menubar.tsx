@@ -12,7 +12,7 @@ const Menubar = () => {
       alignItems: 'center',
       justifyContent: 'space-between',
       minHeight: '3rem',
-      padding: '0 1.5rem',
+      padding: '0 1rem',
       backgroundColor: 'grey.900',
     }}>
       <Box>
