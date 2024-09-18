@@ -1,57 +1,41 @@
 import * as React from 'react'
-import _ from 'lodash'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
-import {
-  TextField,
-  FormControlLabel,
-  Switch,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl
-} from '@mui/material'
+import { TextField, FormControlLabel, Switch, Select, MenuItem, InputLabel, FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
 import InputChips from '../InputChips/InputChips'
-import { useEditCredentialMutation, useGetFoldersQuery } from '../../features/api/apiSlice'
+import { useEditCredentialMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import type { CredentialType } from '../../types/credential'
-import {
-  selectCredentials,
-  selectSelectedCredentials,
-  setCredentials,
-  setSelectedCredentials,
-  setCredentialFormsState,
-} from '../../features/credential/credentialSlice'
+import { credentialActions } from '../../features/credentialSlice'
 import { setStringOrNull, handleError } from '../../helpers/form'
-import { selectCurrentUser } from '../../features/auth/authSlice'
+import useLoggedInUser from '../../hooks/useLoggedInUser'
 
+interface CredentialEditFormProps {
+  credential: CredentialType
+}
 
-const CredentialEditForm = () => {
+const CredentialEditForm = ({ credential }: CredentialEditFormProps) => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
-  const currentUser = useSelector(selectCurrentUser)
-  const credentials = useSelector(selectCredentials)
-  const selectedCredentials = useSelector(selectSelectedCredentials)
-  const selectedCredential = credentials.filter(c => c.id === _.toInteger(selectedCredentials[0]))[0]
-  const { data: folders } = useGetFoldersQuery()
-  const [edit, { isLoading }] = useEditCredentialMutation()
-  const [tags, setTags] = React.useState<string[]>(selectedCredential.tags ? selectedCredential.tags.split(',') : [])
+  const loggedInUser = useLoggedInUser()
+  const [edit, { isLoading: editCredentialIsLoading }] = useEditCredentialMutation()
+  const [tags, setTags] = React.useState<string[]>(credential.tags ? credential.tags.split(',') : [])
   const {
     register,
     handleSubmit,
     control,
     setError,
-    formState: { errors }
+    formState: { errors },
   } = useForm<Partial<CredentialType>>({
     defaultValues: {
-      ...selectedCredential,
-      folder: selectedCredential.folder === null ? -1 : selectedCredential.folder
-    }
+      ...credential,
+      folder: credential.folder === null ? -1 : credential.folder,
+    },
   })
 
   const handleCloseForm = () => {
-    dispatch(setCredentialFormsState({ edit: false }))
+    dispatch(credentialActions.setShowForm({ edit: false }))
   }
 
   const onSubmit = async (data: Partial<CredentialType>) => {
@@ -59,21 +43,24 @@ const CredentialEditForm = () => {
       ...data,
       tags: tags.join(','),
       // eslint-disable-next-line camelcase
-      modified_by: currentUser?.id,
-      folder: data.folder === -1 ? null : data.folder
+      modified_by: loggedInUser?.id,
+      folder: data.folder === -1 ? null : data.folder,
     }
 
     try {
-      const credential = await edit({ id: selectedCredential.id, data }).unwrap()
+      await edit({ id: credential.id, data }).unwrap()
       handleCloseForm()
-      dispatch(setCredentials([...(credentials.filter(c => c.id !== credential.id)), credential]))
-      dispatch(setSelectedCredentials([]))
+      dispatch(credentialActions.setSelected([]))
+      openSnackbar({
+        severity: 'success',
+        message: `Credential with id ${credential.id} update successfuly.`,
+      })
     } catch (e) {
       const msg = handleError(e, setError)
       if (msg) {
         openSnackbar({
           severity: 'error',
-          message: msg
+          message: msg,
         })
       }
     }
@@ -81,137 +68,144 @@ const CredentialEditForm = () => {
 
   const form = (
     <>
-      <FormControl fullWidth sx={{ mt: 2 }}>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
         <TextField
-          id="name"
-          label="Name"
-          variant="standard"
-          className="form-control"
+          id='name'
+          label='Name'
+          variant='standard'
+          className='form-control'
           error={'name' in errors}
-          helperText={errors.name && errors.name.message as string}
+          helperText={errors.name && (errors.name.message as string)}
           {...register('name', { setValueAs: setStringOrNull })}
         />
       </FormControl>
-      <FormControl fullWidth sx={{ mt: 2 }}>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
         <TextField
-          id="username"
-          label="Username"
-          variant="standard"
-          className="form-control"
+          id='username'
+          label='Username'
+          variant='standard'
+          className='form-control'
           error={'username' in errors}
-          helperText={errors.username && errors.username.message as string}
+          helperText={errors.username && (errors.username.message as string)}
           {...register('username', { setValueAs: setStringOrNull })}
         />
       </FormControl>
-      <FormControl fullWidth sx={{ mt: 2 }}>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
         <TextField
-          id="ip"
-          label="IP"
-          variant="standard"
-          className="form-control"
+          id='ip'
+          label='IP'
+          variant='standard'
+          className='form-control'
           error={'ip' in errors}
-          helperText={errors.ip && errors.ip.message as string}
+          helperText={errors.ip && (errors.ip.message as string)}
           {...register('ip', { setValueAs: setStringOrNull })}
         />
       </FormControl>
-      <FormControl fullWidth sx={{ mt: 2 }}>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
         <TextField
-          id="uri"
-          label="URI"
-          variant="standard"
-          className="form-control"
+          id='uri'
+          label='URI'
+          variant='standard'
+          className='form-control'
           error={'uri' in errors}
-          helperText={errors.uri && errors.uri.message as string}
+          helperText={errors.uri && (errors.uri.message as string)}
           {...register('uri', { setValueAs: setStringOrNull })}
         />
       </FormControl>
 
-      <FormControl fullWidth sx={{ mt: 2 }}>
-        <InputLabel id="importancy-label">Importancy</InputLabel>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
+        <InputLabel id='importancy-label'>Importancy</InputLabel>
         <Controller
-          name="importancy"
+          name='importancy'
           control={control}
           render={({ field }) => (
             <Select
-              id="importancy"
-              label="Importancy"
-              labelId="importancy-label"
+              id='importancy'
+              label='Importancy'
+              labelId='importancy-label'
               {...field}
             >
-              <MenuItem value="HIGH">High</MenuItem>
-              <MenuItem value="MEDIUM">Medium</MenuItem>
-              <MenuItem value="LOW">Low</MenuItem>
+              <MenuItem value='HIGH'>High</MenuItem>
+              <MenuItem value='MEDIUM'>Medium</MenuItem>
+              <MenuItem value='LOW'>Low</MenuItem>
             </Select>
           )}
         />
       </FormControl>
 
-      <FormControl fullWidth sx={{ mt: 2, flexDirection: 'row' }}>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2, flexDirection: 'row' }}
+      >
         <FormControlLabel
-          label="Public"
+          label='Public'
           control={
             <Controller
-              name="is_public"
+              name='is_public'
               control={control}
-              render={({ field }) => (
-                <Switch {...field} />
-              )}
+              render={({ field }) => <Switch {...field} />}
             />
           }
         />
         <FormControlLabel
-          label="Auto generate"
+          label='Auto generate'
           control={
             <Controller
-              name="auto_genpass"
+              name='auto_genpass'
               control={control}
-              render={({ field }) => (
-                <Switch {...field} />
-              )}
+              render={({ field }) => <Switch {...field} />}
             />
           }
         />
       </FormControl>
-      <FormControl fullWidth sx={{ mt: 2 }}>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
         <TextField
-          id="description"
-          label="Description"
-          variant="standard"
+          id='description'
+          label='Description'
+          variant='standard'
           fullWidth
           error={'description' in errors}
-          helperText={errors.description && errors.description.message as string}
+          helperText={errors.description && (errors.description.message as string)}
           {...register('description', { setValueAs: setStringOrNull })}
         />
       </FormControl>
-      <FormControl fullWidth sx={{ mt: 2 }}>
-        <InputChips inputLable="Tags" chips={tags} setChips={setTags} />
-      </FormControl>
-      <FormControl fullWidth sx={{ mt: 2 }}>
-        <InputLabel id="folder-label">Folder</InputLabel>
-        <Controller
-          name="folder"
-          control={control}
-          render={({ field }) => (
-            <Select
-              id="folder"
-              label="Folder"
-              labelId="folder-label"
-              {...field}
-            >
-              <MenuItem value={-1}>--</MenuItem>
-              {folders && folders.map(folder => <MenuItem key={folder.id} value={folder.id}>{folder.name}</MenuItem>)}
-            </Select>
-          )}
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
+        <InputChips
+          inputLable='Tags'
+          chips={tags}
+          setChips={setTags}
         />
       </FormControl>
     </>
   )
 
   return (
-    <FormDialog title="Edit Credential"
+    <FormDialog
+      title='Edit Credential'
       form={form}
-      submitLable="Apply"
-      isLoading={isLoading}
+      submitLable='Apply'
+      isLoading={editCredentialIsLoading}
       handleSubmit={handleSubmit(onSubmit)}
       handleCloseForm={handleCloseForm}
     />

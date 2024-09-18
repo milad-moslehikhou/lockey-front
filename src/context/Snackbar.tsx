@@ -1,28 +1,24 @@
 import * as React from 'react'
-import {
-  Snackbar,
-  Alert
-} from '@mui/material'
+import { Snackbar, Alert } from '@mui/material'
 import Slide from '@mui/material/Slide'
 import type { SnackbarContextType, AlertStateType } from '../types/component'
 
-
 const SnackbarContext = React.createContext<SnackbarContextType>({
-  openSnackbar: () => { },
+  openSnackbar: () => {},
 })
 
 const SnackbarProvider = ({ children }: { children: React.ReactNode }) => {
   const [alertState, setAlertState] = React.useState<AlertStateType>({
     open: false,
     severity: 'success',
-    message: 'no message!'
+    message: 'no message!',
   })
 
   const openSnackbar = ({ severity, message }: AlertStateType) => {
     setAlertState({
       open: true,
       severity: severity,
-      message: message
+      message: message,
     })
   }
 
@@ -42,8 +38,9 @@ const SnackbarProvider = ({ children }: { children: React.ReactNode }) => {
       >
         <Alert
           severity={alertState.severity}
-          variant="filled"
-          sx={{ width: '100%' }}>
+          variant='filled'
+          sx={{ width: '100%' }}
+        >
           {alertState.message}
         </Alert>
       </Snackbar>

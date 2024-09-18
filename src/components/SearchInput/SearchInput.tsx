@@ -4,16 +4,14 @@ import InputBase from '@mui/material/InputBase'
 import IconButton from '@mui/material/IconButton'
 import SearchIcon from '@mui/icons-material/Search'
 
-
 interface ISearchInputProps {
   onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
 }
 
 const SearchInput = ({ onChange }: ISearchInputProps) => {
-
   return (
     <Paper
-      component="form"
+      component='form'
       sx={{
         p: '2px 4px',
         display: 'flex',
@@ -23,20 +21,22 @@ const SearchInput = ({ onChange }: ISearchInputProps) => {
     >
       <InputBase
         id='search'
-        placeholder="Search"
+        placeholder='Search'
         onChange={onChange}
-        onKeyDown={e => { if (e.key === 'Enter') e.preventDefault() }}
+        onKeyDown={e => {
+          if (e.key === 'Enter') e.preventDefault()
+        }}
         sx={{
           marginLeft: 1,
-          flex: 1
+          flex: 1,
         }}
       />
       <IconButton
-        type="button"
+        type='button'
         sx={{
-          padding: '10px'
+          padding: '10px',
         }}
-        aria-label="search"
+        aria-label='search'
       >
         <SearchIcon />
       </IconButton>

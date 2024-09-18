@@ -69,7 +69,7 @@
     width: 100px;
     align-self: center;
     margin-top: 4rem;
-    filter: invert(1);
+    color: #ffff;
 }
 
 .logo-header {

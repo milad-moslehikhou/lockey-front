@@ -4,12 +4,13 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { BrowserRouter } from 'react-router-dom'
+import { AuthProvider } from './context/Auth'
+import { LoadingProvider } from './context/Loading'
 import { store } from './app/store'
 import { SnackbarProvider } from './context/Snackbar'
 import Routes from './Routes'
 
 import './App.css'
-
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
@@ -21,20 +22,24 @@ function App() {
           mode: prefersDarkMode ? 'dark' : 'light',
         },
       }),
-    [prefersDarkMode],
+    [prefersDarkMode]
   )
-  
+
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <SnackbarProvider>
-          <BrowserRouter>
-            <Routes />
-          </BrowserRouter>
-        </SnackbarProvider>
-      </ThemeProvider>
-    </Provider>
+    <AuthProvider>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <SnackbarProvider>
+            <LoadingProvider>
+              <BrowserRouter>
+                <Routes />
+              </BrowserRouter>
+            </LoadingProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </Provider>
+    </AuthProvider>
   )
 }
 

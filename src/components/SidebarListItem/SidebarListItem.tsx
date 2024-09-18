@@ -1,42 +1,41 @@
 import * as React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  ListItemText,
-  ListItemButton,
-} from '@mui/material'
-import { selectBreadcrumbs, setSelectedItem } from '../../features/breadcrumbs/breadcrumbsSlice'
-import { BREADCRUMBS_BASE_PATH } from '../../constant'
-
+import { ListItemText, ListItemButton } from '@mui/material'
+import { breadcrumbsActions, selectBreadcrumbsItems } from '../../features/breadcrumbsSlice'
+import { credentialActions } from '../../features/credentialSlice'
 
 interface ISidebarListItemPorps {
-  id: string,
-  text: string,
+  id: string
+  text: string
 }
 
 const SidebarListItem = ({ id, text }: ISidebarListItemPorps) => {
   const dispatch = useDispatch()
-  const breadcrumbs = useSelector(selectBreadcrumbs)
+  const breadcrumbsItems = useSelector(selectBreadcrumbsItems)
 
   const handleClick = () => {
-    if (id === BREADCRUMBS_BASE_PATH.id) {
-      dispatch(setSelectedItem([{ id, text }]))
-    } else {
-      dispatch(setSelectedItem([BREADCRUMBS_BASE_PATH, { id, text }]))
-    }
+    dispatch(breadcrumbsActions.setItems([{ id, name: text }]))
+    dispatch(credentialActions.setFilter(id))
   }
 
+  const selected =
+    breadcrumbsItems[breadcrumbsItems.length - 1] && breadcrumbsItems[breadcrumbsItems.length - 1].id === id
   return (
     <ListItemButton
       sx={{
         padding: '0 1rem',
         fontSize: '14px',
         '&.Mui-selected': {
-          fontWeight: 'bold'
-        }
+          fontWeight: 'bold',
+        },
       }}
-      selected={breadcrumbs.path[breadcrumbs.path.length - 1].id === id}
-      onClick={handleClick} >
-      <ListItemText primary={text} primaryTypographyProps={{ fontWeight: 'inherit' }} />
+      selected={selected}
+      onClick={handleClick}
+    >
+      <ListItemText
+        primary={text}
+        primaryTypographyProps={{ fontWeight: 'inherit' }}
+      />
     </ListItemButton>
   )
 }

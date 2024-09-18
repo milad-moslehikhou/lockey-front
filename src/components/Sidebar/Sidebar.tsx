@@ -1,26 +1,131 @@
 import * as React from 'react'
-import {
-  Box,
-  List,
-  Divider,
-} from '@mui/material'
+import _ from 'lodash'
+import { Box, List, Divider, ListItemIcon, ListItemText, MenuItem } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import ShareIcon from '@mui/icons-material/Share'
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove'
 import SidebarListItem from '../../components/SidebarListItem/SidebarListItem'
 import FolderTreeView from '../FolderTreeView/FolderTreeView'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { breadcrumbsActions, selectBreadcrumbsItems } from '../../features/breadcrumbsSlice'
+import useLoading from '../../hooks/useLoading'
+import { useGetFoldersQuery } from '../../features/apiSlice'
+import type { BreadcrumbsItemType } from '../../types/component'
+import { credentialActions } from '../../features/credentialSlice'
 
 const Sidebar = () => {
+  const dispatch = useDispatch()
+  const loading = useLoading()
+  const { data: folders, isLoading: getFoldersIsLoading } = useGetFoldersQuery()
+
+  const breadcrumbsItems = useSelector(selectBreadcrumbsItems)
+
+  const getLocation = (id: number, location: BreadcrumbsItemType[] = []) => {
+    let tempLocation = [...location]
+    const parent = folders && folders.filter(f => f.id === id)[0]
+    if (parent) {
+      tempLocation = [...tempLocation, { id: `${parent.id}`, name: parent.name }]
+      if (parent.parent) tempLocation = [...getLocation(parent.parent, tempLocation)]
+    }
+    return tempLocation
+  }
+
+  const handleOnNodeSelect = (e: React.SyntheticEvent, nodeId: string) => {
+    dispatch(breadcrumbsActions.setItems(getLocation(_.toInteger(nodeId)).reverse()))
+    dispatch(credentialActions.setFilter(nodeId))
+  }
+
+  const selected = breadcrumbsItems[breadcrumbsItems.length - 1] && breadcrumbsItems[breadcrumbsItems.length - 1].id
+
+  const menuItems = [
+    <MenuItem
+      onClick={() => {
+        console.log('create ')
+      }}
+      key='create'
+    >
+      <ListItemIcon>
+        <AddIcon />
+      </ListItemIcon>
+      <ListItemText>Create</ListItemText>
+    </MenuItem>,
+    <Divider
+      sx={{ margin: '0 !important' }}
+      key='divider1'
+    />,
+    <MenuItem
+      onClick={() => {
+        console.log('edit ')
+      }}
+      key='edit'
+    >
+      <ListItemIcon>
+        <EditIcon />
+      </ListItemIcon>
+      <ListItemText>Edit</ListItemText>
+    </MenuItem>,
+    <MenuItem
+      onClick={() => {
+        console.log('move ')
+      }}
+      key='move'
+    >
+      <ListItemIcon>
+        <DriveFileMoveIcon />
+      </ListItemIcon>
+      <ListItemText>Move</ListItemText>
+    </MenuItem>,
+    <MenuItem
+      onClick={() => {
+        console.log('delete ')
+      }}
+      key='delete'
+    >
+      <ListItemIcon>
+        <DeleteIcon color='error' />
+      </ListItemIcon>
+      <ListItemText>Delete</ListItemText>
+    </MenuItem>,
+    <Divider
+      sx={{ margin: '0 !important' }}
+      key='divider2'
+    />,
+    <MenuItem
+      onClick={() => {
+        console.log('share ')
+      }}
+      key='share'
+    >
+      <ListItemIcon>
+        <ShareIcon />
+      </ListItemIcon>
+      <ListItemText>Share</ListItemText>
+    </MenuItem>,
+  ]
+
+  React.useEffect(() => {
+    loading(getFoldersIsLoading)
+  }, [getFoldersIsLoading])
+
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      width: '320px',
-      minWidth: '320px',
-      position: 'relative',
-      borderRight: '1px solid rgba(0, 0, 0, 0.1)',
-    }}>
-      <List component='nav' style={{ 'width': '100%' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '320px',
+        minWidth: '320px',
+        position: 'relative',
+        borderRight: '1px solid rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <List
+        component='nav'
+        style={{ width: '100%' }}
+      >
         <SidebarListItem
-          id='list:all'
+          id='list:all_items'
           text='All Items'
         />
         <SidebarListItem
@@ -41,7 +146,14 @@ const Sidebar = () => {
         />
       </List>
       <Divider />
-      <FolderTreeView />
+      {folders && (
+        <FolderTreeView
+          folders={folders}
+          menuItems={menuItems}
+          selected={selected}
+          onNodeSelect={handleOnNodeSelect}
+        />
+      )}
     </Box>
   )
 }

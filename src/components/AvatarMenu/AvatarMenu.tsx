@@ -1,20 +1,11 @@
 import * as React from 'react'
-import {
-  Box,
-  Avatar,
-  Typography,
-  Button,
-  Menu,
-  MenuItem
-} from '@mui/material'
+import { Box, Avatar, Typography, Button, Menu, MenuItem } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '../../features/auth/authSlice'
 import { stringToColor } from '../../helpers/common'
-
+import useLoggedInUser from '../../hooks/useLoggedInUser'
 
 const AvatarMenu = () => {
-  const user = useSelector(selectCurrentUser)
+  const loggedInUser = useLoggedInUser()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
@@ -28,9 +19,9 @@ const AvatarMenu = () => {
   return (
     <>
       <Button
-        id="avatar-menu-button"
+        id='avatar-menu-button'
         aria-controls={open ? 'avatar-menu' : undefined}
-        aria-haspopup="true"
+        aria-haspopup='true'
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
         sx={{
@@ -46,37 +37,48 @@ const AvatarMenu = () => {
           borderColor: 'grey.300',
           ':hover': {
             bgcolor: 'background.paper',
-            boxShadow: '2px 2px 4px rgb(0 0 0 / 10%)'
+            boxShadow: '2px 2px 4px rgb(0 0 0 / 10%)',
           },
           '&[aria-expanded=true]': {
-            borderWidth: 0
-          }
+            borderWidth: 0,
+          },
         }}
       >
-        {user && user.profile.avatar
-          ? <Avatar src={user.profile.avatar} alt={user.username} />
-          : <Avatar sx={{ bgcolor: stringToColor(user?.username || '') }}>
-            {user?.profile.first_name[0].concat(user?.profile.last_name[0])}
-          </Avatar>}
-        <Box sx={{
-          marginLeft: 2,
-          flexGrow: 1,
-        }}>
+        {loggedInUser && loggedInUser.profile.avatar ? (
+          <Avatar
+            src={loggedInUser.profile.avatar}
+            alt={loggedInUser.username}
+          />
+        ) : (
+          <Avatar sx={{ bgcolor: stringToColor(loggedInUser?.username || '') }}>
+            {loggedInUser?.profile.first_name[0].concat(loggedInUser?.profile.last_name[0])}
+          </Avatar>
+        )}
+        <Box
+          sx={{
+            marginLeft: 2,
+            flexGrow: 1,
+          }}
+        >
           <Typography
             fontWeight={900}
             textTransform='lowercase'
             textAlign='left'
-          >{user?.profile.first_name + ' ' + user?.profile.last_name}</Typography>
+          >
+            {loggedInUser?.profile.first_name + ' ' + loggedInUser?.profile.last_name}
+          </Typography>
           <Typography
             fontSize='small'
             textTransform='lowercase'
             textAlign='left'
-          >{user?.username}</Typography>
+          >
+            {loggedInUser?.username}
+          </Typography>
         </Box>
         <ExpandMoreIcon fontSize='small' />
       </Button>
       <Menu
-        id="avatar-menu"
+        id='avatar-menu'
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -90,7 +92,7 @@ const AvatarMenu = () => {
           },
           '& .MuiMenu-list': {
             width: anchorEl && anchorEl.clientWidth + 2,
-          }
+          },
         }}
       >
         <MenuItem onClick={handleClose}>Profile</MenuItem>

@@ -1,39 +1,40 @@
 import * as React from 'react'
 import _ from 'lodash'
-import { useSelector } from 'react-redux'
-import {
-  Box,
-  Typography,
-  Divider,
-  Stack,
-  Chip,
-} from '@mui/material'
-import {
-  selectCredentials,
-  selectSelectedCredentials,
-} from '../../features/credential/credentialSlice'
+import { Box, Typography, Divider, Stack, Chip } from '@mui/material'
 import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import ForwardIcon from '@mui/icons-material/Forward'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
 import { formatDate } from '../../helpers/common'
-import { useGetFoldersQuery, useGetUserByIdQuery } from '../../features/api/apiSlice'
+import { useGetFoldersQuery, useGetUserByIdQuery } from '../../features/apiSlice'
+import type { CredentialType } from '../../types/credential'
 
+interface CredentialDetailProps {
+  credential: CredentialType
+}
 
-const CredentialDetail = () => {
-  const { data: folders } = useGetFoldersQuery()
-  const credentials = useSelector(selectCredentials)
-  const selectedCredentials = useSelector(selectSelectedCredentials)
-  const selectedCredential = credentials.filter(c => c.id === _.toInteger(selectedCredentials[0]))[0]
+const CredentialDetail = ({ credential }: CredentialDetailProps) => {
+  const { data: folders, isLoading: foldersIsLoading } = useGetFoldersQuery()
+  const { data: createdBy } = useGetUserByIdQuery(credential.created_by)
+  const { data: modifiedBy } = useGetUserByIdQuery(credential.modified_by)
 
-  const DetailRow = ({ title, value }: { title: string, value: any }) => {
-
+  const DetailRow = ({ title, value }: { title: string; value: any }) => {
     const ValueElement = () => {
       if (typeof value === 'boolean') {
         if (value)
-          return <CheckCircleIcon fontSize='small' color='primary'/>
+          return (
+            <CheckCircleIcon
+              fontSize='small'
+              color='primary'
+            />
+          )
         else
-          return <CancelIcon fontSize='small' color='disabled'/>
+          return (
+            <CancelIcon
+              fontSize='small'
+              color='disabled'
+            />
+          )
       } else {
         return <Typography>{_.toString(value)}</Typography>
       }
@@ -65,17 +66,18 @@ const CredentialDetail = () => {
     let tempLocation = [...location]
     const parent = folders && folders.filter(f => f.id === id)[0]
     if (parent) {
-
       tempLocation = [...tempLocation, parent.name]
-      if (parent.parent)
-        tempLocation = [...getLocation(parent.parent, tempLocation)]
+      if (parent.parent) tempLocation = [...getLocation(parent.parent, tempLocation)]
     }
     return tempLocation
   }
 
-  const location = '/' + getLocation(selectedCredential.folder || -1).reverse().join('/')
-  const { data: createdBy } = useGetUserByIdQuery(selectedCredential.created_by)
-  const { data: modifiedBy } = useGetUserByIdQuery(selectedCredential.modified_by)
+  const location =
+    '/' +
+    getLocation(credential.folder || -1)
+      .reverse()
+      .join('/')
+
   return (
     <Box
       sx={{
@@ -90,15 +92,17 @@ const CredentialDetail = () => {
         overflowY: 'scroll',
       }}
     >
-      <Box sx={{
-        padding: '1rem',
-        height: '100%',
-      }}
-      >
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
+      <Box
+        sx={{
+          padding: '1rem',
+          height: '100%',
         }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
         >
           <VpnKeyIcon
             sx={{
@@ -117,22 +121,35 @@ const CredentialDetail = () => {
               marginLeft: '1rem',
             }}
           >
-            {selectedCredential.name}
+            {credential.name}
           </Typography>
         </Box>
 
-        <Divider sx={{ margin: '1rem 0', }} />
-        <DetailRow title='ID' value={selectedCredential.id} />
-        <DetailRow title='Username' value={selectedCredential.username} />
-        <DetailRow title='IP Address' value={selectedCredential.ip} />
-        <DetailRow title='URI' value={selectedCredential.uri} />
+        <Divider sx={{ margin: '1rem 0' }} />
+        <DetailRow
+          title='ID'
+          value={credential.id}
+        />
+        <DetailRow
+          title='Username'
+          value={credential.username}
+        />
+        <DetailRow
+          title='IP Address'
+          value={credential.ip}
+        />
+        <DetailRow
+          title='URI'
+          value={credential.uri}
+        />
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             margin: '.1rem 0',
             alignItems: 'center',
-          }}>
+          }}
+        >
           <Typography
             sx={{
               width: '7rem',
@@ -141,7 +158,7 @@ const CredentialDetail = () => {
           >
             Importancy
           </Typography>
-          {selectedCredential.importancy === 'HIGH' ?
+          {credential.importancy === 'HIGH' ? (
             <Chip
               label='High'
               variant='outlined'
@@ -149,14 +166,14 @@ const CredentialDetail = () => {
               icon={<ForwardIcon sx={{ fontSize: '1.2rem', transform: 'rotateZ(270deg)' }} />}
               sx={{
                 '& .MuiChip-icon': {
-                  color: '#d32f2f'
-                }
+                  color: '#d32f2f',
+                },
               }}
-
             />
-            : ''
-          }
-          {selectedCredential.importancy === 'MEDIUM' ?
+          ) : (
+            ''
+          )}
+          {credential.importancy === 'MEDIUM' ? (
             <Chip
               label='Medium'
               variant='outlined'
@@ -164,13 +181,14 @@ const CredentialDetail = () => {
               icon={<ForwardIcon sx={{ fontSize: '1.2rem' }} />}
               sx={{
                 '& .MuiChip-icon': {
-                  color: '#ed6c02'
-                }
+                  color: '#ed6c02',
+                },
               }}
             />
-            : ''
-          }
-          {selectedCredential.importancy === 'LOW' ?
+          ) : (
+            ''
+          )}
+          {credential.importancy === 'LOW' ? (
             <Chip
               label='Low'
               variant='outlined'
@@ -178,24 +196,38 @@ const CredentialDetail = () => {
               icon={<ForwardIcon sx={{ fontSize: '1.2rem', transform: 'rotateZ(90deg)' }} />}
               sx={{
                 '& .MuiChip-icon': {
-                  color: '#2e7d32'
-                }
+                  color: '#2e7d32',
+                },
               }}
             />
-            : ''
-          }
+          ) : (
+            ''
+          )}
         </Box>
-        <DetailRow title='Public' value={selectedCredential.is_public} />
-        <DetailRow title='Auto generate' value={selectedCredential.auto_genpass} />
-        <DetailRow title='Location' value={location} />
-        <DetailRow title='Description' value={selectedCredential.description} />
+        <DetailRow
+          title='Public'
+          value={credential.is_public}
+        />
+        <DetailRow
+          title='Auto generate'
+          value={credential.auto_genpass}
+        />
+        <DetailRow
+          title='Location'
+          value={foldersIsLoading ? 'loading...' : location}
+        />
+        <DetailRow
+          title='Description'
+          value={credential.description}
+        />
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             margin: '.1rem 0',
             alignItems: 'center',
-          }}>
+          }}
+        >
           <Typography
             sx={{
               width: '7rem',
@@ -205,24 +237,39 @@ const CredentialDetail = () => {
             Tags
           </Typography>
           <Stack
-            direction="row"
-            spacing={.5}
+            direction='row'
+            spacing={0.5}
           >
-            {selectedCredential.tags && selectedCredential.tags.split(',').map(t => {
-              return <Chip
-                key={t}
-                label={t}
-                size='small'
-                variant='outlined'
-              />
-            })}
+            {credential.tags &&
+              credential.tags.split(',').map(t => {
+                return (
+                  <Chip
+                    key={t}
+                    label={t}
+                    size='small'
+                    variant='outlined'
+                  />
+                )
+              })}
           </Stack>
         </Box>
-        <Divider sx={{ margin: '1rem 0', }} />
-        <DetailRow title='Modified' value={formatDate(selectedCredential.modified_at)} />
-        <DetailRow title='Modified by ' value={modifiedBy?.username} />
-        <DetailRow title='Created' value={formatDate(selectedCredential.created_at)} />
-        <DetailRow title='Created by' value={createdBy?.username} />
+        <Divider sx={{ margin: '1rem 0' }} />
+        <DetailRow
+          title='Modified'
+          value={formatDate(credential.modified_at)}
+        />
+        <DetailRow
+          title='Modified by '
+          value={modifiedBy?.username}
+        />
+        <DetailRow
+          title='Created'
+          value={formatDate(credential.created_at)}
+        />
+        <DetailRow
+          title='Created by'
+          value={createdBy?.username}
+        />
       </Box>
     </Box>
   )

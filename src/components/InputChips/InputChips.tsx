@@ -1,14 +1,9 @@
 import React, { useState } from 'react'
-import {
-  Chip,
-  TextField,
-  Stack
-} from '@mui/material'
-
+import { Chip, TextField, Stack } from '@mui/material'
 
 interface IInputChipsProps {
-  inputLable: string,
-  chips: string[],
+  inputLable: string
+  chips: string[]
   setChips: React.Dispatch<React.SetStateAction<string[]>>
 }
 
@@ -39,27 +34,27 @@ const InputChips = ({ inputLable, chips, setChips }: IInputChipsProps) => {
       <TextField
         label={inputLable}
         value={chip}
-        variant="standard"
+        variant='standard'
         fullWidth
-        onChange={e => { setChip(e.target.value) }}
+        onChange={e => {
+          setChip(e.target.value)
+        }}
         onKeyUp={handleKeyUp}
       />
       <Stack
         sx={{ mt: 2 }}
-        direction="row"
-        spacing={.5}
+        direction='row'
+        spacing={0.5}
       >
-        {
-          chips.map(item => {
-            return (
-              <Chip
-                key={item}
-                label={item}
-                onDelete={handleDelete}
-              />
-            )
-          })
-        }
+        {chips.map(item => {
+          return (
+            <Chip
+              key={item}
+              label={item}
+              onDelete={handleDelete}
+            />
+          )
+        })}
       </Stack>
     </>
   )

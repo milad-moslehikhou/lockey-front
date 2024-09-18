@@ -1,68 +1,75 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { RootStateType } from '../../app/store'
-import type { LoginRequestType, LoginResponseType } from '../../types/auth'
-import type { CredentialType } from '../../types/credential'
-import type { FolderType } from '../../types/folder'
-import type { UserType } from '../../types/user'
-
+import type { AuthType, LoginRequestType } from '../types/auth'
+import type { CredentialType } from '../types/credential'
+import type { FolderType } from '../types/folder'
+import type { UserType } from '../types/user'
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:2000/api/v1/',
-    prepareHeaders: (headers, { getState }) => {
-      const { token } = (<RootStateType>getState()).auth
-      if (token) {
-        headers.set('Authorization', `Token ${token.token}`)
+    prepareHeaders: headers => {
+      const authString = sessionStorage.getItem('auth')
+      if (authString) {
+        const auth = JSON.parse(authString) as AuthType
+        if (auth.token) headers.set('Authorization', `Token ${auth.token}`)
       }
       return headers
     },
   }),
   tagTypes: ['User', 'Credential', 'Folder'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     // Auth
-    login: builder.mutation<LoginResponseType, LoginRequestType>({
-      query: (body) => ({
+    login: builder.mutation<AuthType, LoginRequestType>({
+      query: body => ({
         url: 'auth/login/',
         method: 'POST',
         body,
+      }),
+    }),
+    logout: builder.mutation<any, void>({
+      query: () => ({
+        url: 'auth/logout/',
+        method: 'POST',
       }),
     }),
 
     // User
     getUsers: builder.query<UserType[], void>({
       query: () => 'users/',
-      providesTags: (result) =>
+      providesTags: result =>
         result
-          ? [
-            ...result.map(({ id }) => ({ type: 'User' as const, id })),
-            { type: 'User', id: 'LIST' },
-          ]
+          ? [...result.map(({ id }) => ({ type: 'User' as const, id })), { type: 'User', id: 'LIST' }]
           : [{ type: 'User', id: 'LIST' }],
     }),
     getUserById: builder.query<UserType, number>({
-      query: (id) => `users/${id}/`,
+      query: id => `users/${id}/`,
       providesTags: (result, error, arg) => [{ type: 'User', id: arg }],
     }),
 
     // Folder
     getFolders: builder.query<FolderType[], void>({
       query: () => 'folders/',
-      providesTags: (result) =>
+      providesTags: result =>
         result
-          ? [
-            ...result.map(({ id }) => ({ type: 'Folder' as const, id })),
-            { type: 'Folder', id: 'LIST' },
-          ]
+          ? [...result.map(({ id }) => ({ type: 'Folder' as const, id })), { type: 'Folder', id: 'LIST' }]
           : [{ type: 'Folder', id: 'LIST' }],
     }),
     getFolderById: builder.query<FolderType, number>({
-      query: (id) => `folders/${id}/`,
+      query: id => `folders/${id}/`,
       providesTags: (result, error, arg) => [{ type: 'Folder', id: arg }],
+    }),
+    addFolder: builder.mutation<FolderType, Partial<FolderType>>({
+      query: data => ({
+        url: 'folders/',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Folder'],
     }),
 
     // Credential
     addCredential: builder.mutation<CredentialType, Partial<CredentialType>>({
-      query: (data) => ({
+      query: data => ({
         url: 'credentials/',
         method: 'POST',
         body: data,
@@ -71,19 +78,16 @@ export const apiSlice = createApi({
     }),
     getCredentials: builder.query<CredentialType[], void>({
       query: () => 'credentials/',
-      providesTags: (result) =>
+      providesTags: result =>
         result
-          ? [
-            ...result.map(({ id }) => ({ type: 'Credential' as const, id })),
-            { type: 'Credential', id: 'LIST' },
-          ]
+          ? [...result.map(({ id }) => ({ type: 'Credential' as const, id })), { type: 'Credential', id: 'LIST' }]
           : [{ type: 'Credential', id: 'LIST' }],
     }),
     getCredentialById: builder.query<CredentialType, number>({
-      query: (id) => `credentials/${id}/`,
+      query: id => `credentials/${id}/`,
       providesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
     }),
-    editCredential: builder.mutation<CredentialType, { id: number, data: Partial<CredentialType> }>({
+    editCredential: builder.mutation<CredentialType, { id: number; data: Partial<CredentialType> }>({
       query: ({ id, data }) => ({
         url: `credentials/${id}/`,
         method: 'PATCH',
@@ -92,23 +96,23 @@ export const apiSlice = createApi({
       invalidatesTags: (result, error, arg) => [{ type: 'Credential', id: arg.id }],
     }),
     deleteCredential: builder.mutation<void, number>({
-      query: (id) => ({
+      query: id => ({
         url: `credentials/${id}/`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
+      invalidatesTags: () => [{ type: 'Credential', id: 'LIST' }],
     }),
     addCredentialFavorite: builder.mutation<void, number>({
-      query: (id) => ({
+      query: id => ({
         url: `credentials/${id}/favorite/`,
-        method: 'POST'
+        method: 'POST',
       }),
       invalidatesTags: ['Credential'],
     }),
     deleteCredentialFavorite: builder.mutation<void, number>({
-      query: (id) => ({
+      query: id => ({
         url: `credentials/${id}/favorite/`,
-        method: 'DELETE'
+        method: 'DELETE',
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
     }),
@@ -118,10 +122,12 @@ export const apiSlice = createApi({
 export const {
   // Auth
   useLoginMutation,
+  useLogoutMutation,
   // User
   useGetUsersQuery,
   useGetUserByIdQuery,
   // Folder
+  useAddFolderMutation,
   useGetFoldersQuery,
   useGetFolderByIdQuery,
   // Credential
