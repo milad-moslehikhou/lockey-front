@@ -35,7 +35,7 @@ const CredentialEditForm = ({ credential }: CredentialEditFormProps) => {
   })
 
   const handleCloseForm = () => {
-    dispatch(credentialActions.setShowForm({ edit: false }))
+    dispatch(credentialActions.setShowForms({ edit: false }))
   }
 
   const onSubmit = async (data: Partial<CredentialType>) => {

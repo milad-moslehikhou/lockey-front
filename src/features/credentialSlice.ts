@@ -15,7 +15,7 @@ const credentialSlice = createSlice({
     setSelected: (state, action: PayloadAction<string[]>) => {
       state.selected = action.payload
     },
-    setShowForm: (state, action: PayloadAction<FormsStateType>) => {
+    setShowForms: (state, action: PayloadAction<FormsStateType>) => {
       state.forms = {
         ...action.payload,
         detail: state.forms.detail,
@@ -39,6 +39,6 @@ const credentialSlice = createSlice({
 export default credentialSlice.reducer
 export const credentialActions = credentialSlice.actions
 export const selectCredentialSelected = (state: RootStateType) => state.credential.selected
-export const selectCredentialShowForm = (state: RootStateType) => state.credential.forms
+export const selectCredentialShowForms = (state: RootStateType) => state.credential.forms
 export const selectCredentialSearch = (state: RootStateType) => state.credential.search
 export const selectCredentialFilter = (state: RootStateType) => state.credential.filter

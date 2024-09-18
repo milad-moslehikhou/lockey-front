@@ -42,7 +42,7 @@ const Sidebar = () => {
   const menuItems = [
     <MenuItem
       onClick={() => {
-        console.log('create ')
+        dispatch(credentialActions.setShowForms({ add: true }))
       }}
       key='create'
     >

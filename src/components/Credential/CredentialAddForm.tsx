@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
 import { TextField, FormControlLabel, Switch, Select, MenuItem, InputLabel, FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
@@ -10,11 +10,13 @@ import type { CredentialType } from '../../types/credential'
 import { credentialActions } from '../../features/credentialSlice'
 import { setStringOrNull, handleError } from '../../helpers/form'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
+import { folderActions, selectHoveredFolder } from '../../features/folderSlice'
 
 const CredentialAddForm = () => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
   const loggedInUser = useLoggedInUser()
+  const selectedFolder = useSelector(selectHoveredFolder)
   const [add, { isLoading: addCredentialIsLoading }] = useAddCredentialMutation()
   const [tags, setTags] = React.useState<string[]>([])
   const {
@@ -30,12 +32,11 @@ const CredentialAddForm = () => {
       auto_genpass: false,
       // eslint-disable-next-line camelcase
       is_public: false,
-      folder: -1,
     },
   })
 
   const handleCloseForm = () => {
-    dispatch(credentialActions.setShowForm({ add: false }))
+    dispatch(credentialActions.setShowForms({ add: false }))
   }
 
   const onSubmit = async (data: Partial<CredentialType>) => {
@@ -47,12 +48,13 @@ const CredentialAddForm = () => {
       created_by: loggedInUser?.id,
       // eslint-disable-next-line camelcase
       modified_by: loggedInUser?.id,
-      folder: null,
+      folder: selectedFolder > 0 ? selectedFolder : null,
     }
     try {
       const addedCredential = await add(data).unwrap()
       handleCloseForm()
       dispatch(credentialActions.setSelected([]))
+      dispatch(folderActions.setHovered(-1))
       openSnackbar({
         severity: 'success',
         message: `Credential with id ${addedCredential.id} successfuly added.`,

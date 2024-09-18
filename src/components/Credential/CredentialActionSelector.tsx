@@ -1,7 +1,7 @@
 import * as React from 'react'
 import _ from 'lodash'
 import { useSelector } from 'react-redux'
-import { selectCredentialSelected, selectCredentialShowForm } from '../../features/credentialSlice'
+import { selectCredentialSelected, selectCredentialShowForms } from '../../features/credentialSlice'
 import CredentialDetail from '../../components/Credential/CredentialDetail'
 import { useGetCredentialByIdQuery } from '../../features/apiSlice'
 import CredentialAddForm from './CredentialAddForm'
@@ -11,7 +11,7 @@ import CredentialMoveForm from './CredentialMoveForm'
 
 const CredentialActionSelector = () => {
   const credentialSelected = useSelector(selectCredentialSelected)
-  const credentialShowForm = useSelector(selectCredentialShowForm)
+  const credentialShowForms = useSelector(selectCredentialShowForms)
   const {
     data: credential,
     isUninitialized,
@@ -24,11 +24,11 @@ const CredentialActionSelector = () => {
 
   return (
     <>
-      {credentialShowForm.detail && credentialIsValid ? <CredentialDetail credential={credential} /> : ''}
-      {credentialShowForm.edit && credentialIsValid ? <CredentialEditForm credential={credential} /> : ''}
-      {credentialShowForm.delete && credentialIsValid ? <CredentialDeleteForm credential={credential} /> : ''}
-      {credentialShowForm.move ? <CredentialMoveForm /> : ''}
-      {credentialShowForm.add ? <CredentialAddForm /> : ''}
+      {credentialShowForms.detail && credentialIsValid ? <CredentialDetail credential={credential} /> : ''}
+      {credentialShowForms.edit && credentialIsValid ? <CredentialEditForm credential={credential} /> : ''}
+      {credentialShowForms.delete && credentialIsValid ? <CredentialDeleteForm credential={credential} /> : ''}
+      {credentialShowForms.move ? <CredentialMoveForm /> : ''}
+      {credentialShowForms.add ? <CredentialAddForm /> : ''}
     </>
   )
 }

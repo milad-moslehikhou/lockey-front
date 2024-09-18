@@ -1,8 +1,8 @@
 import * as React from 'react'
 import _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
-import { useForm, Controller } from 'react-hook-form'
-import { Select, MenuItem, InputLabel, FormControl } from '@mui/material'
+import { useForm } from 'react-hook-form'
+import { FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
 import { useEditCredentialMutation, useGetFoldersQuery } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
@@ -29,7 +29,7 @@ const CredentialMoveForm = () => {
   })
 
   const handleCloseForm = () => {
-    dispatch(credentialActions.setShowForm({ edit: false }))
+    dispatch(credentialActions.setShowForms({ edit: false }))
   }
 
   const onSubmit = async (data: Partial<CredentialType>) => {

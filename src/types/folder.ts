@@ -12,5 +12,6 @@ export type FolderType = {
 
 export type FolderStateType = {
   selected: string
+  hovered: number
   forms: FormsStateType
 }

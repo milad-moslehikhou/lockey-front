@@ -99,6 +99,7 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCon
             anchorEl={anchorEl}
             open={openMenu}
             onClose={handleCloseMenu}
+            onClick={handleCloseMenu}
           >
             {menuItems}
           </Menu>

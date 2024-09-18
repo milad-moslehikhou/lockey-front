@@ -29,7 +29,7 @@ const CredentialDeleteForm = ({ credential }: CredentialDeleteFormProps) => {
   } = useForm<DeleteCredentialForm>()
 
   const handleCloseForm = () => {
-    dispatch(credentialActions.setShowForm({ delete: false }))
+    dispatch(credentialActions.setShowForms({ delete: false }))
   }
 
   const onSubmit = async (data: DeleteCredentialForm) => {
