@@ -60,6 +60,8 @@ const CredentialsDataTable = () => {
     switch (credentialFilter) {
       case 'list:all_items':
         return credentials
+      case 'folders':
+        return credentials
       case 'list:favorites':
         return credentials.filter(c => c.is_favorite)
       case 'list:owned_by_me':

@@ -12,10 +12,11 @@ interface FolderTreeViewProps {
   folders: FolderType[]
   menuItems?: React.ReactNode
   selected: string
+  disabledNode?: number
   onNodeSelect: (e: React.SyntheticEvent, nodeId: string) => void
 }
 
-const FolderTreeView = ({ folders, menuItems, selected, onNodeSelect }: FolderTreeViewProps) => {
+const FolderTreeView = ({ folders, menuItems, selected, disabledNode, onNodeSelect }: FolderTreeViewProps) => {
   return (
     <TreeView
       defaultCollapseIcon={<ExpandMoreIcon />}
@@ -30,6 +31,7 @@ const FolderTreeView = ({ folders, menuItems, selected, onNodeSelect }: FolderTr
       }}
     >
       <IconicTreeItem
+        id='folders'
         nodeId='folders'
         labelIcon={FolderIcon}
         labelText={<b>Folders</b>}
@@ -41,6 +43,7 @@ const FolderTreeView = ({ folders, menuItems, selected, onNodeSelect }: FolderTr
                 <FolderTreeItem
                   key={f.id}
                   folderId={f.id}
+                  disabledNode={disabledNode}
                   menuItems={menuItems}
                 />
               )

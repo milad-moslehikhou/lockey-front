@@ -4,7 +4,6 @@ import { Box, List, Divider, ListItemIcon, ListItemText, MenuItem } from '@mui/m
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import ShareIcon from '@mui/icons-material/Share'
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove'
 import SidebarListItem from '../../components/SidebarListItem/SidebarListItem'
 import FolderTreeView from '../FolderTreeView/FolderTreeView'
@@ -15,6 +14,7 @@ import { useGetFoldersQuery } from '../../features/apiSlice'
 import type { BreadcrumbsItemType } from '../../types/component'
 import { credentialActions } from '../../features/credentialSlice'
 import { folderActions } from '../../features/folderSlice'
+import { VpnKey } from '@mui/icons-material'
 
 const Sidebar = () => {
   const dispatch = useDispatch()
@@ -45,7 +45,7 @@ const Sidebar = () => {
       onClick={() => {
         dispatch(folderActions.setShowForms({ add: true }))
       }}
-      key='create'
+      key='create-folder'
     >
       <ListItemIcon>
         <AddIcon />
@@ -69,7 +69,7 @@ const Sidebar = () => {
     </MenuItem>,
     <MenuItem
       onClick={() => {
-        console.log('move ')
+        dispatch(folderActions.setShowForms({ move: true }))
       }}
       key='move'
     >
@@ -80,7 +80,7 @@ const Sidebar = () => {
     </MenuItem>,
     <MenuItem
       onClick={() => {
-        console.log('delete ')
+        dispatch(folderActions.setShowForms({ delete: true }))
       }}
       key='delete'
     >
@@ -95,14 +95,14 @@ const Sidebar = () => {
     />,
     <MenuItem
       onClick={() => {
-        console.log('share ')
+        dispatch(credentialActions.setShowForms({ add: true }))
       }}
-      key='share'
+      key='create-credential'
     >
       <ListItemIcon>
-        <ShareIcon />
+        <VpnKey />
       </ListItemIcon>
-      <ListItemText>Share</ListItemText>
+      <ListItemText>Create Credential</ListItemText>
     </MenuItem>,
   ]
 

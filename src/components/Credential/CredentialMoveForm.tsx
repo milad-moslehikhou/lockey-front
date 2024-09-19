@@ -29,7 +29,7 @@ const CredentialMoveForm = () => {
   })
 
   const handleCloseForm = () => {
-    dispatch(credentialActions.setShowForms({ edit: false }))
+    dispatch(credentialActions.setShowForms({ move: false }))
   }
 
   const onSubmit = async (data: Partial<CredentialType>) => {

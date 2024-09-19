@@ -6,18 +6,21 @@ import IconicTreeItem from '../IconicTreeItem/IconicTreeItem'
 import { useGetFolderByIdQuery, useGetFoldersQuery } from '../../features/apiSlice'
 import useLoading from '../../hooks/useLoading'
 import { folderActions, selectFolderShowForms } from '../../features/folderSlice'
+import { selectCredentialShowForms } from '../../features/credentialSlice'
 
 interface FolderTreeItemProps {
   folderId: number
+  disabledNode?: number
   menuItems: React.ReactNode
 }
 
-const FolderTreeItem = ({ folderId, menuItems }: FolderTreeItemProps) => {
+const FolderTreeItem = ({ folderId, disabledNode, menuItems }: FolderTreeItemProps) => {
   const loading = useLoading()
   const dispatch = useDispatch()
   const { data: folder, isLoading: getFolderIsLoading } = useGetFolderByIdQuery(folderId)
   const { data: folders, isLoading: getFoldersIsLoading } = useGetFoldersQuery()
   const folderShowForms = useSelector(selectFolderShowForms)
+  const credentialShowForms = useSelector(selectCredentialShowForms)
   const folderChildren = folders && folders.filter(f => f.parent == folderId)
 
   React.useEffect(() => {
@@ -30,10 +33,22 @@ const FolderTreeItem = ({ folderId, menuItems }: FolderTreeItemProps) => {
       labelIcon={folder.is_public ? FolderSharedIcon : FolderIcon}
       labelText={folder.name}
       color={folder.color}
+      disabled={folder.id == disabledNode ? true : false}
       menuItems={menuItems}
-      onMouseEnter={() => dispatch(folderActions.setHovered(folder.id))}
+      onMouseEnter={() => {
+        if (!(folderShowForms.move || credentialShowForms.move)) dispatch(folderActions.setHovered(folder.id))
+      }}
       onMouseLeave={() => {
-        if (!(folderShowForms.add || folderShowForms.edit)) dispatch(folderActions.setHovered(-1))
+        if (
+          !(
+            folderShowForms.add ||
+            folderShowForms.edit ||
+            folderShowForms.delete ||
+            folderShowForms.move ||
+            credentialShowForms.add
+          )
+        )
+          dispatch(folderActions.setHovered(-1))
       }}
     >
       {folderChildren &&
@@ -42,6 +57,7 @@ const FolderTreeItem = ({ folderId, menuItems }: FolderTreeItemProps) => {
             <FolderTreeItem
               key={f.id}
               folderId={f.id}
+              disabledNode={disabledNode}
               menuItems={menuItems}
             />
           )

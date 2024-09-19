@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
 import { TextField, FormControlLabel, Switch, Select, MenuItem, InputLabel, FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
@@ -10,11 +10,13 @@ import type { CredentialType } from '../../types/credential'
 import { credentialActions } from '../../features/credentialSlice'
 import { setStringOrNull, handleError } from '../../helpers/form'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
+import { folderActions, selectHoveredFolder } from '../../features/folderSlice'
 
 const CredentialAddForm = () => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
   const loggedInUser = useLoggedInUser()
+  const hoveredFolder = useSelector(selectHoveredFolder)
   const [add, { isLoading: addCredentialIsLoading }] = useAddCredentialMutation()
   const [tags, setTags] = React.useState<string[]>([])
   const {
@@ -46,12 +48,13 @@ const CredentialAddForm = () => {
       created_by: loggedInUser?.id,
       // eslint-disable-next-line camelcase
       modified_by: loggedInUser?.id,
-      folder: data.folder == -1 ? null : data.folder,
+      folder: hoveredFolder == -1 ? null : hoveredFolder,
     }
     try {
       const addedCredential = await add(data).unwrap()
       handleCloseForm()
       dispatch(credentialActions.setSelected([]))
+      dispatch(folderActions.setHovered(-1))
       openSnackbar({
         severity: 'success',
         message: `Credential with id ${addedCredential.id} successfuly added.`,

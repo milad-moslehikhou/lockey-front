@@ -74,6 +74,13 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'Folder', id: arg.id }],
     }),
+    deleteFolder: builder.mutation<void, number>({
+      query: id => ({
+        url: `folders/${id}/`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: () => [{ type: 'Folder', id: 'LIST' }],
+    }),
 
     // Credential
     addCredential: builder.mutation<CredentialType, Partial<CredentialType>>({
@@ -139,6 +146,7 @@ export const {
   useGetFoldersQuery,
   useGetFolderByIdQuery,
   useEditFolderMutation,
+  useDeleteFolderMutation,
   // Credential
   useAddCredentialMutation,
   useGetCredentialsQuery,
