@@ -14,6 +14,7 @@ import useLoading from '../../hooks/useLoading'
 import { useGetFoldersQuery } from '../../features/apiSlice'
 import type { BreadcrumbsItemType } from '../../types/component'
 import { credentialActions } from '../../features/credentialSlice'
+import { folderActions } from '../../features/folderSlice'
 
 const Sidebar = () => {
   const dispatch = useDispatch()
@@ -42,7 +43,7 @@ const Sidebar = () => {
   const menuItems = [
     <MenuItem
       onClick={() => {
-        dispatch(credentialActions.setShowForms({ add: true }))
+        dispatch(folderActions.setShowForms({ add: true }))
       }}
       key='create'
     >
@@ -57,7 +58,7 @@ const Sidebar = () => {
     />,
     <MenuItem
       onClick={() => {
-        console.log('edit ')
+        dispatch(folderActions.setShowForms({ edit: true }))
       }}
       key='edit'
     >

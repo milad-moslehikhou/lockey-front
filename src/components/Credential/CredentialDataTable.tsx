@@ -408,7 +408,7 @@ const CredentialsDataTable = () => {
                                   title={
                                     row.auto_genpass
                                       ? 'Auto generate password is active'
-                                      : "Auto generate password isn't active"
+                                      : 'Auto generate password is not active'
                                   }
                                 >
                                   <LockResetIcon color={row.auto_genpass ? 'primary' : 'disabled'} />

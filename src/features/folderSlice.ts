@@ -17,7 +17,7 @@ const folderSlice = createSlice({
     setHovered: (state, action: PayloadAction<number>) => {
       state.hovered = action.payload
     },
-    setShowForm: (state, action: PayloadAction<FormsStateType>) => {
+    setShowForms: (state, action: PayloadAction<FormsStateType>) => {
       state.forms = action.payload
     },
   },

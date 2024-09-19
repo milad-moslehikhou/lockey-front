@@ -5,8 +5,7 @@ import FolderSharedIcon from '@mui/icons-material/FolderShared'
 import IconicTreeItem from '../IconicTreeItem/IconicTreeItem'
 import { useGetFolderByIdQuery, useGetFoldersQuery } from '../../features/apiSlice'
 import useLoading from '../../hooks/useLoading'
-import { folderActions } from '../../features/folderSlice'
-import { selectCredentialShowForms } from '../../features/credentialSlice'
+import { folderActions, selectFolderShowForms } from '../../features/folderSlice'
 
 interface FolderTreeItemProps {
   folderId: number
@@ -18,7 +17,7 @@ const FolderTreeItem = ({ folderId, menuItems }: FolderTreeItemProps) => {
   const dispatch = useDispatch()
   const { data: folder, isLoading: getFolderIsLoading } = useGetFolderByIdQuery(folderId)
   const { data: folders, isLoading: getFoldersIsLoading } = useGetFoldersQuery()
-  const credentialShowForms = useSelector(selectCredentialShowForms)
+  const folderShowForms = useSelector(selectFolderShowForms)
   const folderChildren = folders && folders.filter(f => f.parent == folderId)
 
   React.useEffect(() => {
@@ -34,7 +33,7 @@ const FolderTreeItem = ({ folderId, menuItems }: FolderTreeItemProps) => {
       menuItems={menuItems}
       onMouseEnter={() => dispatch(folderActions.setHovered(folder.id))}
       onMouseLeave={() => {
-        if (!credentialShowForms.add) dispatch(folderActions.setHovered(-1))
+        if (!(folderShowForms.add || folderShowForms.edit)) dispatch(folderActions.setHovered(-1))
       }}
     >
       {folderChildren &&

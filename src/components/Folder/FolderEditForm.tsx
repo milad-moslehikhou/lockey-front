@@ -1,23 +1,24 @@
 import * as React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
 import { TextField, FormControlLabel, Switch, FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
-import { useAddFolderMutation } from '../../features/apiSlice'
+import { useEditFolderMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import type { FolderType } from '../../types/folder'
-import { credentialActions } from '../../features/credentialSlice'
+import { folderActions } from '../../features/folderSlice'
 import { setStringOrNull, handleError } from '../../helpers/form'
-import useLoggedInUser from '../../hooks/useLoggedInUser'
-import { folderActions, selectHoveredFolder } from '../../features/folderSlice'
 import ColorPickerField from '../ColorPickerField/ColorPickerField'
+import { credentialActions } from '../../features/credentialSlice'
 
-const FolderAddForm = () => {
+interface FolderEditFormProps {
+  folder: FolderType
+}
+
+const FolderEditForm = ({ folder }: FolderEditFormProps) => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
-  const loggedInUser = useLoggedInUser()
-  const folderHovered = useSelector(selectHoveredFolder)
-  const [add, { isLoading: addFolderIsLoading }] = useAddFolderMutation()
+  const [edit, { isLoading: editFolderIsLoading }] = useEditFolderMutation()
   const {
     register,
     handleSubmit,
@@ -28,37 +29,26 @@ const FolderAddForm = () => {
     formState: { errors },
   } = useForm<Partial<FolderType>>({
     defaultValues: {
-      // eslint-disable-next-line camelcase
-      is_public: false,
-      color: '#000',
+      ...folder,
     },
   })
 
-  const colorPickerValue = watch('color')
-
-  const handleColorPickerChange = (color: string) => {
-    setValue('color', color)
-  }
-
   const handleCloseForm = () => {
-    dispatch(folderActions.setShowForms({ add: false }))
+    dispatch(folderActions.setShowForms({ edit: false }))
   }
 
   const onSubmit = async (data: Partial<FolderType>) => {
     data = {
       ...data,
-      parent: folderHovered == -1 ? null : folderHovered,
-      team: loggedInUser?.team,
-      user: loggedInUser?.id,
     }
+
     try {
-      console.log(data)
-      const addedFolder = await add(data).unwrap()
+      await edit({ id: folder.id, data }).unwrap()
       handleCloseForm()
       dispatch(credentialActions.setSelected([]))
       openSnackbar({
         severity: 'success',
-        message: `Folder with id ${addedFolder.id} successfuly added.`,
+        message: `Folder with id ${folder.id} update successfuly.`,
       })
     } catch (e) {
       const msg = handleError(e, setError)
@@ -71,9 +61,10 @@ const FolderAddForm = () => {
     }
   }
 
-  React.useEffect(() => {
-    register('color')
-  }, [register])
+  const colorPickerValue = watch('color')
+  const handleColorPickerChange = (color: string) => {
+    setValue('color', color)
+  }
 
   const form = (
     <>
@@ -126,14 +117,14 @@ const FolderAddForm = () => {
 
   return (
     <FormDialog
-      title='Create Folder'
+      title='Edit Folder'
       form={form}
-      submitLable='Create'
-      isLoading={addFolderIsLoading}
+      submitLable='Apply'
+      isLoading={editFolderIsLoading}
       handleSubmit={handleSubmit(onSubmit)}
       handleCloseForm={handleCloseForm}
     />
   )
 }
 
-export default FolderAddForm
+export default FolderEditForm

@@ -66,6 +66,14 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Folder'],
     }),
+    editFolder: builder.mutation<FolderType, { id: number; data: Partial<FolderType> }>({
+      query: ({ id, data }) => ({
+        url: `folders/${id}/`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Folder', id: arg.id }],
+    }),
 
     // Credential
     addCredential: builder.mutation<CredentialType, Partial<CredentialType>>({
@@ -130,6 +138,7 @@ export const {
   useAddFolderMutation,
   useGetFoldersQuery,
   useGetFolderByIdQuery,
+  useEditFolderMutation,
   // Credential
   useAddCredentialMutation,
   useGetCredentialsQuery,

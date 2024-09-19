@@ -19,7 +19,7 @@ const Toolbar = () => {
     ? 'inset 0.1rem 0.1rem 0.2rem #c8d0e7, inset -0.1rem -0.1rem 1rem #fff'
     : 'unset'
   const handleMenuClick = (isFolder: boolean) => {
-    if (isFolder) dispatch(folderActions.setShowForm({ add: true }))
+    if (isFolder) dispatch(folderActions.setShowForms({ add: true }))
     else dispatch(credentialActions.setShowForms({ add: true }))
   }
 
