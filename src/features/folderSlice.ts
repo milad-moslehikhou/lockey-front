@@ -25,6 +25,6 @@ const folderSlice = createSlice({
 
 export default folderSlice.reducer
 export const folderActions = folderSlice.actions
-export const selectSelectedFolder = (state: RootStateType) => state.folder.selected
-export const selectHoveredFolder = (state: RootStateType) => state.folder.hovered
+export const selectFolderSelected = (state: RootStateType) => state.folder.selected
+export const selectFolderHovered = (state: RootStateType) => state.folder.hovered
 export const selectFolderShowForms = (state: RootStateType) => state.folder.forms

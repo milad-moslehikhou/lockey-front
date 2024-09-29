@@ -10,8 +10,12 @@ const Menubar = () => {
   const [, setAuth] = useAuth()
   const navigate = useNavigate()
   const openSnackbar = useSnackbar()
+  const [logoutIsPending, setLogoutIsPending] = React.useState(false)
 
   const handleClick = async () => {
+    if(logoutIsPending)
+      return
+    setLogoutIsPending(true)
     try {
       await logout().unwrap()
       setAuth({ user: null, token: null, expiry: null })

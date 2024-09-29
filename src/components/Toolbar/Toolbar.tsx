@@ -97,7 +97,8 @@ const Toolbar = () => {
           variant='outlined'
           size='small'
           startIcon={<ShareIcon />}
-          disabled={credentialSelected.length <= 0}
+          disabled={credentialSelected.length !== 1}
+          onClick={() => dispatch(credentialActions.setShowForms({ share: true }))}
         >
           Share
         </Button>

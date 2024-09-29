@@ -8,7 +8,7 @@ export const setStringOrNull = (v: unknown) => {
 export const handleError = (e: any, setError: any) => {
   const error = e.data || e.error
   console.log(typeof error, e)
-  if (typeof error === 'string') return 'Something has wrong!'
+  if (typeof error === 'string') return error
   if ('non_field_errors' in error) return error.non_field_errors.join(' ')
   if ('errors' in error) return error.errors.map((err: any) => err.detail).join(' ')
   if ('error' in error) return error.error

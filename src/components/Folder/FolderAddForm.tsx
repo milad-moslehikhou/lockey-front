@@ -9,14 +9,14 @@ import type { FolderType } from '../../types/folder'
 import { credentialActions } from '../../features/credentialSlice'
 import { setStringOrNull, handleError } from '../../helpers/form'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
-import { folderActions, selectHoveredFolder } from '../../features/folderSlice'
+import { folderActions, selectFolderHovered } from '../../features/folderSlice'
 import ColorPickerField from '../ColorPickerField/ColorPickerField'
 
 const FolderAddForm = () => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
   const loggedInUser = useLoggedInUser()
-  const folderHovered = useSelector(selectHoveredFolder)
+  const folderHovered = useSelector(selectFolderHovered)
   const [add, { isLoading: addFolderIsLoading }] = useAddFolderMutation()
   const {
     register,
@@ -47,8 +47,7 @@ const FolderAddForm = () => {
   const onSubmit = async (data: Partial<FolderType>) => {
     data = {
       ...data,
-      parent: folderHovered == -1 ? null : folderHovered,
-      team: loggedInUser?.team,
+      parent: folderHovered === -1 ? null : folderHovered,
       user: loggedInUser?.id,
     }
     try {

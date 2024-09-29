@@ -1,28 +1,23 @@
 import * as React from 'react'
-import { TreeView } from '@mui/lab'
 import FolderIcon from '@mui/icons-material/Folder'
-
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import IconicTreeItem from '../IconicTreeItem/IconicTreeItem'
 import FolderTreeItem from '../FolderTreeItem/FolderTreeItem'
 import { FolderType } from '../../types/folder'
+import { SimpleTreeView } from '@mui/x-tree-view'
 
 interface FolderTreeViewProps {
   folders: FolderType[]
   menuItems?: React.ReactNode
   selected: string
-  disabledNode?: number
-  onNodeSelect: (e: React.SyntheticEvent, nodeId: string) => void
+  disabledItem?: number
+  onSelectedItemsChange: (e: React.SyntheticEvent, itemIds: string | null) => void
 }
 
-const FolderTreeView = ({ folders, menuItems, selected, disabledNode, onNodeSelect }: FolderTreeViewProps) => {
+const FolderTreeView = ({ folders, menuItems, selected, disabledItem, onSelectedItemsChange }: FolderTreeViewProps) => {
   return (
-    <TreeView
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpandIcon={<ChevronRightIcon />}
-      onNodeSelect={onNodeSelect}
-      selected={selected}
+    <SimpleTreeView
+      onSelectedItemsChange={onSelectedItemsChange}
+      selectedItems={selected}
       sx={{
         height: 'calc(100vh - 3rem - 6rem - 4rem - 2rem - 176px - 16px)',
         flexGrow: 1,
@@ -32,7 +27,8 @@ const FolderTreeView = ({ folders, menuItems, selected, disabledNode, onNodeSele
     >
       <IconicTreeItem
         id='folders'
-        nodeId='folders'
+        key={'folders'}
+        itemId='folders'
         labelIcon={FolderIcon}
         labelText={<b>Folders</b>}
       >
@@ -42,14 +38,15 @@ const FolderTreeView = ({ folders, menuItems, selected, disabledNode, onNodeSele
               return (
                 <FolderTreeItem
                   key={f.id}
-                  folderId={f.id}
-                  disabledNode={disabledNode}
+                  folder={f}
+                  disabledItem={disabledItem}
                   menuItems={menuItems}
                 />
               )
+            return <></>
           })}
       </IconicTreeItem>
-    </TreeView>
+    </SimpleTreeView>
   )
 }
 

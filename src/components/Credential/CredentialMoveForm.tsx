@@ -11,6 +11,7 @@ import { credentialActions, selectCredentialSelected } from '../../features/cred
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 import FolderTreeView from '../FolderTreeView/FolderTreeView'
 import useLoading from '../../hooks/useLoading'
+import { handleError } from '../../helpers/form'
 
 const CredentialMoveForm = () => {
   const dispatch = useDispatch()
@@ -20,9 +21,11 @@ const CredentialMoveForm = () => {
   const credentialsId = useSelector(selectCredentialSelected)
   const [folderId, setFolderId] = React.useState(-1)
   const [selected, setSelected] = React.useState('')
+  const [movedCredenrialIds, setMovedCredenrialIds] = React.useState<string[]>([])
+  const [notMovedCredenrialIds, setNotMovedCredenrialIds] = React.useState<string[]>([])
   const { data: folders, isLoading: foldersIsLoading } = useGetFoldersQuery()
   const [edit, { isLoading: editCredentialIsLoading }] = useEditCredentialMutation()
-  const { handleSubmit } = useForm<Partial<CredentialType>>({
+  const { handleSubmit, setError } = useForm<Partial<CredentialType>>({
     defaultValues: {
       folder: -1,
     },
@@ -38,33 +41,45 @@ const CredentialMoveForm = () => {
       modified_by: loggedInUser?.id,
       folder: folderId === -1 ? null : folderId,
     }
-    const notMovedCredenrialIds: string[] = []
 
     try {
       credentialsId.forEach(async id => {
         try {
           await edit({ id: _.toInteger(id), data }).unwrap()
+          setMovedCredenrialIds([
+            ...movedCredenrialIds,
+            id
+          ])
         } catch (e) {
-          notMovedCredenrialIds.push(id)
+          setNotMovedCredenrialIds([
+            ...notMovedCredenrialIds,
+            id
+          ])
         }
       })
       handleCloseForm()
       dispatch(credentialActions.setSelected([]))
+      if (notMovedCredenrialIds.length > 0)
+        openSnackbar({
+          severity: 'error',
+          message: `Could not move credential(s) with id ${notMovedCredenrialIds.join(', ')}`,
+        })
       openSnackbar({
         severity: 'success',
-        message: 'Credentials moved successfully.',
+        message: `Credential(s) with id ${movedCredenrialIds.join(', ')} moved successfully.`,
       })
     } catch (e) {
+      const msg = handleError(e, setError)
       openSnackbar({
         severity: 'error',
-        message: `Somthing has wrong!, could not move credential with id(s) ${notMovedCredenrialIds.join(', ')}`,
+        message: msg,
       })
     }
   }
 
-  const handleOnNodeSelect = (e: React.SyntheticEvent, nodeId: string) => {
-    setFolderId(_.toInteger(nodeId))
-    setSelected(nodeId)
+  const handleOnSelectedItemsChange = (e: React.SyntheticEvent, itemId: string | null) => {
+    itemId && setFolderId(_.toInteger(itemId))
+    itemId && setSelected(itemId)
   }
 
   const form = (
@@ -77,7 +92,7 @@ const CredentialMoveForm = () => {
           <FolderTreeView
             folders={folders}
             selected={selected}
-            onNodeSelect={handleOnNodeSelect}
+            onSelectedItemsChange={handleOnSelectedItemsChange}
           />
         )}
       </FormControl>
@@ -86,7 +101,7 @@ const CredentialMoveForm = () => {
 
   React.useEffect(() => {
     loading(foldersIsLoading)
-  }, [foldersIsLoading])
+  }, [loading, foldersIsLoading])
 
   return (
     <FormDialog

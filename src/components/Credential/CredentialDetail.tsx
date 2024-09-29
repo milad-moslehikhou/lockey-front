@@ -6,7 +6,7 @@ import ForwardIcon from '@mui/icons-material/Forward'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
 import { formatDate } from '../../helpers/common'
-import { useGetFoldersQuery, useGetUserByIdQuery } from '../../features/apiSlice'
+import { useGetCredentialSharesByIdQuery, useGetFoldersQuery, useGetUsersQuery } from '../../features/apiSlice'
 import type { CredentialType } from '../../types/credential'
 
 interface CredentialDetailProps {
@@ -15,8 +15,8 @@ interface CredentialDetailProps {
 
 const CredentialDetail = ({ credential }: CredentialDetailProps) => {
   const { data: folders, isLoading: foldersIsLoading } = useGetFoldersQuery()
-  const { data: createdBy } = useGetUserByIdQuery(credential.created_by)
-  const { data: modifiedBy } = useGetUserByIdQuery(credential.modified_by)
+  const { data: users, isLoading: usersIsLoading } = useGetUsersQuery()
+  const { data: credentialShares } = useGetCredentialSharesByIdQuery(credential.id)
 
   const DetailRow = ({ title, value }: { title: string; value: any }) => {
     const ValueElement = () => {
@@ -253,6 +253,26 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
               })}
           </Stack>
         </Box>
+        {users && credentialShares && credentialShares.length > 0 && 
+        <>
+          <Divider sx={{ margin: '1rem 0' }} />
+          <DetailRow
+            title='Shared by'
+            value={users.find(u => u.id === credentialShares[0].shared_by)?.username
+            }
+          />
+          <DetailRow
+            title='Shared with'
+            value={credentialShares.map(s => {
+                return users && users.find(u => u.id === s.shared_with)?.username
+              }).join(', ')
+            }
+          />
+          <DetailRow
+            title='Until'
+            value={formatDate(credentialShares[0].until)}
+          />
+        </>}
         <Divider sx={{ margin: '1rem 0' }} />
         <DetailRow
           title='Modified'
@@ -260,7 +280,8 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
         />
         <DetailRow
           title='Modified by '
-          value={modifiedBy?.username}
+          value={usersIsLoading ? 'loading...' : users && users.find(u => u.id === credential.modified_by)?.username
+          }
         />
         <DetailRow
           title='Created'
@@ -268,7 +289,7 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
         />
         <DetailRow
           title='Created by'
-          value={createdBy?.username}
+          value={usersIsLoading ? 'loading...' : users && users.find(u => u.id === credential.created_by)?.username}
         />
       </Box>
     </Box>

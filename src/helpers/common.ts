@@ -1,5 +1,5 @@
 import { OrderType } from '../types/component'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import { ColorResult } from 'react-color'
 
 export const stringToColor = (string: string) => {

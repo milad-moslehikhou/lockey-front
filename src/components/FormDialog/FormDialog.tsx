@@ -24,6 +24,7 @@ const FormDialog = ({ title, form, submitLable, isLoading, handleCloseForm, hand
         // },
         '& .MuiDialog-paper': {
           overflowY: 'unset',
+          minWidth: '20vw',
         },
       }}
       open={true}

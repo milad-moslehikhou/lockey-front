@@ -51,8 +51,8 @@ const FolderMoveForm = ({ folder }: FolderMoveFormProps) => {
     }
   }
 
-  const handleOnNodeSelect = (e: React.SyntheticEvent, nodeId: string) => {
-    setSelected(nodeId)
+  const handleOnSelectedItemsChange = (e: React.SyntheticEvent, itemId: string | null) => {
+    itemId && setSelected(itemId)
   }
 
   const form = (
@@ -65,8 +65,8 @@ const FolderMoveForm = ({ folder }: FolderMoveFormProps) => {
           <FolderTreeView
             folders={folders}
             selected={selected}
-            disabledNode={folder.id}
-            onNodeSelect={handleOnNodeSelect}
+            disabledItem={folder.id}
+            onSelectedItemsChange={handleOnSelectedItemsChange}
           />
         )}
       </FormControl>
@@ -75,7 +75,7 @@ const FolderMoveForm = ({ folder }: FolderMoveFormProps) => {
 
   React.useEffect(() => {
     loading(foldersIsLoading)
-  }, [foldersIsLoading])
+  }, [foldersIsLoading, loading])
 
   return (
     <FormDialog

@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { AuthType, LoginRequestType } from '../types/auth'
-import type { CredentialType } from '../types/credential'
+import type { CredentialType, CredentialShareType } from '../types/credential'
 import type { FolderType } from '../types/folder'
 import type { UserType } from '../types/user'
+import { GroupType } from '../types/group'
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
@@ -16,7 +17,7 @@ export const apiSlice = createApi({
       return headers
     },
   }),
-  tagTypes: ['User', 'Credential', 'Folder'],
+  tagTypes: ['Group', 'User', 'Credential', 'Folder'],
   endpoints: builder => ({
     // Auth
     login: builder.mutation<AuthType, LoginRequestType>({
@@ -31,6 +32,19 @@ export const apiSlice = createApi({
         url: 'auth/logout/',
         method: 'POST',
       }),
+    }),
+
+    // Group
+    getGroups: builder.query<GroupType[], void>({
+      query: () => 'groups/',
+      providesTags: result =>
+        result
+          ? [...result.map(({ id }) => ({ type: 'Group' as const, id })), { type: 'Group', id: 'LIST' }]
+          : [{ type: 'Group', id: 'LIST' }],
+    }),
+    getGroupById: builder.query<UserType, number>({
+      query: id => `groups/${id}/`,
+      providesTags: (result, error, arg) => [{ type: 'Group', id: arg }],
     }),
 
     // User
@@ -66,7 +80,7 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Folder'],
     }),
-    editFolder: builder.mutation<FolderType, { id: number; data: Partial<FolderType> }>({
+    editFolder: builder.mutation<FolderType, { id: number, data: Partial<FolderType> }>({
       query: ({ id, data }) => ({
         url: `folders/${id}/`,
         method: 'PATCH',
@@ -102,7 +116,18 @@ export const apiSlice = createApi({
       query: id => `credentials/${id}/`,
       providesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
     }),
-    editCredential: builder.mutation<CredentialType, { id: number; data: Partial<CredentialType> }>({
+    getCredentialSharesById: builder.query<CredentialShareType[], number>({
+      query: id => `credentials/${id}/share/`,
+      providesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
+    }),
+    getCredentialShares: builder.query<CredentialShareType[], void>({
+      query: () => `credentials/all-shared/`,
+      providesTags: result =>
+        result
+          ? [...result.map(({ id }) => ({ type: 'Credential' as const, id })), { type: 'Credential', id: 'LIST' }]
+          : [{ type: 'Credential', id: 'LIST' }],
+    }),
+    editCredential: builder.mutation<CredentialType, { id: number, data: Partial<CredentialType> }>({
       query: ({ id, data }) => ({
         url: `credentials/${id}/`,
         method: 'PATCH',
@@ -131,13 +156,24 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
     }),
-  }),
+    editCredentialShare: builder.mutation<CredentialShareType,{ id: number, data: Partial<CredentialShareType[]> }>({
+      query: ({id, data}) => ({
+        url: `credentials/${id}/share/`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['Credential'],
+    }),
+  })
 })
 
 export const {
   // Auth
   useLoginMutation,
   useLogoutMutation,
+  // Group
+  useGetGroupsQuery,
+  useGetGroupByIdQuery,
   // User
   useGetUsersQuery,
   useGetUserByIdQuery,
@@ -152,8 +188,11 @@ export const {
   useGetCredentialsQuery,
   useLazyGetCredentialsQuery,
   useGetCredentialByIdQuery,
+  useGetCredentialSharesQuery,
+  useGetCredentialSharesByIdQuery,
   useEditCredentialMutation,
   useDeleteCredentialMutation,
   useAddCredentialFavoriteMutation,
   useDeleteCredentialFavoriteMutation,
+  useEditCredentialShareMutation,
 } = apiSlice

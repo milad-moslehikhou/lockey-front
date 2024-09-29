@@ -12,16 +12,13 @@ import {
   TableRow,
   Checkbox,
   Tooltip,
-  Chip,
   Stack,
+  IconButton,
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 import StarIcon from '@mui/icons-material/Star'
 import StarHalfIcon from '@mui/icons-material/StarHalf'
 import StarBorderIcon from '@mui/icons-material/StarBorder'
-import ForwardIcon from '@mui/icons-material/Forward'
-import GroupsIcon from '@mui/icons-material/Groups'
-import LockResetIcon from '@mui/icons-material/LockReset'
 import { getComparator, humanizeDate } from '../../helpers/common'
 import {
   credentialActions,
@@ -32,13 +29,15 @@ import {
 import {
   useAddCredentialFavoriteMutation,
   useDeleteCredentialFavoriteMutation,
+  useGetCredentialSharesQuery,
   useGetCredentialsQuery,
 } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import useLoading from '../../hooks/useLoading'
-import type { CredentialImportancyType, CredentialType } from '../../types/credential'
+import type { CredentialType } from '../../types/credential'
 import type { DataTableHeaderType, OrderType } from '../../types/component'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
+import { FileCopy, Visibility } from '@mui/icons-material'
 
 const CredentialsDataTable = () => {
   const dispatch = useDispatch()
@@ -48,6 +47,7 @@ const CredentialsDataTable = () => {
   const credentialSearch = useSelector(selectCredentialSearch)
   const credentialFilter = useSelector(selectCredentialFilter)
   const credentialSelected = useSelector(selectCredentialSelected)
+  const {data: credentialShares, isLoading: credentialSharesIsLoading} = useGetCredentialSharesQuery()
   const searchCredential = (credentials: CredentialType[]) => {
     return credentials.filter(
       c =>
@@ -67,9 +67,11 @@ const CredentialsDataTable = () => {
       case 'list:owned_by_me':
         return credentials.filter(c => loggedInUser && c.created_by === loggedInUser.id)
       case 'list:shared_by_me':
-        return credentials.filter(c => c.is_favorite)
+        const sharedByMeIds = credentialShares?.filter(s => s.shared_by === loggedInUser?.id).map(s => s.credential)
+        return credentials.filter(c => sharedByMeIds?.includes(c.id))
       case 'list:shared_with_me':
-        return credentials.filter(c => c.is_favorite)
+        const sharedWithMeIds = credentialShares?.filter(s => s.shared_with === loggedInUser?.id).map(s => s.credential)
+        return credentials.filter(c => sharedWithMeIds?.includes(c.id))
       default:
         return credentials.filter(c => c.folder === _.toNumber(credentialFilter))
     }
@@ -120,45 +122,6 @@ const CredentialsDataTable = () => {
       type: 'string',
     },
   ]
-
-  const Importancy = ({ level }: { level: CredentialImportancyType }) => {
-    let ImportancyIcon
-    switch (level) {
-      case 'HIGH':
-        ImportancyIcon = (
-          <ForwardIcon
-            color='error'
-            sx={{
-              fontSize: '1.2rem',
-              transform: 'rotateZ(270deg)',
-            }}
-          />
-        )
-        break
-      case 'MEDIUM':
-        ImportancyIcon = (
-          <ForwardIcon
-            color='warning'
-            sx={{
-              fontSize: '1.2rem',
-            }}
-          />
-        )
-        break
-      case 'LOW':
-        ImportancyIcon = (
-          <ForwardIcon
-            color='success'
-            sx={{
-              fontSize: '1.2rem',
-              transform: 'rotateZ(90deg)',
-            }}
-          />
-        )
-        break
-    }
-    return <Tooltip title={`${level} importancy`}>{ImportancyIcon}</Tooltip>
-  }
 
   const handleOnSort = (e: React.MouseEvent<unknown>, property: keyof CredentialType) => {
     const isAsc = orderBy === property && order === 'asc'
@@ -216,12 +179,24 @@ const CredentialsDataTable = () => {
     }
   }
 
+  const handleOnShowSecret = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
+
+  }
+
+  const handleOnCopySecret = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
+
+  }
+
+  const isShared = (credentialId: number) => {
+    const sharedIds = credentialShares?.map(s => s.credential)
+    return sharedIds?.includes(credentialId)
+  }
   const isSelected = (id: string) => credentialSelected.indexOf(id) !== -1
-  const numFavorited = credentials.filter(item => item.is_favorite == true).length
+  const numFavorited = credentials.filter(item => item.is_favorite === true).length
 
   React.useEffect(() => {
-    credentialsIsLoading || addFavoriteIsLoading || delFavoriteIsLoading ? loading(true) : loading(false)
-  }, [credentialsIsLoading, addFavoriteIsLoading, delFavoriteIsLoading])
+    loading(credentialsIsLoading || addFavoriteIsLoading || delFavoriteIsLoading || credentialSharesIsLoading)
+  }, [loading, credentialsIsLoading, addFavoriteIsLoading, delFavoriteIsLoading, credentialSharesIsLoading])
 
   return (
     <Box
@@ -287,7 +262,7 @@ const CredentialsDataTable = () => {
                     </TableSortLabel>
                   </TableCell>
                 ))}
-                <TableCell padding='checkbox'></TableCell>
+                <TableCell align='center'>Secret</TableCell>
               </TableRow>
             </TableHead>
 
@@ -344,6 +319,7 @@ const CredentialsDataTable = () => {
                       <TableCell
                         sx={{
                           borderBottom: 0,
+                          color: isShared(row.id) ? '#1976d2' : 'unset'
                         }}
                       >
                         {row.name}
@@ -379,46 +355,30 @@ const CredentialsDataTable = () => {
                       <TableCell
                         sx={{
                           borderBottom: 0,
-                          fontSize: '.5rem',
                         }}
                       >
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <Chip
-                            variant='outlined'
-                            sx={{
-                              '& .MuiChip-label': {
-                                display: 'flex',
-                                alignItems: 'center',
-                              },
-                            }}
-                            label={
-                              <Stack
-                                direction='row'
-                                spacing={0.1}
-                                alignItems='center'
-                              >
-                                <Importancy level={row.importancy} />
-                                <Tooltip title={row.is_public ? 'Public' : 'Private'}>
-                                  <GroupsIcon color={row.is_public ? 'primary' : 'disabled'} />
-                                </Tooltip>
-                                <Tooltip
-                                  title={
-                                    row.auto_genpass
-                                      ? 'Auto generate password is active'
-                                      : 'Auto generate password is not active'
-                                  }
-                                >
-                                  <LockResetIcon color={row.auto_genpass ? 'primary' : 'disabled'} />
-                                </Tooltip>
-                              </Stack>
-                            }
-                          />
-                        </Box>
+                        <Stack direction="row" justifyContent='center'>
+                          <Tooltip title='Show secret'>
+                            <IconButton 
+                              aria-label="reveal"
+                              size='small' 
+                              color='primary'
+                              onClick={event => handleOnShowSecret(event, row.id)}
+                            >
+                              <Visibility fontSize='inherit'/>
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title='Copy to clipboard'>
+                            <IconButton 
+                              aria-label="copy" 
+                              size='small' 
+                              color='primary'
+                              onClick={event => handleOnCopySecret(event, row.id)}
+                            >
+                              <FileCopy fontSize='inherit'/>
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
                       </TableCell>
                     </TableRow>
                   )

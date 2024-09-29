@@ -16,6 +16,15 @@ const AvatarMenu = () => {
     setAnchorEl(null)
   }
 
+  let displayName =  "  "
+  let displayShortName = "  "
+  if(loggedInUser && loggedInUser.profile) {
+    displayName = ('first_name' in loggedInUser.profile && 'last_name' in loggedInUser.profile)?
+      `${loggedInUser.profile.first_name} ${loggedInUser.profile.last_name}`: loggedInUser.username
+    displayShortName = ('first_name' in loggedInUser.profile && 'last_name' in loggedInUser.profile)?
+      `${loggedInUser.profile.first_name[0]}${loggedInUser.profile.last_name[0]}`: loggedInUser.username[0]
+  }
+  
   return (
     <>
       <Button
@@ -44,16 +53,18 @@ const AvatarMenu = () => {
           },
         }}
       >
-        {loggedInUser && loggedInUser.profile.avatar ? (
-          <Avatar
-            src={loggedInUser.profile.avatar}
-            alt={loggedInUser.username}
-          />
-        ) : (
-          <Avatar sx={{ bgcolor: stringToColor(loggedInUser?.username || '') }}>
-            {loggedInUser?.profile.first_name[0].concat(loggedInUser?.profile.last_name[0])}
-          </Avatar>
-        )}
+        {loggedInUser && loggedInUser.profile && (
+          loggedInUser.profile.avatar ? (
+            <Avatar
+              src={loggedInUser.profile.avatar}
+              alt={loggedInUser.username}
+            />
+          ) : (
+            <Avatar sx={{ bgcolor: stringToColor(loggedInUser.username || '') }}>
+              {displayShortName}
+            </Avatar>
+          )
+        )}  
         <Box
           sx={{
             marginLeft: 2,
@@ -65,7 +76,7 @@ const AvatarMenu = () => {
             textTransform='lowercase'
             textAlign='left'
           >
-            {loggedInUser?.profile.first_name + ' ' + loggedInUser?.profile.last_name}
+            {displayName}
           </Typography>
           <Typography
             fontSize='small'

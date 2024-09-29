@@ -29,9 +29,15 @@ export type FormsStateType = {
   delete?: boolean
   move?: boolean
   detail?: boolean
+  share?: boolean
 }
 
 export type BreadcrumbsItemType = {
   id: string
   name: string
+}
+
+export type AutoCompleteFieldOptionsType = {
+  label: string
+  value: any
 }

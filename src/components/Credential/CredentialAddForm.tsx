@@ -10,13 +10,13 @@ import type { CredentialType } from '../../types/credential'
 import { credentialActions } from '../../features/credentialSlice'
 import { setStringOrNull, handleError } from '../../helpers/form'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
-import { folderActions, selectHoveredFolder } from '../../features/folderSlice'
+import { folderActions, selectFolderHovered } from '../../features/folderSlice'
 
 const CredentialAddForm = () => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
   const loggedInUser = useLoggedInUser()
-  const hoveredFolder = useSelector(selectHoveredFolder)
+  const folderHovered = useSelector(selectFolderHovered)
   const [add, { isLoading: addCredentialIsLoading }] = useAddCredentialMutation()
   const [tags, setTags] = React.useState<string[]>([])
   const {
@@ -43,12 +43,11 @@ const CredentialAddForm = () => {
     data = {
       ...data,
       tags: tags.join(','),
-      team: loggedInUser?.team,
       // eslint-disable-next-line camelcase
       created_by: loggedInUser?.id,
       // eslint-disable-next-line camelcase
       modified_by: loggedInUser?.id,
-      folder: hoveredFolder == -1 ? null : hoveredFolder,
+      folder: folderHovered === -1 ? null : folderHovered,
     }
     try {
       const addedCredential = await add(data).unwrap()

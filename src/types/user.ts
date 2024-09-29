@@ -3,7 +3,6 @@ export type UserType = {
   username: string
   is_superuser: boolean
   is_active: boolean
-  team: number
   groups: Array<number>
   user_permissions: Array<any>
   last_login: string

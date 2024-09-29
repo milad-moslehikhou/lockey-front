@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useSelector } from 'react-redux'
-import { selectFolderShowForms, selectHoveredFolder } from '../../features/folderSlice'
+import { selectFolderShowForms, selectFolderHovered } from '../../features/folderSlice'
 import FolderAddForm from './FolderAddForm'
 import { useGetFolderByIdQuery } from '../../features/apiSlice'
 import FolderEditForm from './FolderEditForm'
@@ -8,7 +8,7 @@ import FolderDeleteForm from './FolderDeleteForm'
 import FolderMoveForm from './FolderMoveForm'
 
 const FolderActionSelector = () => {
-  const folderHovered = useSelector(selectHoveredFolder)
+  const folderHovered = useSelector(selectFolderHovered)
   const folderShowForms = useSelector(selectFolderShowForms)
   const {
     data: folder,

@@ -6,7 +6,6 @@ export type FolderType = {
   color?: string
   is_public?: boolean
   parent?: number | null
-  team: number
   user: number
 }
 

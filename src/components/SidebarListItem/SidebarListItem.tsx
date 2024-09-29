@@ -16,6 +16,7 @@ const SidebarListItem = ({ id, text }: ISidebarListItemPorps) => {
   const handleClick = () => {
     dispatch(breadcrumbsActions.setItems([{ id, name: text }]))
     dispatch(credentialActions.setFilter(id))
+    dispatch(credentialActions.setSelected([]))
   }
 
   const selected =

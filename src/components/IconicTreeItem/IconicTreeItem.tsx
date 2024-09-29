@@ -1,16 +1,16 @@
 import * as React from 'react'
 import Box from '@mui/material/Box'
-import TreeItem, { TreeItemProps, useTreeItem, TreeItemContentProps } from '@mui/lab/TreeItem'
 import { Typography, IconButton, Menu } from '@mui/material'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import clsx from 'clsx'
+import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItemState } from '@mui/x-tree-view'
 
 const TreeItemContext = React.createContext<React.ReactNode>(undefined)
 
 const CustomContent = React.forwardRef(function CustomContent(props: TreeItemContentProps, ref) {
-  const { classes, className, label, nodeId, icon: iconProp, expansionIcon, displayIcon } = props
+  const { classes, className, label, itemId, icon: iconProp, expansionIcon, displayIcon } = props
 
-  const { disabled, expanded, selected, handleExpansion, handleSelection, preventSelection } = useTreeItem(nodeId)
+  const { disabled, expanded, selected, handleExpansion, handleSelection, preventSelection } = useTreeItemState(itemId)
   const menuItems = React.useContext(TreeItemContext)
 
   const icon = iconProp || expansionIcon || displayIcon
@@ -41,7 +41,7 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCon
 
   return (
     <div
-      id={nodeId}
+      id={itemId}
       className={clsx(className, classes.root, {
         [classes.expanded]: expanded,
         [classes.selected]: selected,
@@ -119,7 +119,7 @@ const CustomTreeItem = (props: TreeItemProps) => {
 }
 
 interface IconicTreeItemProps {
-  nodeId: string
+  itemId: string
   labelIcon: any
   labelText: string | React.ReactNode
   color?: string
@@ -128,7 +128,7 @@ interface IconicTreeItemProps {
 }
 
 const IconicTreeItem = ({
-  nodeId,
+  itemId,
   labelIcon: LabelIcon,
   labelText,
   color,
@@ -139,7 +139,7 @@ const IconicTreeItem = ({
     <div>
       <TreeItemContext.Provider value={menuItems}>
         <CustomTreeItem
-          nodeId={nodeId}
+          itemId={itemId}
           label={
             <Box
               sx={{

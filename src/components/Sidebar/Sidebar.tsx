@@ -33,9 +33,9 @@ const Sidebar = () => {
     return tempLocation
   }
 
-  const handleOnNodeSelect = (e: React.SyntheticEvent, nodeId: string) => {
-    dispatch(breadcrumbsActions.setItems(getLocation(_.toInteger(nodeId)).reverse()))
-    dispatch(credentialActions.setFilter(nodeId))
+  const handleOnSelectedItemsChange = (e: React.SyntheticEvent, itemId: string | null) => {
+    itemId && dispatch(breadcrumbsActions.setItems(getLocation(_.toInteger(itemId)).reverse()))
+    itemId && dispatch(credentialActions.setFilter(itemId))
   }
 
   const selected = breadcrumbsItems[breadcrumbsItems.length - 1] && breadcrumbsItems[breadcrumbsItems.length - 1].id
@@ -108,7 +108,7 @@ const Sidebar = () => {
 
   React.useEffect(() => {
     loading(getFoldersIsLoading)
-  }, [getFoldersIsLoading])
+  }, [loading, getFoldersIsLoading])
 
   return (
     <Box
@@ -150,9 +150,9 @@ const Sidebar = () => {
       {folders && (
         <FolderTreeView
           folders={folders}
-          menuItems={menuItems}
           selected={selected}
-          onNodeSelect={handleOnNodeSelect}
+          menuItems={menuItems}
+          onSelectedItemsChange={handleOnSelectedItemsChange}
         />
       )}
     </Box>

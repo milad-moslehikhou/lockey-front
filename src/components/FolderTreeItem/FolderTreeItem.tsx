@@ -3,37 +3,37 @@ import { useDispatch, useSelector } from 'react-redux'
 import FolderIcon from '@mui/icons-material/Folder'
 import FolderSharedIcon from '@mui/icons-material/FolderShared'
 import IconicTreeItem from '../IconicTreeItem/IconicTreeItem'
-import { useGetFolderByIdQuery, useGetFoldersQuery } from '../../features/apiSlice'
+import { useGetFoldersQuery } from '../../features/apiSlice'
 import useLoading from '../../hooks/useLoading'
 import { folderActions, selectFolderShowForms } from '../../features/folderSlice'
 import { selectCredentialShowForms } from '../../features/credentialSlice'
+import { FolderType } from '../../types/folder'
 
 interface FolderTreeItemProps {
-  folderId: number
-  disabledNode?: number
+  folder: FolderType
+  disabledItem?: number
   menuItems: React.ReactNode
 }
 
-const FolderTreeItem = ({ folderId, disabledNode, menuItems }: FolderTreeItemProps) => {
+const FolderTreeItem = ({ folder, disabledItem, menuItems }: FolderTreeItemProps) => {
   const loading = useLoading()
   const dispatch = useDispatch()
-  const { data: folder, isLoading: getFolderIsLoading } = useGetFolderByIdQuery(folderId)
   const { data: folders, isLoading: getFoldersIsLoading } = useGetFoldersQuery()
   const folderShowForms = useSelector(selectFolderShowForms)
   const credentialShowForms = useSelector(selectCredentialShowForms)
-  const folderChildren = folders && folders.filter(f => f.parent == folderId)
+  const folderChildren = folders && folders.filter(f => f.parent === folder.id)
 
   React.useEffect(() => {
-    loading(getFolderIsLoading || getFoldersIsLoading)
+    loading(getFoldersIsLoading)
   })
 
   return folder ? (
     <IconicTreeItem
-      nodeId={`${folder.id}`}
+      itemId={`${folder.id}`}
       labelIcon={folder.is_public ? FolderSharedIcon : FolderIcon}
       labelText={folder.name}
       color={folder.color}
-      disabled={folder.id == disabledNode ? true : false}
+      disabled={folder.id === disabledItem ? true : false}
       menuItems={menuItems}
       onMouseEnter={() => {
         if (!(folderShowForms.move || credentialShowForms.move)) dispatch(folderActions.setHovered(folder.id))
@@ -56,8 +56,8 @@ const FolderTreeItem = ({ folderId, disabledNode, menuItems }: FolderTreeItemPro
           return (
             <FolderTreeItem
               key={f.id}
-              folderId={f.id}
-              disabledNode={disabledNode}
+              folder={f}
+              disabledItem={disabledItem}
               menuItems={menuItems}
             />
           )
