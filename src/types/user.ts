@@ -1,17 +1,23 @@
+import { FormsStateType } from './component'
+
 export type UserType = {
   id: number
   username: string
+  password: string
+  first_name: string
+  last_name: string
+  avatar: string | File
   is_superuser: boolean
   is_active: boolean
   groups: Array<number>
   user_permissions: Array<any>
-  last_login: string
-  date_joined: string
-  profile: UserProfileType
+  last_login: Date
+  date_joined: Date
 }
 
-export type UserProfileType = {
-  first_name: string
-  last_name: string
-  avatar: string
+export type UserStateType = {
+  selected: string[]
+  forms: FormsStateType
+  search: string
+  filter: string
 }

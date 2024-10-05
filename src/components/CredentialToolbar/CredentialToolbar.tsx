@@ -10,8 +10,10 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import InfoIcon from '@mui/icons-material/Info'
 import { credentialActions, selectCredentialShowForms, selectCredentialSelected } from '../../features/credentialSlice'
 import { folderActions } from '../../features/folderSlice'
+import { Password } from '@mui/icons-material'
+import ToolbarContainer from '../ToolbarContainer/ToolbarContainer'
 
-const Toolbar = () => {
+const CredentialToolbar = () => {
   const dispatch = useDispatch()
   const credentialShowForms = useSelector(selectCredentialShowForms)
   const credentialSelected = useSelector(selectCredentialSelected)
@@ -24,19 +26,7 @@ const Toolbar = () => {
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        minHeight: '3rem',
-        padding: '1rem',
-        backgroundColor: 'grey.100',
-        borderBottomColor: 'grey.300',
-        borderBottomStyle: 'solid',
-        borderBottomWidth: 1,
-        zIndex: 1000,
-      }}
-    >
+    <ToolbarContainer>
       <Box>
         <PopupState variant='popover'>
           {popupState => (
@@ -78,12 +68,21 @@ const Toolbar = () => {
         direction='row'
         spacing='1rem'
         sx={{
-          width: 'calc(100% - 320px - 24px - 10px)',
+          width: 'calc(100% - 300px - 24px - 10px)',
           alignItems: 'center',
           position: 'absolute',
-          left: '320px',
+          left: '300px',
         }}
       >
+        <Button
+          variant='outlined'
+          size='small'
+          startIcon={<EditIcon />}
+          disabled={credentialSelected.length !== 1}
+          onClick={() => dispatch(credentialActions.setShowForms({ edit: true }))}
+        >
+          Edit
+        </Button>
         <Button
           variant='outlined'
           size='small'
@@ -105,11 +104,11 @@ const Toolbar = () => {
         <Button
           variant='outlined'
           size='small'
-          startIcon={<EditIcon />}
+          startIcon={<Password />}
           disabled={credentialSelected.length !== 1}
-          onClick={() => dispatch(credentialActions.setShowForms({ edit: true }))}
+          onClick={() => dispatch(credentialActions.setShowForms({ addSecret: true }))}
         >
-          Edit
+          Add Secret
         </Button>
         <Button
           variant='outlined'
@@ -152,8 +151,8 @@ const Toolbar = () => {
           </IconButton>
         </Tooltip>
       </Box>
-    </Box>
+    </ToolbarContainer>
   )
 }
 
-export default Toolbar
+export default CredentialToolbar

@@ -3,7 +3,7 @@ import * as React from 'react'
 import { Box } from '@mui/material'
 import Menubar from '../../components/Menubar/Menubar'
 import Appbar from '../../components/Appbar/Appbar'
-import Toolbar from '../../components/Toolbar/Toolbar'
+import CredentialToolbar from '../../components/CredentialToolbar/CredentialToolbar'
 import Footer from '../../components/Footer/Footer'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import FolderBreadcrumbs from '../../components/LocationBreadcrumbs/LocationBreadcrumbs'
@@ -22,7 +22,7 @@ const Passwords = () => {
     >
       <Menubar />
       <Appbar />
-      <Toolbar />
+      <CredentialToolbar />
       <Box
         sx={{
           display: 'flex',

@@ -1,17 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootStateType } from '../app/store'
 import { FormsStateType } from '../types/component'
-import { CredentialSecretType, CredentialStateType } from '../types/credential'
+import { UserStateType } from '../types/user'
 
-const credentialSlice = createSlice({
-  name: 'credential',
+const userSlice = createSlice({
+  name: 'user',
   initialState: {
     selected: [],
     forms: { detail: true },
     search: '',
     filter: 'list:all_items',
-    secret: [],
-  } as CredentialStateType,
+  } as UserStateType,
   reducers: {
     setSelected: (state, action: PayloadAction<string[]>) => {
       state.selected = action.payload
@@ -34,16 +33,12 @@ const credentialSlice = createSlice({
     setFilter: (state, action: PayloadAction<string>) => {
       state.filter = action.payload
     },
-    setSecret: (state, action: PayloadAction<CredentialSecretType[]>) => {
-      state.secret = action.payload
-    },
   },
 })
 
-export default credentialSlice.reducer
-export const credentialActions = credentialSlice.actions
-export const selectCredentialSelected = (state: RootStateType) => state.credential.selected
-export const selectCredentialShowForms = (state: RootStateType) => state.credential.forms
-export const selectCredentialSearch = (state: RootStateType) => state.credential.search
-export const selectCredentialFilter = (state: RootStateType) => state.credential.filter
-export const selectCredentialSecret = (state: RootStateType) => state.credential.secret
+export default userSlice.reducer
+export const userActions = userSlice.actions
+export const selectUserSelected = (state: RootStateType) => state.user.selected
+export const selectUserShowForms = (state: RootStateType) => state.user.forms
+export const selectUserSearch = (state: RootStateType) => state.user.search
+export const selectUserFilter = (state: RootStateType) => state.user.filter

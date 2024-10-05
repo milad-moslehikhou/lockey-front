@@ -34,7 +34,7 @@ const FolderDeleteForm = ({ folder }: FolderDeleteFormProps) => {
       await del(folder.id).unwrap()
       openSnackbar({
         severity: 'success',
-        message: `Folder with id ${folder.id} delete successfuly.`,
+        message: `Folder with id ${folder.id} delete successfully.`,
       })
     } catch (e) {
       const msg = handleError(e, setError)

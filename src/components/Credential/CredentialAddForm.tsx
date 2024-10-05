@@ -56,7 +56,7 @@ const CredentialAddForm = () => {
       dispatch(folderActions.setHovered(-1))
       openSnackbar({
         severity: 'success',
-        message: `Credential with id ${addedCredential.id} successfuly added.`,
+        message: `Credential with id ${addedCredential.id} successfully added.`,
       })
     } catch (e) {
       const msg = handleError(e, setError)

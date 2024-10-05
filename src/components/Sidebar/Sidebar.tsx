@@ -115,8 +115,8 @@ const Sidebar = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        width: '320px',
-        minWidth: '320px',
+        width: '300px',
+        minWidth: '300px',
         position: 'relative',
         borderRight: '1px solid rgba(0, 0, 0, 0.1)',
       }}

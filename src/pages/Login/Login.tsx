@@ -27,7 +27,7 @@ const Login = () => {
     try {
       const auth = await login(data).unwrap()
       setAuth(auth)
-      navigate('/app/passwords', { replace: true })
+      navigate('/app/credentials', { replace: true })
     } catch (e) {
       const msg = handleError(e, setError)
       if (msg) {
@@ -43,7 +43,7 @@ const Login = () => {
   if (auth && auth.user)
     loginPage = (
       <Navigate
-        to='/app/passwords'
+        to='/app/credentials'
         state={{ from: location }}
       />
     )

@@ -31,6 +31,7 @@ import {
   useDeleteCredentialFavoriteMutation,
   useGetCredentialSharesQuery,
   useGetCredentialsQuery,
+  useLazyGetCredentialSecretByIdQuery,
 } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import useLoading from '../../hooks/useLoading'
@@ -38,6 +39,7 @@ import type { CredentialType } from '../../types/credential'
 import type { DataTableHeaderType, OrderType } from '../../types/component'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 import { FileCopy, Visibility } from '@mui/icons-material'
+import Share from '@mui/icons-material/Share'
 
 const CredentialsDataTable = () => {
   const dispatch = useDispatch()
@@ -47,7 +49,12 @@ const CredentialsDataTable = () => {
   const credentialSearch = useSelector(selectCredentialSearch)
   const credentialFilter = useSelector(selectCredentialFilter)
   const credentialSelected = useSelector(selectCredentialSelected)
-  const {data: credentialShares, isLoading: credentialSharesIsLoading} = useGetCredentialSharesQuery()
+  const { data: credentialShares, isLoading: credentialSharesIsLoading } = useGetCredentialSharesQuery()
+  const [trigger, { data: credentialSecret, isLoading: credentialSecretIsLoading }] =
+    useLazyGetCredentialSecretByIdQuery()
+  const [selectedCredential, setSelectedCredential] = React.useState<number>()
+  const [copyToClipboard, setCopyToClipboard] = React.useState<boolean>(false)
+  const [showSecret, setShowSecret] = React.useState<boolean>(false)
   const searchCredential = (credentials: CredentialType[]) => {
     return credentials.filter(
       c =>
@@ -179,12 +186,54 @@ const CredentialsDataTable = () => {
     }
   }
 
-  const handleOnShowSecret = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
+  const showSecretDialog = () => {
+    setShowSecret(false)
+    if (credentialSecret)
+      if (credentialSecret.length > 0) {
+        dispatch(credentialActions.setSecret(credentialSecret))
+        dispatch(credentialActions.setShowForms({ showSecret: true }))
+      } else {
+        openSnackbar({
+          severity: 'error',
+          message: 'This credential does not have any secret.',
+        })
+      }
+  }
 
+  let timer: any = null
+  const copyToClipboardFn = () => {
+    setCopyToClipboard(false)
+    if (credentialSecret)
+      if (credentialSecret.length > 0) {
+        navigator.clipboard.writeText(credentialSecret[credentialSecret.length - 1].password)
+        openSnackbar({
+          severity: 'success',
+          message: 'Secret copied successfully. it will remove from clipbaord after 30s!',
+        })
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+          console.log('timeout')
+          navigator.clipboard.writeText('').catch(e => {})
+        }, 30000)
+      } else {
+        openSnackbar({
+          severity: 'error',
+          message: 'This credential does not have any secret.',
+        })
+      }
+    return timer
+  }
+
+  const handleOnShowSecret = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
+    if (selectedCredential !== id) setSelectedCredential(id)
+    else showSecretDialog()
+    setShowSecret(true)
   }
 
   const handleOnCopySecret = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
-
+    if (selectedCredential !== id) setSelectedCredential(id)
+    else copyToClipboardFn()
+    setCopyToClipboard(true)
   }
 
   const isShared = (credentialId: number) => {
@@ -195,8 +244,38 @@ const CredentialsDataTable = () => {
   const numFavorited = credentials.filter(item => item.is_favorite === true).length
 
   React.useEffect(() => {
-    loading(credentialsIsLoading || addFavoriteIsLoading || delFavoriteIsLoading || credentialSharesIsLoading)
-  }, [loading, credentialsIsLoading, addFavoriteIsLoading, delFavoriteIsLoading, credentialSharesIsLoading])
+    loading(
+      credentialsIsLoading ||
+        addFavoriteIsLoading ||
+        delFavoriteIsLoading ||
+        credentialSharesIsLoading ||
+        credentialSecretIsLoading
+    )
+  }, [
+    loading,
+    credentialsIsLoading,
+    addFavoriteIsLoading,
+    delFavoriteIsLoading,
+    credentialSharesIsLoading,
+    credentialSecretIsLoading,
+  ])
+
+  React.useEffect(() => {
+    if (selectedCredential) trigger(selectedCredential)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCredential])
+
+  React.useEffect(() => {
+    let timer: any = null
+
+    if (showSecret) {
+      showSecretDialog()
+    } else if (copyToClipboard) {
+      timer = copyToClipboardFn()
+    }
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [credentialSecret])
 
   return (
     <Box
@@ -215,7 +294,6 @@ const CredentialsDataTable = () => {
       >
         <TableContainer>
           <Table
-            sx={{ minWidth: 750 }}
             aria-labelledby='tableTitle'
             size='small'
           >
@@ -239,6 +317,7 @@ const CredentialsDataTable = () => {
                     checked={credentials.length > 0 && numFavorited === credentials.length}
                   />
                 </TableCell>
+                <TableCell padding='checkbox' />
                 {headers.map(header => (
                   <TableCell
                     key={header.id}
@@ -262,7 +341,7 @@ const CredentialsDataTable = () => {
                     </TableSortLabel>
                   </TableCell>
                 ))}
-                <TableCell align='center'>Secret</TableCell>
+                <TableCell padding='checkbox' />
               </TableRow>
             </TableHead>
 
@@ -308,7 +387,21 @@ const CredentialsDataTable = () => {
                           onChange={event => handleOnFavorite(event, row.id)}
                         />
                       </TableCell>
-
+                      <TableCell
+                        padding='checkbox'
+                        sx={{
+                          borderBottom: 0,
+                        }}
+                      >
+                        {isShared(row.id) ? (
+                          <Share
+                            fontSize='inherit'
+                            sx={{ marginTop: '5px' }}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </TableCell>
                       <TableCell
                         sx={{
                           borderBottom: 0,
@@ -319,7 +412,6 @@ const CredentialsDataTable = () => {
                       <TableCell
                         sx={{
                           borderBottom: 0,
-                          color: isShared(row.id) ? '#1976d2' : 'unset'
                         }}
                       >
                         {row.name}
@@ -353,29 +445,30 @@ const CredentialsDataTable = () => {
                         {humanizeDate(row.modified_at)}
                       </TableCell>
                       <TableCell
+                        padding='checkbox'
                         sx={{
                           borderBottom: 0,
                         }}
                       >
-                        <Stack direction="row" justifyContent='center'>
+                        <Stack direction='row'>
                           <Tooltip title='Show secret'>
-                            <IconButton 
-                              aria-label="reveal"
-                              size='small' 
+                            <IconButton
+                              aria-label='reveal'
+                              size='small'
                               color='primary'
                               onClick={event => handleOnShowSecret(event, row.id)}
                             >
-                              <Visibility fontSize='inherit'/>
+                              <Visibility fontSize='inherit' />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title='Copy to clipboard'>
-                            <IconButton 
-                              aria-label="copy" 
-                              size='small' 
+                            <IconButton
+                              aria-label='copy'
+                              size='small'
                               color='primary'
                               onClick={event => handleOnCopySecret(event, row.id)}
                             >
-                              <FileCopy fontSize='inherit'/>
+                              <FileCopy fontSize='inherit' />
                             </IconButton>
                           </Tooltip>
                         </Stack>

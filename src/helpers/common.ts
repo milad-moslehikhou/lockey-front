@@ -1,5 +1,5 @@
 import { OrderType } from '../types/component'
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import { ColorResult } from 'react-color'
 
 export const stringToColor = (string: string) => {
@@ -43,9 +43,9 @@ export const humanizeDate = (date: Date): string => {
   return moment.duration(diff).humanize(true)
 }
 
-export const formatDate = (date: Date): string => {
+export const formatDate = (date: Date, format: string = 'YYYY-MM-DD hh:mm:ss'): string => {
   const d = moment(date)
-  return d.format('YYYY-MM-DD hh:mm:ss')
+  return d.format(format)
 }
 
 export const colorConverters = {

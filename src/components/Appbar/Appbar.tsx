@@ -29,7 +29,7 @@ const Appbar = () => {
     >
       <Box
         sx={{
-          width: 'calc(320px - 24px - 16px)',
+          width: 'calc(300px - 24px - 16px)',
           marginRight: '16px',
         }}
       >
@@ -47,7 +47,7 @@ const Appbar = () => {
       <Box
         sx={{
           position: 'absolute',
-          left: '320px',
+          left: '300px',
         }}
       >
         <SearchInput onChange={handleChange} />

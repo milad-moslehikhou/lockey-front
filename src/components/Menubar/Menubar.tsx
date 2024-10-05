@@ -1,24 +1,28 @@
 import * as React from 'react'
 import { Box, Link } from '@mui/material'
-import { useLogoutMutation } from '../../features/apiSlice'
+import { apiSlice, useLogoutMutation } from '../../features/apiSlice'
 import { useNavigate } from 'react-router-dom'
 import useSnackbar from '../../hooks/useSnackbar'
 import useAuth from '../../hooks/useAuth'
+import { useDispatch } from 'react-redux'
+import useLoggedInUser from '../../hooks/useLoggedInUser'
 
 const Menubar = () => {
   const [logout] = useLogoutMutation()
+  const loggedInUser = useLoggedInUser()
   const [, setAuth] = useAuth()
   const navigate = useNavigate()
   const openSnackbar = useSnackbar()
+  const dispatch = useDispatch()
   const [logoutIsPending, setLogoutIsPending] = React.useState(false)
 
-  const handleClick = async () => {
-    if(logoutIsPending)
-      return
+  const handleOnLogoutClick = async () => {
+    if (logoutIsPending) return
     setLogoutIsPending(true)
     try {
       await logout().unwrap()
       setAuth({ user: null, token: null, expiry: null })
+      dispatch(apiSlice.util.resetApiState())
       navigate('/login')
     } catch {
       openSnackbar({
@@ -41,7 +45,7 @@ const Menubar = () => {
     >
       <Box>
         <Link
-          href='/app/passwords'
+          href='/app/credentials'
           sx={{
             marginRight: '1rem',
             color: 'grey.50',
@@ -52,22 +56,24 @@ const Menubar = () => {
           }}
           underline='none'
         >
-          passwords
+          credentials
         </Link>
-        <Link
-          href='#'
-          sx={{
-            marginRight: '1rem',
-            color: 'grey.50',
-            '&:hover': {
-              cursor: 'pointer',
-              color: 'grey.300',
-            },
-          }}
-          underline='none'
-        >
-          administration
-        </Link>
+        {loggedInUser && loggedInUser.is_superuser && (
+          <Link
+            href='/app/administration'
+            sx={{
+              marginRight: '1rem',
+              color: 'grey.50',
+              '&:hover': {
+                cursor: 'pointer',
+                color: 'grey.300',
+              },
+            }}
+            underline='none'
+          >
+            administration
+          </Link>
+        )}
       </Box>
       <Box>
         <Link
@@ -79,7 +85,7 @@ const Menubar = () => {
             },
           }}
           underline='none'
-          onClick={handleClick}
+          onClick={handleOnLogoutClick}
         >
           logout
         </Link>

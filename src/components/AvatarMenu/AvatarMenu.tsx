@@ -16,15 +16,18 @@ const AvatarMenu = () => {
     setAnchorEl(null)
   }
 
-  let displayName =  "  "
-  let displayShortName = "  "
-  if(loggedInUser && loggedInUser.profile) {
-    displayName = ('first_name' in loggedInUser.profile && 'last_name' in loggedInUser.profile)?
-      `${loggedInUser.profile.first_name} ${loggedInUser.profile.last_name}`: loggedInUser.username
-    displayShortName = ('first_name' in loggedInUser.profile && 'last_name' in loggedInUser.profile)?
-      `${loggedInUser.profile.first_name[0]}${loggedInUser.profile.last_name[0]}`: loggedInUser.username[0]
+  let displayName = '  '
+  let displayShortName = '  '
+  if (loggedInUser) {
+    if (loggedInUser.first_name && loggedInUser.last_name) {
+      displayName = `${loggedInUser.first_name} ${loggedInUser.last_name}`
+      displayShortName = `${loggedInUser.first_name[0]}${loggedInUser.last_name[0]}`
+    } else {
+      displayName = loggedInUser.username
+      displayShortName = loggedInUser.username[0]
+    }
   }
-  
+
   return (
     <>
       <Button
@@ -53,18 +56,15 @@ const AvatarMenu = () => {
           },
         }}
       >
-        {loggedInUser && loggedInUser.profile && (
-          loggedInUser.profile.avatar ? (
+        {loggedInUser &&
+          (loggedInUser.avatar ? (
             <Avatar
-              src={loggedInUser.profile.avatar}
+              src={typeof loggedInUser.avatar === 'string' ? loggedInUser.avatar : ''}
               alt={loggedInUser.username}
             />
           ) : (
-            <Avatar sx={{ bgcolor: stringToColor(loggedInUser.username || '') }}>
-              {displayShortName}
-            </Avatar>
-          )
-        )}  
+            <Avatar sx={{ bgcolor: stringToColor(loggedInUser.username || '') }}>{displayShortName}</Avatar>
+          ))}
         <Box
           sx={{
             marginLeft: 2,

@@ -131,7 +131,7 @@ const CredentialShareForm = ({credential}: CredentialShareFormProps) => {
       dispatch(credentialActions.setSelected([]))
       openSnackbar({
         severity: 'success',
-        message: `Credential with id ${credential.id} share successfuly.`,
+        message: `Credential with id ${credential.id} share successfully.`,
       })
     } catch (e) {
       const msg = handleError(e, setError)

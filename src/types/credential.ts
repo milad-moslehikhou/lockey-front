@@ -1,5 +1,4 @@
-import { Moment } from 'moment'
-import { AutoCompleteFieldOptionsType, FormsStateType } from './component'
+import { FormsStateType } from './component'
 
 export type CredentialImportancyType = 'HIGH' | 'MEDIUM' | 'LOW'
 
@@ -27,6 +26,7 @@ export type CredentialStateType = {
   forms: FormsStateType
   search: string
   filter: string
+  secret: CredentialSecretType[]
 }
 
 export type CredentialShareType = {
@@ -47,8 +47,8 @@ export type CredentialShareStateType = {
 export type CredentialSecretType = {
   id: number
   credential: number
-  secret: string
-  expired_at: Date
+  password: string
+  expire_at: Date
   created_by: number
   created_at: Date
 }

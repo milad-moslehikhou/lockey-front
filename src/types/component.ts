@@ -30,6 +30,9 @@ export type FormsStateType = {
   move?: boolean
   detail?: boolean
   share?: boolean
+  addSecret?: boolean
+  showSecret?: boolean
+  setPass?: boolean
 }
 
 export type BreadcrumbsItemType = {

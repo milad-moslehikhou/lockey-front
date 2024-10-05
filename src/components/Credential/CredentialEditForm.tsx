@@ -53,7 +53,7 @@ const CredentialEditForm = ({ credential }: CredentialEditFormProps) => {
       dispatch(credentialActions.setSelected([]))
       openSnackbar({
         severity: 'success',
-        message: `Credential with id ${credential.id} update successfuly.`,
+        message: `Credential with id ${credential.id} update successfully.`,
       })
     } catch (e) {
       const msg = handleError(e, setError)
@@ -158,7 +158,12 @@ const CredentialEditForm = ({ credential }: CredentialEditFormProps) => {
             <Controller
               name='is_public'
               control={control}
-              render={({ field }) => <Switch {...field} />}
+              render={({ field }) => (
+                <Switch
+                  {...field}
+                  checked={field.value}
+                />
+              )}
             />
           }
         />
@@ -168,7 +173,12 @@ const CredentialEditForm = ({ credential }: CredentialEditFormProps) => {
             <Controller
               name='auto_genpass'
               control={control}
-              render={({ field }) => <Switch {...field} />}
+              render={({ field }) => (
+                <Switch
+                  {...field}
+                  checked={field.value}
+                />
+              )}
             />
           }
         />

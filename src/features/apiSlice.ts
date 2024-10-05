@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { AuthType, LoginRequestType } from '../types/auth'
-import type { CredentialType, CredentialShareType } from '../types/credential'
+import type { CredentialType, CredentialShareType, CredentialSecretType } from '../types/credential'
 import type { FolderType } from '../types/folder'
 import type { UserType } from '../types/user'
 import { GroupType } from '../types/group'
+import { serialize } from 'object-to-formdata'
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
@@ -17,7 +18,7 @@ export const apiSlice = createApi({
       return headers
     },
   }),
-  tagTypes: ['Group', 'User', 'Credential', 'Folder'],
+  tagTypes: ['Group', 'User', 'Credential', 'CredentialSecret', 'Folder'],
   endpoints: builder => ({
     // Auth
     login: builder.mutation<AuthType, LoginRequestType>({
@@ -48,6 +49,33 @@ export const apiSlice = createApi({
     }),
 
     // User
+    addUser: builder.mutation<UserType, Partial<UserType>>({
+      query: data => {
+        console.log(data)
+        return {
+          url: 'users/',
+          method: 'POST',
+          body: serialize(data, { allowEmptyArrays: true, dotsForObjectNotation: true }),
+        }
+      },
+      invalidatesTags: ['User'],
+    }),
+    editUser: builder.mutation<UserType, { id: number; data: Partial<UserType> }>({
+      query: ({ id, data }) => ({
+        url: `users/${id}/`,
+        method: 'PATCH',
+        body: serialize(data, { allowEmptyArrays: true, dotsForObjectNotation: true }),
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'User', id: arg.id }],
+    }),
+    setUserPass: builder.mutation<void, { id: number; data: Partial<UserType> }>({
+      query: ({ id, data }) => ({
+        url: `users/${id}/set-password/`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'User', id: arg.id }],
+    }),
     getUsers: builder.query<UserType[], void>({
       query: () => 'users/',
       providesTags: result =>
@@ -58,6 +86,13 @@ export const apiSlice = createApi({
     getUserById: builder.query<UserType, number>({
       query: id => `users/${id}/`,
       providesTags: (result, error, arg) => [{ type: 'User', id: arg }],
+    }),
+    deleteUser: builder.mutation<void, number>({
+      query: id => ({
+        url: `users/${id}/`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: () => [{ type: 'User', id: 'LIST' }],
     }),
 
     // Folder
@@ -80,7 +115,7 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Folder'],
     }),
-    editFolder: builder.mutation<FolderType, { id: number, data: Partial<FolderType> }>({
+    editFolder: builder.mutation<FolderType, { id: number; data: Partial<FolderType> }>({
       query: ({ id, data }) => ({
         url: `folders/${id}/`,
         method: 'PATCH',
@@ -105,6 +140,14 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Credential'],
     }),
+    addCredentialSecret: builder.mutation<void, { id: number; data: Partial<CredentialSecretType> }>({
+      query: ({ id, data }) => ({
+        url: `credentials/${id}/secret/`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['CredentialSecret'],
+    }),
     getCredentials: builder.query<CredentialType[], void>({
       query: () => 'credentials/',
       providesTags: result =>
@@ -127,7 +170,11 @@ export const apiSlice = createApi({
           ? [...result.map(({ id }) => ({ type: 'Credential' as const, id })), { type: 'Credential', id: 'LIST' }]
           : [{ type: 'Credential', id: 'LIST' }],
     }),
-    editCredential: builder.mutation<CredentialType, { id: number, data: Partial<CredentialType> }>({
+    getCredentialSecretById: builder.query<CredentialSecretType[], number>({
+      query: id => `credentials/${id}/secret/`,
+      providesTags: (result, error, arg) => [{ type: 'CredentialSecret', id: arg }],
+    }),
+    editCredential: builder.mutation<CredentialType, { id: number; data: Partial<CredentialType> }>({
       query: ({ id, data }) => ({
         url: `credentials/${id}/`,
         method: 'PATCH',
@@ -156,15 +203,15 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
     }),
-    editCredentialShare: builder.mutation<CredentialShareType,{ id: number, data: Partial<CredentialShareType[]> }>({
-      query: ({id, data}) => ({
+    editCredentialShare: builder.mutation<CredentialShareType, { id: number; data: Partial<CredentialShareType[]> }>({
+      query: ({ id, data }) => ({
         url: `credentials/${id}/share/`,
         method: 'PATCH',
         body: data,
       }),
       invalidatesTags: ['Credential'],
     }),
-  })
+  }),
 })
 
 export const {
@@ -175,8 +222,12 @@ export const {
   useGetGroupsQuery,
   useGetGroupByIdQuery,
   // User
+  useAddUserMutation,
+  useEditUserMutation,
+  useSetUserPassMutation,
   useGetUsersQuery,
   useGetUserByIdQuery,
+  useDeleteUserMutation,
   // Folder
   useAddFolderMutation,
   useGetFoldersQuery,
@@ -185,11 +236,14 @@ export const {
   useDeleteFolderMutation,
   // Credential
   useAddCredentialMutation,
+  useAddCredentialSecretMutation,
   useGetCredentialsQuery,
   useLazyGetCredentialsQuery,
   useGetCredentialByIdQuery,
   useGetCredentialSharesQuery,
   useGetCredentialSharesByIdQuery,
+  useGetCredentialSecretByIdQuery,
+  useLazyGetCredentialSecretByIdQuery,
   useEditCredentialMutation,
   useDeleteCredentialMutation,
   useAddCredentialFavoriteMutation,

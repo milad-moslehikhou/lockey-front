@@ -1,14 +1,17 @@
 import React from 'react'
 import { useRoutes } from 'react-router-dom'
 import { PrivateOutlet } from './utils/PrivateOutlet'
+import useLoggedInUser from './hooks/useLoggedInUser'
 
 const Login = React.lazy(() => import('./pages/Login/Login'))
-const Passwords = React.lazy(() => import('./pages/Passwords/Passwords'))
-const Preferences = React.lazy(() => import('./pages/Preferences/Preferences'))
+const Credentials = React.lazy(() => import('./pages/Passwords/Passwords'))
+const Administration = React.lazy(() => import('./pages/Administration/Administration'))
 const NotFound = React.lazy(() => import('./pages/NotFound/NotFound'))
 
-const Routes = () =>
-  useRoutes([
+const Routes = () => {
+  const loggedInUser = useLoggedInUser()
+
+  return useRoutes([
     {
       path: '/login',
       element: <Login />,
@@ -18,13 +21,13 @@ const Routes = () =>
       element: <PrivateOutlet />,
       children: [
         {
-          path: 'app/passwords',
-          element: <Passwords />,
+          path: 'app/credentials',
+          element: <Credentials />,
           index: true,
         },
         {
-          path: 'app/preferences',
-          element: <Preferences />,
+          path: loggedInUser?.is_superuser ? 'app/administration' : '',
+          element: loggedInUser?.is_superuser ? <Administration /> : <></>,
         },
       ],
     },
@@ -33,5 +36,6 @@ const Routes = () =>
       element: <NotFound />,
     },
   ])
+}
 
 export default Routes

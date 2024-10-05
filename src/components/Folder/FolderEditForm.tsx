@@ -48,7 +48,7 @@ const FolderEditForm = ({ folder }: FolderEditFormProps) => {
       dispatch(credentialActions.setSelected([]))
       openSnackbar({
         severity: 'success',
-        message: `Folder with id ${folder.id} update successfuly.`,
+        message: `Folder with id ${folder.id} update successfully.`,
       })
     } catch (e) {
       const msg = handleError(e, setError)
@@ -107,7 +107,12 @@ const FolderEditForm = ({ folder }: FolderEditFormProps) => {
             <Controller
               name='is_public'
               control={control}
-              render={({ field }) => <Switch {...field} />}
+              render={({ field }) => (
+                <Switch
+                  {...field}
+                  checked={field.value}
+                />
+              )}
             />
           }
         />

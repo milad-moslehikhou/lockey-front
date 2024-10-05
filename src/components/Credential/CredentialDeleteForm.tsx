@@ -45,7 +45,7 @@ const CredentialDeleteForm = ({ credential }: CredentialDeleteFormProps) => {
         dispatch(credentialActions.setSelected([]))
         openSnackbar({
           severity: 'success',
-          message: `Credential with id ${credential.id} delete successfuly.`,
+          message: `Credential with id ${credential.id} delete successfully.`,
         })
       } catch (e) {
         const msg = handleError(e, setError)
