@@ -1,13 +1,11 @@
 import * as React from 'react'
-import _ from 'lodash'
 import { Box, Typography, Divider, Stack, Chip } from '@mui/material'
 import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import ForwardIcon from '@mui/icons-material/Forward'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import CancelIcon from '@mui/icons-material/Cancel'
 import { formatDate } from '../../helpers/common'
 import { useGetCredentialSharesByIdQuery, useGetFoldersQuery, useGetUsersQuery } from '../../features/apiSlice'
 import type { CredentialType } from '../../types/credential'
+import DetailRow from '../DetailRow/DetailRow'
 
 interface CredentialDetailProps {
   credential: CredentialType
@@ -17,50 +15,6 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
   const { data: folders, isLoading: foldersIsLoading } = useGetFoldersQuery()
   const { data: users, isLoading: usersIsLoading } = useGetUsersQuery()
   const { data: credentialShares } = useGetCredentialSharesByIdQuery(credential.id)
-
-  const DetailRow = ({ title, value }: { title: string; value: any }) => {
-    const ValueElement = () => {
-      if (typeof value === 'boolean') {
-        if (value)
-          return (
-            <CheckCircleIcon
-              fontSize='small'
-              color='primary'
-            />
-          )
-        else
-          return (
-            <CancelIcon
-              fontSize='small'
-              color='disabled'
-            />
-          )
-      } else {
-        return <Typography>{_.toString(value)}</Typography>
-      }
-    }
-
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          margin: '.1rem 0',
-          alignItems: 'center',
-        }}
-      >
-        <Typography
-          sx={{
-            width: '7rem',
-            marginRight: '3rem',
-          }}
-        >
-          {title}
-        </Typography>
-        <ValueElement />
-      </Box>
-    )
-  }
 
   const getLocation = (id: number, location: string[] = []) => {
     let tempLocation = [...location]
@@ -253,26 +207,27 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
               })}
           </Stack>
         </Box>
-        {users && credentialShares && credentialShares.length > 0 && 
-        <>
-          <Divider sx={{ margin: '1rem 0' }} />
-          <DetailRow
-            title='Shared by'
-            value={users.find(u => u.id === credentialShares[0].shared_by)?.username
-            }
-          />
-          <DetailRow
-            title='Shared with'
-            value={credentialShares.map(s => {
-                return users && users.find(u => u.id === s.shared_with)?.username
-              }).join(', ')
-            }
-          />
-          <DetailRow
-            title='Until'
-            value={formatDate(credentialShares[0].until)}
-          />
-        </>}
+        {users && credentialShares && credentialShares.length > 0 && (
+          <>
+            <Divider sx={{ margin: '1rem 0' }} />
+            <DetailRow
+              title='Shared by'
+              value={users.find(u => u.id === credentialShares[0].shared_by)?.username}
+            />
+            <DetailRow
+              title='Shared with'
+              value={credentialShares
+                .map(s => {
+                  return users && users.find(u => u.id === s.shared_with)?.username
+                })
+                .join(', ')}
+            />
+            <DetailRow
+              title='Until'
+              value={formatDate(credentialShares[0].until)}
+            />
+          </>
+        )}
         <Divider sx={{ margin: '1rem 0' }} />
         <DetailRow
           title='Modified'
@@ -280,8 +235,7 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
         />
         <DetailRow
           title='Modified by '
-          value={usersIsLoading ? 'loading...' : users && users.find(u => u.id === credential.modified_by)?.username
-          }
+          value={usersIsLoading ? 'loading...' : users && users.find(u => u.id === credential.modified_by)?.username}
         />
         <DetailRow
           title='Created'

@@ -4,9 +4,9 @@ import { useForm } from 'react-hook-form'
 import { TextField, FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
 import {
-  useEditGroupMemberMutation,
   useEditGroupMutation,
   useGetGroupMemberByIdQuery,
+  useGetPermissionsQuery,
   useGetUsersQuery,
 } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
@@ -25,7 +25,9 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
   const openSnackbar = useSnackbar()
   const { data: users, isLoading: usersIsLoading } = useGetUsersQuery()
   const { data: members, isLoading: membersIsLoading } = useGetGroupMemberByIdQuery(group.id)
+  const { data: perms, isLoading: permsIsLoading } = useGetPermissionsQuery()
   const [userOptions, setUserOptions] = React.useState<AutoCompleteFieldOptionsType[]>([])
+  const [permOptions, setPermOptions] = React.useState<AutoCompleteFieldOptionsType[]>([])
   const [editGroup, { isLoading: editGroupIsLoading }] = useEditGroupMutation()
 
   const {
@@ -38,6 +40,7 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
   } = useForm<Partial<GroupMemberType>>({
     defaultValues: {
       ...group,
+      permissions: [],
       members: [],
     },
   })
@@ -55,8 +58,25 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
     setValue('members', newValue)
   }
 
+  const handleOnPermsValueChange = (newValue: AutoCompleteFieldOptionsType[]) => {
+    if (perms) {
+      const selectOptions = newValue.map(v => v.value)
+      const filteredUsers = perms.filter(u => !selectOptions.includes(u.id))
+      setPermOptions(
+        filteredUsers.map(f => {
+          return { label: f.codename, value: f.id }
+        })
+      )
+    }
+    setValue('permissions', newValue)
+  }
+
   const handleOnUserChange = (event: React.SyntheticEvent, newValue: AutoCompleteFieldOptionsType[]) => {
     handleOnAutoCompleteValueChange(newValue)
+  }
+
+  const handleOnPermChange = (event: React.SyntheticEvent, newValue: AutoCompleteFieldOptionsType[]) => {
+    handleOnPermsValueChange(newValue)
   }
 
   const handleCloseForm = () => {
@@ -66,6 +86,7 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
   const onSubmit = async (data: Partial<GroupMemberType>) => {
     data = {
       ...data,
+      permissions: data.permissions && data.permissions.map(p => (typeof p === 'number' ? p : p.value)),
       members: data.members && data.members.map(m => (typeof m === 'number' ? m : m.value)),
     }
     try {
@@ -94,10 +115,25 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
   }, [members])
 
   React.useEffect(() => {
+    if (!permsIsLoading && group.permissions && perms) {
+      const findedPerm: AutoCompleteFieldOptionsType[] = []
+      group.permissions
+        .map(gp => perms.find(p => p.id === gp))
+        .forEach(fp => {
+          if (fp) findedPerm.push({ label: fp.codename, value: fp.id })
+        })
+      handleOnPermsValueChange(findedPerm)
+    } else handleOnPermsValueChange([])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [perms])
+
+  React.useEffect(() => {
     register('members')
+    register('permissions')
   }, [register])
 
   const usersSelectedValue = watch('members')
+  const permsSelectedValue = watch('permissions')
 
   const form = (
     <>
@@ -113,6 +149,19 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
           error={'name' in errors}
           helperText={errors.name && (errors.name.message as string)}
           {...register('name', { setValueAs: setStringOrNull })}
+        />
+      </FormControl>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
+        <AutoCompleteField
+          label='Permissions'
+          value={permsSelectedValue}
+          error={'permissions' in errors}
+          helperText={errors.permissions && (errors.permissions.message as string)}
+          options={permOptions}
+          onChange={handleOnPermChange}
         />
       </FormControl>
       <FormControl

@@ -1,12 +1,9 @@
 import * as React from 'react'
-import _ from 'lodash'
-import { Box, Typography, Divider, Avatar } from '@mui/material'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import CancelIcon from '@mui/icons-material/Cancel'
+import { Box, Divider, Avatar } from '@mui/material'
 import { formatDate } from '../../helpers/common'
 import type { UserType } from '../../types/user'
-import { Person } from '@mui/icons-material'
 import { useGetGroupsQuery } from '../../features/apiSlice'
+import DetailRow from '../DetailRow/DetailRow'
 
 interface UserDetailProps {
   user: UserType
@@ -14,49 +11,6 @@ interface UserDetailProps {
 
 const UserDetail = ({ user }: UserDetailProps) => {
   const { data: groups, isLoading: groupsIsLoading } = useGetGroupsQuery()
-  const DetailRow = ({ title, value }: { title: string; value: any }) => {
-    const ValueElement = () => {
-      if (typeof value === 'boolean') {
-        if (value)
-          return (
-            <CheckCircleIcon
-              fontSize='small'
-              color='primary'
-            />
-          )
-        else
-          return (
-            <CancelIcon
-              fontSize='small'
-              color='disabled'
-            />
-          )
-      } else {
-        return <Typography>{_.toString(value)}</Typography>
-      }
-    }
-
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          margin: '.1rem 0',
-          alignItems: 'center',
-        }}
-      >
-        <Typography
-          sx={{
-            width: '7rem',
-            marginRight: '3rem',
-          }}
-        >
-          {title}
-        </Typography>
-        <ValueElement />
-      </Box>
-    )
-  }
 
   return (
     <Box

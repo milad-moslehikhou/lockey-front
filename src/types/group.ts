@@ -3,7 +3,7 @@ import { AutoCompleteFieldOptionsType, FormsStateType } from './component'
 export type GroupType = {
   id: number
   name: string
-  permissions: string[]
+  permissions: number[] | AutoCompleteFieldOptionsType[]
 }
 
 export type GroupStateType = {

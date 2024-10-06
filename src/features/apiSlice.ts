@@ -5,6 +5,7 @@ import type { FolderType } from '../types/folder'
 import type { UserType } from '../types/user'
 import { GroupMemberType, GroupType } from '../types/group'
 import { serialize } from 'object-to-formdata'
+import { PermissionType } from '../types/permission'
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
@@ -18,7 +19,7 @@ export const apiSlice = createApi({
       return headers
     },
   }),
-  tagTypes: ['Group', 'User', 'Credential', 'CredentialSecret', 'Folder'],
+  tagTypes: ['Group', 'User', 'Permission', 'Credential', 'CredentialSecret', 'Folder'],
   endpoints: builder => ({
     // Auth
     login: builder.mutation<AuthType, LoginRequestType>({
@@ -33,6 +34,15 @@ export const apiSlice = createApi({
         url: 'auth/logout/',
         method: 'POST',
       }),
+    }),
+
+    // Permissions
+    getPermissions: builder.query<PermissionType[], void>({
+      query: () => 'permissions/',
+      providesTags: result =>
+        result
+          ? [...result.map(({ id }) => ({ type: 'Permission' as const, id })), { type: 'Permission', id: 'LIST' }]
+          : [{ type: 'Permission', id: 'LIST' }],
     }),
 
     // Group
@@ -254,6 +264,8 @@ export const {
   // Auth
   useLoginMutation,
   useLogoutMutation,
+  // Permission
+  useGetPermissionsQuery,
   // Group
   useAddGroupMutation,
   useEditGroupMutation,

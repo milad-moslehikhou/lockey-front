@@ -1,11 +1,9 @@
 import * as React from 'react'
-import _ from 'lodash'
 import { Box, Typography, Divider } from '@mui/material'
 import Groups from '@mui/icons-material/Groups'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import CancelIcon from '@mui/icons-material/Cancel'
 import type { GroupType } from '../../types/group'
-import { useGetGroupMemberByIdQuery } from '../../features/apiSlice'
+import { useGetGroupMemberByIdQuery, useGetPermissionsQuery } from '../../features/apiSlice'
+import DetailRow from '../DetailRow/DetailRow'
 
 interface GroupDetailProps {
   group: GroupType
@@ -13,50 +11,7 @@ interface GroupDetailProps {
 
 const GroupDetail = ({ group }: GroupDetailProps) => {
   const { data: members, isLoading: membersIsLoading } = useGetGroupMemberByIdQuery(group.id)
-
-  const DetailRow = ({ title, value }: { title: string; value: any }) => {
-    const ValueElement = () => {
-      if (typeof value === 'boolean') {
-        if (value)
-          return (
-            <CheckCircleIcon
-              fontSize='small'
-              color='primary'
-            />
-          )
-        else
-          return (
-            <CancelIcon
-              fontSize='small'
-              color='disabled'
-            />
-          )
-      } else {
-        return <Typography>{_.toString(value)}</Typography>
-      }
-    }
-
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          margin: '.1rem 0',
-          alignItems: 'center',
-        }}
-      >
-        <Typography
-          sx={{
-            width: '7rem',
-            marginRight: '3rem',
-          }}
-        >
-          {title}
-        </Typography>
-        <ValueElement />
-      </Box>
-    )
-  }
+  const { data: perms, isLoading: permsIsLoading } = useGetPermissionsQuery()
 
   return (
     <Box
@@ -117,7 +72,13 @@ const GroupDetail = ({ group }: GroupDetailProps) => {
         <Divider sx={{ margin: '1rem 0' }} />
         <DetailRow
           title='Permissions'
-          value={group.permissions.join(', ')}
+          value={
+            perms
+              ? permsIsLoading
+                ? 'loading...'
+                : group.permissions.map(gp => perms.find(p => p.id === gp)?.codename).join(', ')
+              : ''
+          }
         />
         <Divider sx={{ margin: '1rem 0' }} />
         <DetailRow
