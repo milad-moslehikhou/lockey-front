@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
-import { TextField, FormControl } from '@mui/material'
+import { FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
 import { useDeleteUserMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import { userActions } from '../../features/userSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { handleError } from '../../helpers/form'
 import { UserType } from '../../types/user'
 
 interface UserDeleteFormProps {

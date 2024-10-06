@@ -3,7 +3,7 @@ import type { AuthType, LoginRequestType } from '../types/auth'
 import type { CredentialType, CredentialShareType, CredentialSecretType } from '../types/credential'
 import type { FolderType } from '../types/folder'
 import type { UserType } from '../types/user'
-import { GroupType } from '../types/group'
+import { GroupMemberType, GroupType } from '../types/group'
 import { serialize } from 'object-to-formdata'
 
 export const apiSlice = createApi({
@@ -36,6 +36,32 @@ export const apiSlice = createApi({
     }),
 
     // Group
+    addGroup: builder.mutation<GroupType, Partial<GroupType>>({
+      query: data => {
+        return {
+          url: 'groups/',
+          method: 'POST',
+          body: data,
+        }
+      },
+      invalidatesTags: ['Group'],
+    }),
+    editGroup: builder.mutation<GroupType, { id: number; data: Partial<GroupType> }>({
+      query: ({ id, data }) => ({
+        url: `groups/${id}/`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Group', id: arg.id }],
+    }),
+    editGroupMember: builder.mutation<void, { id: number; data: Partial<GroupMemberType> }>({
+      query: ({ id, data }) => ({
+        url: `groups/${id}/members/`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Group', id: arg.id }],
+    }),
     getGroups: builder.query<GroupType[], void>({
       query: () => 'groups/',
       providesTags: result =>
@@ -43,15 +69,25 @@ export const apiSlice = createApi({
           ? [...result.map(({ id }) => ({ type: 'Group' as const, id })), { type: 'Group', id: 'LIST' }]
           : [{ type: 'Group', id: 'LIST' }],
     }),
-    getGroupById: builder.query<UserType, number>({
+    getGroupById: builder.query<GroupType, number>({
       query: id => `groups/${id}/`,
       providesTags: (result, error, arg) => [{ type: 'Group', id: arg }],
+    }),
+    getGroupMemberById: builder.query<UserType[], number>({
+      query: id => `groups/${id}/members/`,
+      providesTags: (result, error, arg) => [{ type: 'Group', id: arg }],
+    }),
+    deleteGroup: builder.mutation<void, number>({
+      query: id => ({
+        url: `groups/${id}/`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: () => [{ type: 'Group', id: 'LIST' }],
     }),
 
     // User
     addUser: builder.mutation<UserType, Partial<UserType>>({
       query: data => {
-        console.log(data)
         return {
           url: 'users/',
           method: 'POST',
@@ -219,8 +255,13 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   // Group
+  useAddGroupMutation,
+  useEditGroupMutation,
+  useEditGroupMemberMutation,
   useGetGroupsQuery,
   useGetGroupByIdQuery,
+  useGetGroupMemberByIdQuery,
+  useDeleteGroupMutation,
   // User
   useAddUserMutation,
   useEditUserMutation,

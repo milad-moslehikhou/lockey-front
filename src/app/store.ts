@@ -4,6 +4,7 @@ import folderReducer from '../features/folderSlice'
 import credentialReducer from '../features/credentialSlice'
 import breadcrumbsReducer from '../features/breadcrumbsSlice'
 import userReducer from '../features/userSlice'
+import groupReducer from '../features/groupSlice'
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     folder: folderReducer,
     credential: credentialReducer,
     user: userReducer,
+    group: groupReducer,
     breadcrumbs: breadcrumbsReducer,
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(apiSlice.middleware),

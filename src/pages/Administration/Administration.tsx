@@ -7,9 +7,44 @@ import Footer from '../../components/Footer/Footer'
 import UserActionSelector from '../../components/User/UserActionSelector'
 import UsersDataTable from '../../components/User/UserDataTable'
 import UserAdminToolbar from '../../components/UserAdminToolbar/UserAdminToolbar'
+import GroupsDataTable from '../../components/Group/GroupDataTable'
+import GroupActionSelector from '../../components/Group/GroupActionSelector'
+import GroupAdminToolbar from '../../components/GroupAdminToolbar/GroupAdminToolbar'
+import { useDispatch } from 'react-redux'
+import { groupActions } from '../../features/groupSlice'
+import { userActions } from '../../features/userSlice'
+
+interface AdminListItemType {
+  name: 'user' | 'group'
+}
 
 const Administration = () => {
-  const [showUserTab, setShowUserTab] = React.useState<boolean>(true)
+  const dispatch = useDispatch()
+  const [selectedItem, setSelectedItem] = React.useState<AdminListItemType>({ name: 'user' })
+  const [toolbar, setToolbar] = React.useState<React.JSX.Element>()
+  const [dataTable, setDataTable] = React.useState<React.JSX.Element>()
+  const [actionSelector, setActionSelector] = React.useState<React.JSX.Element>()
+
+  const handleOnListItemChange = (event: React.MouseEvent<HTMLDivElement>, item: AdminListItemType) => {
+    setSelectedItem(item)
+    dispatch(groupActions.setSelected([]))
+    dispatch(userActions.setSelected([]))
+  }
+
+  React.useEffect(() => {
+    switch (selectedItem.name) {
+      case 'user':
+        setToolbar(<UserAdminToolbar />)
+        setActionSelector(<UserActionSelector />)
+        setDataTable(<UsersDataTable />)
+        break
+      case 'group':
+        setToolbar(<GroupAdminToolbar />)
+        setActionSelector(<GroupActionSelector />)
+        setDataTable(<GroupsDataTable />)
+        break
+    }
+  }, [selectedItem])
 
   return (
     <Box
@@ -21,7 +56,7 @@ const Administration = () => {
     >
       <Menubar />
       <Appbar />
-      {showUserTab ? <UserAdminToolbar /> : <></>}
+      {toolbar}
       <Box
         sx={{
           display: 'flex',
@@ -51,8 +86,8 @@ const Administration = () => {
                   fontWeight: 'bold',
                 },
               }}
-              selected={showUserTab}
-              onClick={event => setShowUserTab(true)}
+              selected={selectedItem.name === 'user'}
+              onClick={event => handleOnListItemChange(event, { name: 'user' })}
             >
               <ListItemText
                 primary='User'
@@ -67,8 +102,8 @@ const Administration = () => {
                   fontWeight: 'bold',
                 },
               }}
-              selected={!showUserTab}
-              onClick={event => setShowUserTab(false)}
+              selected={selectedItem.name === 'group'}
+              onClick={event => handleOnListItemChange(event, { name: 'group' })}
             >
               <ListItemText
                 primary='Group'
@@ -89,9 +124,9 @@ const Administration = () => {
               height: 'calc(100% - 48px)',
             }}
           >
-            {showUserTab ? <UsersDataTable /> : <></>}
+            {dataTable}
           </Box>
-          {showUserTab ? <UserActionSelector /> : <></>}
+          {actionSelector}
         </Box>
       </Box>
       <Footer />

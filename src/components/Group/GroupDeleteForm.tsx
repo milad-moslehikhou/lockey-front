@@ -3,49 +3,47 @@ import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { TextField, FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
-import { useDeleteCredentialMutation } from '../../features/apiSlice'
+import { useDeleteGroupMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
-import { credentialActions } from '../../features/credentialSlice'
+import { groupActions } from '../../features/groupSlice'
 import { setStringOrNull, handleError } from '../../helpers/form'
-import { CredentialType } from '../../types/credential'
+import { GroupType } from '../../types/group'
 
-interface CredentialDeleteFormProps {
-  credential: CredentialType
+interface GroupDeleteFormProps {
+  group: GroupType
 }
 
-interface DeleteCredentialForm {
+interface DeleteGroupForm {
   name: string
 }
 
-const CredentialDeleteForm = ({ credential }: CredentialDeleteFormProps) => {
+const GroupDeleteForm = ({ group }: GroupDeleteFormProps) => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
-  const [del, { isLoading: deleteCredentialIsLoading }] = useDeleteCredentialMutation()
+  const [deleteGroup, { isLoading: deleteGroupIsLoading }] = useDeleteGroupMutation()
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<DeleteCredentialForm>()
+  } = useForm<DeleteGroupForm>()
 
   const handleCloseForm = () => {
-    dispatch(credentialActions.setShowForms({ delete: false }))
+    dispatch(groupActions.setShowForms({ delete: false }))
   }
 
-  const onSubmit = async (data: DeleteCredentialForm) => {
-    if (credential.name !== data.name) {
+  const onSubmit = async (data: DeleteGroupForm) => {
+    if (group.name !== data.name) {
       setError('name', {
         type: 'server',
         message: 'Name is not match',
       })
     } else {
       try {
-        await del(credential.id).unwrap()
-        handleCloseForm()
-        dispatch(credentialActions.setSelected([]))
+        await deleteGroup(group.id).unwrap()
         openSnackbar({
           severity: 'success',
-          message: `Credential with id ${credential.id} delete successfully.`,
+          message: `Group with id ${group.id} delete successfully.`,
         })
       } catch (e) {
         const msg = handleError(e, setError)
@@ -55,6 +53,9 @@ const CredentialDeleteForm = ({ credential }: CredentialDeleteFormProps) => {
             message: msg,
           })
         }
+      } finally {
+        handleCloseForm()
+        dispatch(groupActions.setSelected([]))
       }
     }
   }
@@ -75,7 +76,7 @@ const CredentialDeleteForm = ({ credential }: CredentialDeleteFormProps) => {
               color: '#e0143c',
             }}
           >
-            {credential.name.toLowerCase()}
+            {group.name.toLowerCase()}
           </code>{' '}
           to confirm!
         </label>
@@ -100,14 +101,14 @@ const CredentialDeleteForm = ({ credential }: CredentialDeleteFormProps) => {
 
   return (
     <FormDialog
-      title='Delete Credential'
+      title='Delete Group'
       form={form}
       submitLable='Delete'
-      isLoading={deleteCredentialIsLoading}
+      isLoading={deleteGroupIsLoading}
       handleSubmit={handleSubmit(onSubmit)}
       handleCloseForm={handleCloseForm}
     />
   )
 }
 
-export default CredentialDeleteForm
+export default GroupDeleteForm

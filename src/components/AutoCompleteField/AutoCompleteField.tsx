@@ -22,7 +22,7 @@ const AutoCompleteField = ({ label, options, value, error, helperText, onChange 
       options={options}
       value={value}
       getOptionKey={options => options.value}
-      disableCloseOnSelect
+      disableCloseOnSelect={false}
       filterSelectedOptions
       style={{ width: '100%' }}
       onChange={onChange}

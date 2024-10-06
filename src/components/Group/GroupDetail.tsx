@@ -1,19 +1,19 @@
 import * as React from 'react'
 import _ from 'lodash'
-import { Box, Typography, Divider, Avatar } from '@mui/material'
+import { Box, Typography, Divider } from '@mui/material'
+import Groups from '@mui/icons-material/Groups'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
-import { formatDate } from '../../helpers/common'
-import type { UserType } from '../../types/user'
-import { Person } from '@mui/icons-material'
-import { useGetGroupsQuery } from '../../features/apiSlice'
+import type { GroupType } from '../../types/group'
+import { useGetGroupMemberByIdQuery } from '../../features/apiSlice'
 
-interface UserDetailProps {
-  user: UserType
+interface GroupDetailProps {
+  group: GroupType
 }
 
-const UserDetail = ({ user }: UserDetailProps) => {
-  const { data: groups, isLoading: groupsIsLoading } = useGetGroupsQuery()
+const GroupDetail = ({ group }: GroupDetailProps) => {
+  const { data: members, isLoading: membersIsLoading } = useGetGroupMemberByIdQuery(group.id)
+
   const DetailRow = ({ title, value }: { title: string; value: any }) => {
     const ValueElement = () => {
       if (typeof value === 'boolean') {
@@ -81,75 +81,52 @@ const UserDetail = ({ user }: UserDetailProps) => {
         <Box
           sx={{
             display: 'flex',
-            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          <Avatar
-            src={typeof user.avatar === 'string' ? user.avatar : ''}
+          <Groups
             sx={{
-              width: '128px',
-              height: '128px',
+              color: 'grey.500',
+              backgroundColor: 'grey.100',
+              borderRadius: '2rem',
+              padding: '.3rem',
+              width: '2rem',
+              height: '2rem',
             }}
           />
+          <Typography
+            sx={{
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              marginLeft: '1rem',
+            }}
+          >
+            {group.name}
+          </Typography>
         </Box>
 
         <Divider sx={{ margin: '1rem 0' }} />
         <DetailRow
           title='ID'
-          value={user.id}
+          value={group.id}
         />
         <DetailRow
-          title='Username'
-          value={user.username}
-        />
-        <DetailRow
-          title='First Name'
-          value={user.first_name}
-        />
-        <DetailRow
-          title='Last Name'
-          value={user.last_name}
-        />
-        <DetailRow
-          title='Superuser'
-          value={user.is_superuser}
-        />
-        <DetailRow
-          title='Active'
-          value={user.is_active}
-        />
-        <DetailRow
-          title='Last Login'
-          value={formatDate(user.last_login)}
-        />
-        <DetailRow
-          title='Date Joined'
-          value={formatDate(user.date_joined)}
-        />
-        <Divider sx={{ margin: '1rem 0' }} />
-        <DetailRow
-          title='Groups'
-          value={
-            user.groups.length > 0
-              ? groupsIsLoading
-                ? 'loading...'
-                : groups &&
-                  user.groups
-                    .map(ug => {
-                      return groups.find(g => g.id === ug)?.name
-                    })
-                    .join(', ')
-              : ''
-          }
+          title='Name'
+          value={group.name}
         />
         <Divider sx={{ margin: '1rem 0' }} />
         <DetailRow
           title='Permissions'
-          value={user.user_permissions.length > 0 ? user.user_permissions.join(', ') : ''}
+          value={group.permissions.join(', ')}
+        />
+        <Divider sx={{ margin: '1rem 0' }} />
+        <DetailRow
+          title='Members'
+          value={members ? (membersIsLoading ? 'loading...' : members.map(m => m.username).join(', ')) : ''}
         />
       </Box>
     </Box>
   )
 }
 
-export default UserDetail
+export default GroupDetail

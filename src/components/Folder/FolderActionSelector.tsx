@@ -15,7 +15,7 @@ const FolderActionSelector = () => {
     isUninitialized,
     isFetching,
   } = useGetFolderByIdQuery(folderHovered, {
-    skip: folderHovered == -1,
+    skip: folderHovered === -1,
   })
 
   const folderIsValid = folder && !isUninitialized && !isFetching
