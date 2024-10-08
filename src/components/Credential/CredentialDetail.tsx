@@ -159,10 +159,6 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
           )}
         </Box>
         <DetailRow
-          title='Public'
-          value={credential.is_public}
-        />
-        <DetailRow
           title='Auto generate'
           value={credential.auto_genpass}
         />

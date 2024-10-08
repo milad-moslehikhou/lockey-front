@@ -153,21 +153,6 @@ const CredentialEditForm = ({ credential }: CredentialEditFormProps) => {
         sx={{ mt: 2, flexDirection: 'row' }}
       >
         <FormControlLabel
-          label='Public'
-          control={
-            <Controller
-              name='is_public'
-              control={control}
-              render={({ field }) => (
-                <Switch
-                  {...field}
-                  checked={field.value}
-                />
-              )}
-            />
-          }
-        />
-        <FormControlLabel
           label='Auto generate'
           control={
             <Controller

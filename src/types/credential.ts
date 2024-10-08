@@ -9,7 +9,6 @@ export type CredentialType = {
   ip: string | null
   uri: string | null
   importancy: CredentialImportancyType
-  is_public: boolean
   is_favorite: boolean
   auto_genpass: boolean
   tags: string

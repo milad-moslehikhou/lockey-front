@@ -30,8 +30,6 @@ const CredentialAddForm = () => {
       importancy: 'LOW',
       // eslint-disable-next-line camelcase
       auto_genpass: false,
-      // eslint-disable-next-line camelcase
-      is_public: false,
     },
   })
 
@@ -155,16 +153,6 @@ const CredentialAddForm = () => {
         fullWidth
         sx={{ mt: 2, flexDirection: 'row' }}
       >
-        <FormControlLabel
-          label='Public'
-          control={
-            <Controller
-              name='is_public'
-              control={control}
-              render={({ field }) => <Switch {...field} />}
-            />
-          }
-        />
         <FormControlLabel
           label='Auto generate'
           control={
