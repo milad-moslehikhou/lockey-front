@@ -12,7 +12,7 @@ const InputChips = ({ inputLable, chips, setChips }: IInputChipsProps) => {
 
   const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault()
-    if (event.key === 'Enter' && chip && chip.trim() != '') {
+    if (event.key === 'Enter' && chip && chip.trim() !== '') {
       const index = chips.indexOf(chip)
       if (index > -1) {
         setChip('')
@@ -25,7 +25,7 @@ const InputChips = ({ inputLable, chips, setChips }: IInputChipsProps) => {
 
   const handleDelete = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const deleteChip = event.currentTarget.parentElement?.innerText
-    setChips(chips.filter(item => item != deleteChip))
+    setChips(chips.filter(item => item !== deleteChip))
     setChip('')
   }
 

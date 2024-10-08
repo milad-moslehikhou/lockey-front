@@ -45,7 +45,7 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
     },
   })
 
-  const handleOnAutoCompleteValueChange = (newValue: AutoCompleteFieldOptionsType[]) => {
+  const handleOnUsersValueChange = (newValue: AutoCompleteFieldOptionsType[]) => {
     if (users) {
       const selectOptions = newValue.map(v => v.value)
       const filteredUsers = users.filter(u => !selectOptions.includes(u.id))
@@ -72,7 +72,7 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
   }
 
   const handleOnUserChange = (event: React.SyntheticEvent, newValue: AutoCompleteFieldOptionsType[]) => {
-    handleOnAutoCompleteValueChange(newValue)
+    handleOnUsersValueChange(newValue)
   }
 
   const handleOnPermChange = (event: React.SyntheticEvent, newValue: AutoCompleteFieldOptionsType[]) => {
@@ -110,7 +110,7 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
 
   React.useEffect(() => {
     if (!membersIsLoading && !usersIsLoading)
-      handleOnAutoCompleteValueChange(members ? members.map(m => ({ label: m.username, value: m.id })) : [])
+      handleOnUsersValueChange(members ? members.map(m => ({ label: m.username, value: m.id })) : [])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [members])
 

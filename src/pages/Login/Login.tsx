@@ -1,41 +1,76 @@
+import './Login.css'
 import * as React from 'react'
 import { TextField } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { useLoginMutation } from '../../features/apiSlice'
+import { apiSlice, useLoginMutation } from '../../features/apiSlice'
 import { setStringOrNull, handleError } from '../../helpers/form'
 import useSnackbar from '../../hooks/useSnackbar'
 import useAuth from '../../hooks/useAuth'
 import type { LoginRequestType } from '../../types/auth'
-import './Login.css'
+import Captcha from '../../components/Captcha/Captcha'
+import useOfflineCaptcha from 'use-offline-captcha'
+import { useDispatch } from 'react-redux'
 
+interface LoginFormType extends LoginRequestType {
+  captcha: string
+}
 const Login = () => {
   const [auth, setAuth] = useAuth()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const location = useLocation()
   const openSnackbar = useSnackbar()
+  const [captchaValue, setCaptchaValue] = React.useState<string>('')
+  const captchaRef = React.useRef<HTMLDivElement>(null)
+  const { gen, validate } = useOfflineCaptcha(captchaRef, {
+    type: 'mixed',
+    length: 4,
+    sensitive: false,
+    width: 150,
+    height: 35,
+    background: 'rgba(255, 255, 255, 1)',
+  })
   const [login, { isLoading }] = useLoginMutation()
   const {
+    clearErrors,
     register,
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<LoginRequestType>()
+  } = useForm<LoginFormType>()
+  const handleOnCaptchaRefresh = () => {
+    gen()
+  }
+
+  React.useEffect(() => {
+    if (gen) gen()
+  }, [gen])
+
+  React.useEffect(() => {
+    dispatch(apiSlice.util.resetApiState())
+  })
 
   const onSubmit = handleSubmit(async (data: LoginRequestType) => {
-    try {
-      const auth = await login(data).unwrap()
-      setAuth(auth)
-      navigate('/app/credentials', { replace: true })
-    } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
+    if (validate(captchaValue)) {
+      try {
+        const auth = await login(data).unwrap()
+        setAuth(auth)
+        navigate('/app/credentials', { replace: true })
+      } catch (e) {
+        handleOnCaptchaRefresh()
+        const msg = handleError(e, setError)
+        if (msg) {
+          openSnackbar({
+            severity: 'error',
+            message: msg,
+          })
+        }
       }
+    } else {
+      handleOnCaptchaRefresh()
+      setError('captcha', { message: 'Incorrect CAPTCHA.' })
     }
   })
 
@@ -81,6 +116,17 @@ const Login = () => {
               helperText={errors.password && (errors.password.message as string)}
               {...register('password', { setValueAs: setStringOrNull })}
             />
+            <Captcha
+              value={captchaValue}
+              captchaRef={captchaRef}
+              error={'captcha' in errors}
+              helperText={errors.captcha && (errors.captcha.message as string)}
+              onRefresh={handleOnCaptchaRefresh}
+              onChange={e => {
+                setCaptchaValue(e.target.value)
+                clearErrors('captcha')
+              }}
+            />
             <LoadingButton
               variant='contained'
               type='submit'
@@ -92,13 +138,7 @@ const Login = () => {
               LOGIN
             </LoadingButton>
           </form>
-          <div className='form-footer'>
-            <p>
-              Developed by
-              <a href='mailto:gh_mirasgari@isc.co.ir'>Reza Mirasgari</a> and
-              <a href='mailto:m_moslehikhou@isc.co.ir'>Milad Moslehikhou</a> &copy; 2021
-            </p>
-          </div>
+          <div className='form-footer'></div>
         </div>
       </div>
     )

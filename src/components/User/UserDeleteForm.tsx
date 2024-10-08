@@ -1,48 +1,61 @@
 import * as React from 'react'
 import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
-import { FormControl } from '@mui/material'
+import { TextField, FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
 import { useDeleteUserMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import { userActions } from '../../features/userSlice'
-import { handleError } from '../../helpers/form'
+import { setStringOrNull, handleError } from '../../helpers/form'
 import { UserType } from '../../types/user'
 
 interface UserDeleteFormProps {
   user: UserType
 }
 
+interface DeleteUserForm {
+  username: string
+}
+
 const UserDeleteForm = ({ user }: UserDeleteFormProps) => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
-  const [del, { isLoading: deleteUserIsLoading }] = useDeleteUserMutation()
+  const [deleteUser, { isLoading: deleteUserIsLoading }] = useDeleteUserMutation()
   const {
+    register,
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<Partial<UserType>>()
+  } = useForm<DeleteUserForm>()
 
   const handleCloseForm = () => {
     dispatch(userActions.setShowForms({ delete: false }))
   }
 
-  const onSubmit = async () => {
-    try {
-      await del(user.id).unwrap()
-      handleCloseForm()
-      dispatch(userActions.setSelected([]))
-      openSnackbar({
-        severity: 'success',
-        message: `User with id ${user.id} delete successfully.`,
+  const onSubmit = async (data: DeleteUserForm) => {
+    if (user.username !== data.username) {
+      setError('username', {
+        type: 'server',
+        message: 'Username is not match',
       })
-    } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
+    } else {
+      try {
+        await deleteUser(user.id).unwrap()
         openSnackbar({
-          severity: 'error',
-          message: msg,
+          severity: 'success',
+          message: `User with id ${user.id} delete successfully.`,
         })
+      } catch (e) {
+        const msg = handleError(e, setError)
+        if (msg) {
+          openSnackbar({
+            severity: 'error',
+            message: msg,
+          })
+        }
+      } finally {
+        handleCloseForm()
+        dispatch(userActions.setSelected([]))
       }
     }
   }
@@ -54,7 +67,7 @@ const UserDeleteForm = ({ user }: UserDeleteFormProps) => {
         sx={{ mt: 2 }}
       >
         <label>
-          You want to delete the user{' '}
+          Please enter{' '}
           <code
             style={{
               padding: '0 3px',
@@ -63,11 +76,25 @@ const UserDeleteForm = ({ user }: UserDeleteFormProps) => {
               color: '#e0143c',
             }}
           >
-            {user.username}
-          </code>
-          {'. '}
-          are you sure?
+            {user.username.toLowerCase()}
+          </code>{' '}
+          to confirm!
         </label>
+      </FormControl>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
+        <TextField
+          id='username'
+          label='Username'
+          variant='standard'
+          className='form-control'
+          autoComplete='off'
+          error={'username' in errors}
+          helperText={errors.username && (errors.username.message as string)}
+          {...register('username', { setValueAs: setStringOrNull })}
+        />
       </FormControl>
     </>
   )

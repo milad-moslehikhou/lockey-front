@@ -10,8 +10,19 @@ import FolderBreadcrumbs from '../../components/LocationBreadcrumbs/LocationBrea
 import CredentialsDataTable from '../../components/Credential/CredentialDataTable'
 import CredentialActionSelector from '../../components/Credential/CredentialActionSelector'
 import FolderActionSelector from '../../components/Folder/FolderActionSelector'
+import { credentialActions } from '../../features/credentialSlice'
+import { breadcrumbsActions } from '../../features/breadcrumbsSlice'
+import { useDispatch } from 'react-redux'
 
 const Passwords = () => {
+  const dispatch = useDispatch()
+  const handleOnSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const search = e.currentTarget.value.toLowerCase()
+    dispatch(credentialActions.setSearch(search))
+    if (search === '' || search === undefined) dispatch(breadcrumbsActions.setItems([]))
+    else dispatch(breadcrumbsActions.setItems([{ id: 'search', name: `Search: ${search}` }]))
+  }
+
   return (
     <Box
       sx={{
@@ -21,7 +32,7 @@ const Passwords = () => {
       }}
     >
       <Menubar />
-      <Appbar />
+      <Appbar onSearchInputChange={handleOnSearchInputChange} />
       <CredentialToolbar />
       <Box
         sx={{

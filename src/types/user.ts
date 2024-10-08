@@ -1,4 +1,4 @@
-import { FormsStateType } from './component'
+import { AutoCompleteFieldOptionsType, FormsStateType } from './component'
 
 export type UserType = {
   id: number
@@ -9,7 +9,7 @@ export type UserType = {
   avatar: string | File
   is_superuser: boolean
   is_active: boolean
-  groups: Array<number>
+  groups: number[] | AutoCompleteFieldOptionsType[]
   user_permissions: Array<any>
   last_login: Date
   date_joined: Date

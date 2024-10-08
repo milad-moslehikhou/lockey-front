@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Box, Divider, Avatar } from '@mui/material'
 import { formatDate } from '../../helpers/common'
 import type { UserType } from '../../types/user'
-import { useGetGroupsQuery } from '../../features/apiSlice'
+import { useGetGroupsQuery, useGetPermissionsQuery } from '../../features/apiSlice'
 import DetailRow from '../DetailRow/DetailRow'
 
 interface UserDetailProps {
@@ -11,6 +11,7 @@ interface UserDetailProps {
 
 const UserDetail = ({ user }: UserDetailProps) => {
   const { data: groups, isLoading: groupsIsLoading } = useGetGroupsQuery()
+  const { data: perms, isLoading: permsIsLoading } = useGetPermissionsQuery()
 
   return (
     <Box
@@ -99,7 +100,13 @@ const UserDetail = ({ user }: UserDetailProps) => {
         <Divider sx={{ margin: '1rem 0' }} />
         <DetailRow
           title='Permissions'
-          value={user.user_permissions.length > 0 ? user.user_permissions.join(', ') : ''}
+          value={
+            perms
+              ? permsIsLoading
+                ? 'loading...'
+                : user.user_permissions.map(up => perms.find(p => p.id === up)?.codename).join(', ')
+              : ''
+          }
         />
       </Box>
     </Box>

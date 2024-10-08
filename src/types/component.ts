@@ -44,3 +44,16 @@ export type AutoCompleteFieldOptionsType = {
   label: string
   value: any
 }
+
+declare const lengthRange: readonly [4, 5, 6, 7, 8]
+declare type TLength = (typeof lengthRange)[number]
+
+export type IUserOpt = {
+  type: 'mixed' | 'numeric' | 'alpha'
+  length?: TLength
+  sensitive?: boolean
+  width?: number
+  height?: number
+  fontColor?: string
+  background?: string
+}

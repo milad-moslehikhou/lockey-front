@@ -13,6 +13,7 @@ import GroupAdminToolbar from '../../components/GroupAdminToolbar/GroupAdminTool
 import { useDispatch } from 'react-redux'
 import { groupActions } from '../../features/groupSlice'
 import { userActions } from '../../features/userSlice'
+import { CaseReducerActions } from '@reduxjs/toolkit'
 
 interface AdminListItemType {
   name: 'user' | 'group'
@@ -20,6 +21,7 @@ interface AdminListItemType {
 
 const Administration = () => {
   const dispatch = useDispatch()
+  const [actions, setActions] = React.useState<any>()
   const [selectedItem, setSelectedItem] = React.useState<AdminListItemType>({ name: 'user' })
   const [toolbar, setToolbar] = React.useState<React.JSX.Element>()
   const [dataTable, setDataTable] = React.useState<React.JSX.Element>()
@@ -31,14 +33,21 @@ const Administration = () => {
     dispatch(userActions.setSelected([]))
   }
 
+  const handleOnSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const search = e.currentTarget.value.toLowerCase()
+    dispatch(actions.setSearch(search))
+  }
+
   React.useEffect(() => {
     switch (selectedItem.name) {
       case 'user':
+        setActions(userActions)
         setToolbar(<UserAdminToolbar />)
         setActionSelector(<UserActionSelector />)
         setDataTable(<UsersDataTable />)
         break
       case 'group':
+        setActions(groupActions)
         setToolbar(<GroupAdminToolbar />)
         setActionSelector(<GroupActionSelector />)
         setDataTable(<GroupsDataTable />)
@@ -55,7 +64,7 @@ const Administration = () => {
       }}
     >
       <Menubar />
-      <Appbar />
+      <Appbar onSearchInputChange={handleOnSearchInputChange} />
       {toolbar}
       <Box
         sx={{

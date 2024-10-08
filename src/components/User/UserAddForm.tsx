@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
 import { TextField, FormControlLabel, Switch, FormControl, Box, Button, Avatar } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
-import { useAddUserMutation, useGetGroupsQuery } from '../../features/apiSlice'
+import { useAddUserMutation, useGetGroupsQuery, useGetPermissionsQuery } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import type { UserType } from '../../types/user'
 import { userActions } from '../../features/userSlice'
@@ -14,16 +14,14 @@ import AutoCompleteField from '../AutoCompleteField/AutoCompleteField'
 import { AutoCompleteFieldOptionsType } from '../../types/component'
 import styled from '@emotion/styled'
 
-interface UserAddFromType extends UserType {
-  groupsOption: AutoCompleteFieldOptionsType[]
-}
-
 const UserAddForm = () => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
   const loggedInUser = useLoggedInUser()
   const { data: groups, isLoading: groupsIsLoading } = useGetGroupsQuery()
+  const { data: perms, isLoading: permsIsLoading } = useGetPermissionsQuery()
   const [groupOptions, setGroupOptions] = React.useState<AutoCompleteFieldOptionsType[]>([])
+  const [permOptions, setPermOptions] = React.useState<AutoCompleteFieldOptionsType[]>([])
   const [add, { isLoading: addUserIsLoading }] = useAddUserMutation()
 
   const {
@@ -34,7 +32,7 @@ const UserAddForm = () => {
     setValue,
     setError,
     formState: { errors },
-  } = useForm<Partial<UserAddFromType>>({
+  } = useForm<Partial<UserType>>({
     defaultValues: {
       is_active: false,
       groups: [],
@@ -44,7 +42,7 @@ const UserAddForm = () => {
   const handleCloseForm = () => {
     dispatch(userActions.setShowForms({ add: false }))
   }
-  const handleOnAutoCompleteValueChange = (newValue: AutoCompleteFieldOptionsType[]) => {
+  const handleOnGroupsValueChange = (newValue: AutoCompleteFieldOptionsType[]) => {
     if (groups) {
       const selectOptions = newValue.map(v => v.value)
       const filteredUsers = groups.filter(
@@ -56,12 +54,26 @@ const UserAddForm = () => {
         })
       )
     }
-    setValue('groupsOption', newValue)
+    setValue('groups', newValue)
+  }
+  const handleOnPermsValueChange = (newValue: AutoCompleteFieldOptionsType[]) => {
+    if (perms) {
+      const selectOptions = newValue.map(v => v.value)
+      const filteredUsers = perms.filter(u => !selectOptions.includes(u.id))
+      setPermOptions(
+        filteredUsers.map(f => {
+          return { label: f.codename, value: f.id }
+        })
+      )
+    }
+    setValue('user_permissions', newValue)
   }
   const handleOnGroupChange = (event: React.SyntheticEvent, newValue: AutoCompleteFieldOptionsType[]) => {
-    handleOnAutoCompleteValueChange(newValue)
+    handleOnGroupsValueChange(newValue)
   }
-
+  const handleOnPermChange = (event: React.SyntheticEvent, newValue: AutoCompleteFieldOptionsType[]) => {
+    handleOnPermsValueChange(newValue)
+  }
   const handleOnAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target && event.target.files && event.target.files.length > 0) {
       setValue('avatar', event.target.files[0])
@@ -71,9 +83,11 @@ const UserAddForm = () => {
   const onSubmit = async (data: Partial<UserType>) => {
     data = {
       ...data,
-      groups: groupOptions.map(g => g.value),
+      groups: data.groups && data.groups.map(g => (typeof g === 'number' ? g : g.value)),
+      user_permissions: data.user_permissions && data.user_permissions.map(p => (typeof p === 'number' ? p : p.value)),
     }
     try {
+      console.log(data)
       const addedUser = await add(data).unwrap()
       handleCloseForm()
       dispatch(userActions.setSelected([]))
@@ -94,20 +108,22 @@ const UserAddForm = () => {
 
   React.useEffect(() => {
     register('groups')
+    register('user_permissions')
     register('avatar')
   }, [register])
 
   React.useEffect(() => {
-    setGroupOptions(
-      groups
-        ? groups.map(g => {
-            return { label: g.name, value: g.id }
-          })
-        : []
-    )
+    if (!groupsIsLoading) handleOnGroupsValueChange([])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groups])
 
+  React.useEffect(() => {
+    if (!permsIsLoading) handleOnPermsValueChange([])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [perms])
+
   const groupsSelectedValue = watch('groups')
+  const permsSelectedValue = watch('user_permissions')
   const avatarValue = watch('avatar')
 
   const VisuallyHiddenInput = styled('input')({
@@ -231,6 +247,19 @@ const UserAddForm = () => {
               render={({ field }) => <Switch {...field} />}
             />
           }
+        />
+      </FormControl>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
+        <AutoCompleteField
+          label='Permissions'
+          value={permsSelectedValue}
+          error={'user_permissions' in errors}
+          helperText={errors.user_permissions && (errors.user_permissions.message as string)}
+          options={permOptions}
+          onChange={handleOnPermChange}
         />
       </FormControl>
       <FormControl

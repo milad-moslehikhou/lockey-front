@@ -1,10 +1,9 @@
 import * as React from 'react'
 import { Box, Link } from '@mui/material'
-import { apiSlice, useLogoutMutation } from '../../features/apiSlice'
+import { useLogoutMutation } from '../../features/apiSlice'
 import { useNavigate } from 'react-router-dom'
 import useSnackbar from '../../hooks/useSnackbar'
 import useAuth from '../../hooks/useAuth'
-import { useDispatch } from 'react-redux'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 
 const Menubar = () => {
@@ -13,7 +12,6 @@ const Menubar = () => {
   const [, setAuth] = useAuth()
   const navigate = useNavigate()
   const openSnackbar = useSnackbar()
-  const dispatch = useDispatch()
   const [logoutIsPending, setLogoutIsPending] = React.useState(false)
 
   const handleOnLogoutClick = async () => {
@@ -22,7 +20,6 @@ const Menubar = () => {
     try {
       await logout().unwrap()
       setAuth({ user: null, token: null, expiry: null })
-      dispatch(apiSlice.util.resetApiState())
       navigate('/login')
     } catch {
       openSnackbar({
