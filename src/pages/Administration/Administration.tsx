@@ -13,7 +13,6 @@ import GroupAdminToolbar from '../../components/GroupAdminToolbar/GroupAdminTool
 import { useDispatch } from 'react-redux'
 import { groupActions } from '../../features/groupSlice'
 import { userActions } from '../../features/userSlice'
-import { CaseReducerActions } from '@reduxjs/toolkit'
 
 interface AdminListItemType {
   name: 'user' | 'group'

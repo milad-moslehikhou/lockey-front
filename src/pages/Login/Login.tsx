@@ -90,8 +90,8 @@ const Login = () => {
             src={window.location.origin + '/logo-sm-512.png'}
             alt='logo'
           />
-          <p className='logo-header'>Lockey secure pass store</p>
-          <p className='logo-desc'>safely store important passwords in a safe place.</p>
+          <p className='logo-header'>Lockey secure secret store</p>
+          <p className='logo-desc'>safely store important secrets in a safe place.</p>
         </div>
         <div className='form-wraper'>
           <div className='form-header'>Welcome Back!</div>

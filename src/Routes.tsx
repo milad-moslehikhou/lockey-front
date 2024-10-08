@@ -4,7 +4,7 @@ import { PrivateOutlet } from './utils/PrivateOutlet'
 import useLoggedInUser from './hooks/useLoggedInUser'
 
 const Login = React.lazy(() => import('./pages/Login/Login'))
-const Credentials = React.lazy(() => import('./pages/Passwords/Passwords'))
+const Credentials = React.lazy(() => import('./pages/Credentials/Credentials'))
 const Administration = React.lazy(() => import('./pages/Administration/Administration'))
 const NotFound = React.lazy(() => import('./pages/NotFound/NotFound'))
 
