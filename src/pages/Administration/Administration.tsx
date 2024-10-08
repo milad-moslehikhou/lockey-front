@@ -25,6 +25,7 @@ const Administration = () => {
   const [toolbar, setToolbar] = React.useState<React.JSX.Element>()
   const [dataTable, setDataTable] = React.useState<React.JSX.Element>()
   const [actionSelector, setActionSelector] = React.useState<React.JSX.Element>()
+  const [searchText, setSearchText] = React.useState<string>('')
 
   const handleOnListItemChange = (event: React.MouseEvent<HTMLDivElement>, item: AdminListItemType) => {
     setSelectedItem(item)
@@ -34,6 +35,7 @@ const Administration = () => {
 
   const handleOnSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.currentTarget.value.toLowerCase()
+    setSearchText(search)
     dispatch(actions.setSearch(search))
   }
 
@@ -127,6 +129,17 @@ const Administration = () => {
             padding: '0 1rem',
           }}
         >
+          <Box
+            sx={{
+              fontWeight: '400',
+              fontSize: '1rem',
+              lineHeight: '1.5',
+              color: 'rgba(0, 0, 0, 0.6)',
+              margin: ' 12px 0',
+            }}
+          >
+            {searchText.length > 0 ? `Search: ${searchText}` : 'All Items'}
+          </Box>
           <Box
             sx={{
               height: 'calc(100% - 48px)',
