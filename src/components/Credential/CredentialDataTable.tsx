@@ -194,7 +194,7 @@ const CredentialsDataTable = () => {
         dispatch(credentialActions.setShowForms({ showSecret: true }))
       } else {
         openSnackbar({
-          severity: 'error',
+          severity: 'info',
           message: 'This credential does not have any secret.',
         })
       }

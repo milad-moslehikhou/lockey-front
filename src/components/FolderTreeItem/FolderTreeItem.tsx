@@ -30,7 +30,7 @@ const FolderTreeItem = ({ folder, disabledItem, menuItems }: FolderTreeItemProps
   return folder ? (
     <IconicTreeItem
       itemId={`${folder.id}`}
-      labelIcon={folder.is_public ? FolderSharedIcon : FolderIcon}
+      labelIcon={folder.is_public ? FolderIcon : FolderSharedIcon}
       labelText={folder.name}
       color={folder.color}
       disabled={folder.id === disabledItem ? true : false}
