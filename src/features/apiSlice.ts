@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { AuthType, LoginRequestType } from '../types/auth'
-import type { CredentialType, CredentialShareType, CredentialSecretType } from '../types/credential'
+import type {
+  CredentialType,
+  CredentialShareType,
+  CredentialSecretType,
+  CredentialGrantType,
+} from '../types/credential'
 import type { FolderType } from '../types/folder'
 import type { UserType } from '../types/user'
 import { GroupMemberType, GroupType } from '../types/group'
@@ -19,7 +24,16 @@ export const apiSlice = createApi({
       return headers
     },
   }),
-  tagTypes: ['Group', 'User', 'Permission', 'Credential', 'CredentialSecret', 'Folder'],
+  tagTypes: [
+    'Group',
+    'User',
+    'Permission',
+    'Credential',
+    'CredentialSecret',
+    'CredentialGrant',
+    'CredentialShare',
+    'Folder',
+  ],
   endpoints: builder => ({
     // Auth
     login: builder.mutation<AuthType, LoginRequestType>({
@@ -207,18 +221,25 @@ export const apiSlice = createApi({
     }),
     getCredentialSharesById: builder.query<CredentialShareType[], number>({
       query: id => `credentials/${id}/share/`,
-      providesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
+      providesTags: (result, error, arg) => [{ type: 'CredentialShare', id: arg }],
     }),
     getCredentialShares: builder.query<CredentialShareType[], void>({
       query: () => `credentials/all-shared/`,
       providesTags: result =>
         result
-          ? [...result.map(({ id }) => ({ type: 'Credential' as const, id })), { type: 'Credential', id: 'LIST' }]
-          : [{ type: 'Credential', id: 'LIST' }],
+          ? [
+              ...result.map(({ id }) => ({ type: 'CredentialShare' as const, id })),
+              { type: 'CredentialShare', id: 'LIST' },
+            ]
+          : [{ type: 'CredentialShare', id: 'LIST' }],
     }),
     getCredentialSecretById: builder.query<CredentialSecretType[], number>({
       query: id => `credentials/${id}/secret/`,
       providesTags: (result, error, arg) => [{ type: 'CredentialSecret', id: arg }],
+    }),
+    getCredentialGrantsById: builder.query<CredentialGrantType[], number>({
+      query: id => `credentials/${id}/grant/`,
+      providesTags: (result, error, arg) => [{ type: 'CredentialGrant', id: arg }],
     }),
     editCredential: builder.mutation<CredentialType, { id: number; data: Partial<CredentialType> }>({
       query: ({ id, data }) => ({
@@ -255,7 +276,15 @@ export const apiSlice = createApi({
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: ['Credential'],
+      invalidatesTags: ['CredentialShare'],
+    }),
+    editCredentialGrant: builder.mutation<CredentialGrantType, { id: number; data: Partial<CredentialGrantType>[] }>({
+      query: ({ id, data }) => ({
+        url: `credentials/${id}/grant/`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['CredentialGrant'],
     }),
   }),
 })
@@ -296,10 +325,12 @@ export const {
   useGetCredentialSharesQuery,
   useGetCredentialSharesByIdQuery,
   useGetCredentialSecretByIdQuery,
+  useGetCredentialGrantsByIdQuery,
   useLazyGetCredentialSecretByIdQuery,
   useEditCredentialMutation,
   useDeleteCredentialMutation,
   useAddCredentialFavoriteMutation,
   useDeleteCredentialFavoriteMutation,
   useEditCredentialShareMutation,
+  useEditCredentialGrantMutation,
 } = apiSlice

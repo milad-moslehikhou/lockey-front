@@ -11,6 +11,7 @@ import CredentialMoveForm from './CredentialMoveForm'
 import CredentialShareForm from './CredentialShareForm'
 import CredentialNewSecretForm from './CredentialNewSecretForm'
 import CredentialShowSecret from './CredentialShowSecret'
+import CredentialGrantForm from './CredentialGrantForm'
 
 const CredentialActionSelector = () => {
   const credentialSelected = useSelector(selectCredentialSelected)
@@ -29,6 +30,7 @@ const CredentialActionSelector = () => {
     <>
       {credentialShowForms.detail && credentialIsValid ? <CredentialDetail credential={credential} /> : ''}
       {credentialShowForms.edit && credentialIsValid ? <CredentialEditForm credential={credential} /> : ''}
+      {credentialShowForms.grant && credentialIsValid ? <CredentialGrantForm credential={credential} /> : ''}
       {credentialShowForms.delete && credentialIsValid ? <CredentialDeleteForm credential={credential} /> : ''}
       {credentialShowForms.share && credentialIsValid ? <CredentialShareForm credential={credential} /> : ''}
       {credentialShowForms.addSecret && credentialIsValid ? <CredentialNewSecretForm credential={credential} /> : ''}

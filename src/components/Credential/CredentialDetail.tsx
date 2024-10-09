@@ -3,7 +3,13 @@ import { Box, Typography, Divider, Stack, Chip } from '@mui/material'
 import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import ForwardIcon from '@mui/icons-material/Forward'
 import { formatDate } from '../../helpers/common'
-import { useGetCredentialSharesByIdQuery, useGetFoldersQuery, useGetUsersQuery } from '../../features/apiSlice'
+import {
+  useGetCredentialGrantsByIdQuery,
+  useGetCredentialSharesByIdQuery,
+  useGetFoldersQuery,
+  useGetGroupsQuery,
+  useGetUsersQuery,
+} from '../../features/apiSlice'
 import type { CredentialType } from '../../types/credential'
 import DetailRow from '../DetailRow/DetailRow'
 
@@ -14,7 +20,9 @@ interface CredentialDetailProps {
 const CredentialDetail = ({ credential }: CredentialDetailProps) => {
   const { data: folders, isLoading: foldersIsLoading } = useGetFoldersQuery()
   const { data: users, isLoading: usersIsLoading } = useGetUsersQuery()
+  const { data: groups, isLoading: groupsIsLoading } = useGetGroupsQuery()
   const { data: credentialShares } = useGetCredentialSharesByIdQuery(credential.id)
+  const { data: credentialGrants } = useGetCredentialGrantsByIdQuery(credential.id)
 
   const getLocation = (id: number, location: string[] = []) => {
     let tempLocation = [...location]
@@ -221,6 +229,24 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
             <DetailRow
               title='Until'
               value={formatDate(credentialShares[0].until)}
+            />
+          </>
+        )}
+        {groups && credentialGrants && credentialGrants.length > 0 && (
+          <>
+            <Divider sx={{ margin: '1rem 0' }} />
+            <DetailRow
+              title='Grants'
+              value={credentialGrants
+                .map(cg => {
+                  let ret = ''
+                  const groupName = groups && groups.find(g => g.id === cg.group)?.name
+                  if (groupName) ret = ret.concat(`${groupName}(${cg.action.toLowerCase()})`)
+                  const userName = users && users.find(u => u.id === cg.user)?.username
+                  if (userName) ret = ret.concat(`${userName}(${cg.action.toLowerCase()})`)
+                  return ret
+                })
+                .join('\n')}
             />
           </>
         )}

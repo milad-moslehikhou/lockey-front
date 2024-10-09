@@ -8,9 +8,10 @@ import ShareIcon from '@mui/icons-material/Share'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import InfoIcon from '@mui/icons-material/Info'
+import PasswordIcon from '@mui/icons-material/Password'
+import ShieldIcon from '@mui/icons-material/Shield'
 import { credentialActions, selectCredentialShowForms, selectCredentialSelected } from '../../features/credentialSlice'
 import { folderActions } from '../../features/folderSlice'
-import { Password } from '@mui/icons-material'
 import ToolbarContainer from '../ToolbarContainer/ToolbarContainer'
 
 const CredentialToolbar = () => {
@@ -95,6 +96,15 @@ const CredentialToolbar = () => {
         <Button
           variant='outlined'
           size='small'
+          startIcon={<ShieldIcon />}
+          disabled={credentialSelected.length !== 1}
+          onClick={() => dispatch(credentialActions.setShowForms({ grant: true }))}
+        >
+          Grant
+        </Button>
+        <Button
+          variant='outlined'
+          size='small'
           startIcon={<ShareIcon />}
           disabled={credentialSelected.length !== 1}
           onClick={() => dispatch(credentialActions.setShowForms({ share: true }))}
@@ -104,7 +114,7 @@ const CredentialToolbar = () => {
         <Button
           variant='outlined'
           size='small'
-          startIcon={<Password />}
+          startIcon={<PasswordIcon />}
           disabled={credentialSelected.length !== 1}
           onClick={() => dispatch(credentialActions.setShowForms({ addSecret: true }))}
         >

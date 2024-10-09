@@ -22,7 +22,9 @@ const DetailRow = ({ title, value }: { title: string; value: any }) => {
           />
         )
     } else {
-      return <Typography sx={{ width: '10vw', textWrap: 'pretty' }}>{_.toString(value)}</Typography>
+      return (
+        <Typography sx={{ maxwidth: '20vw', textWrap: 'wrap', whiteSpace: 'pre-wrap' }}>{_.toString(value)}</Typography>
+      )
     }
   }
 

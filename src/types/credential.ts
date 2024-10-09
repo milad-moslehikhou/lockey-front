@@ -51,3 +51,11 @@ export type CredentialSecretType = {
   created_by: number
   created_at: Date
 }
+
+export type CredentialGrantType = {
+  id: number
+  credential: number
+  group?: number
+  user?: number
+  action: 'VIEW' | 'MODIFY'
+}
