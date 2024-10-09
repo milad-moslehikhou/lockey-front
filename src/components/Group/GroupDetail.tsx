@@ -76,7 +76,7 @@ const GroupDetail = ({ group }: GroupDetailProps) => {
             perms
               ? permsIsLoading
                 ? 'loading...'
-                : group.permissions.map(gp => perms.find(p => p.id === gp)?.codename).join(', ')
+                : group.permissions.map(gp => perms.find(p => p.id === gp)?.codename).join('\n')
               : ''
           }
         />

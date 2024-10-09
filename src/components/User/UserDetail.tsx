@@ -93,7 +93,7 @@ const UserDetail = ({ user }: UserDetailProps) => {
                     .map(ug => {
                       return groups.find(g => g.id === ug)?.name
                     })
-                    .join(', ')
+                    .join('\n')
               : ''
           }
         />
@@ -104,7 +104,7 @@ const UserDetail = ({ user }: UserDetailProps) => {
             perms
               ? permsIsLoading
                 ? 'loading...'
-                : user.user_permissions.map(up => perms.find(p => p.id === up)?.codename).join(', ')
+                : user.user_permissions.map(up => perms.find(p => p.id === up)?.codename).join('\n')
               : ''
           }
         />

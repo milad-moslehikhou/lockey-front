@@ -23,7 +23,6 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import FormDialog from '../FormDialog/FormDialog'
 import {
   useEditCredentialGrantMutation,
-  useEditCredentialShareMutation,
   useGetCredentialGrantsByIdQuery,
   useGetGroupsQuery,
   useGetUsersQuery,
@@ -125,6 +124,16 @@ const CredentialGrantForm = ({ credential }: CredentialGrantFormProps) => {
   React.useEffect(() => {
     credentialGrants && setGrants(credentialGrants)
   }, [credentialGrants])
+
+  React.useEffect(() => {
+    if (errors) {
+      openSnackbar({
+        severity: 'error',
+        message: 'Something has wrong.',
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errors])
 
   const form = (
     <>
@@ -234,7 +243,7 @@ const CredentialGrantForm = ({ credential }: CredentialGrantFormProps) => {
                 </TableCell>
                 <TableCell>{users && users.find(u => u.id === row.user)?.username}</TableCell>
                 <TableCell>{row.action}</TableCell>
-                <TableCell>
+                <TableCell padding='checkbox'>
                   <IconButton
                     aria-label='delete'
                     size='small'
