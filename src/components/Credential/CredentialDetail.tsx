@@ -19,8 +19,8 @@ interface CredentialDetailProps {
 
 const CredentialDetail = ({ credential }: CredentialDetailProps) => {
   const { data: folders, isLoading: foldersIsLoading } = useGetFoldersQuery()
-  const { data: users, isLoading: usersIsLoading } = useGetUsersQuery()
-  const { data: groups, isLoading: groupsIsLoading } = useGetGroupsQuery()
+  const { data: users } = useGetUsersQuery()
+  const { data: groups } = useGetGroupsQuery()
   const { data: credentialShares } = useGetCredentialSharesByIdQuery(credential.id)
   const { data: credentialGrants } = useGetCredentialGrantsByIdQuery(credential.id)
 
@@ -257,7 +257,7 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
         />
         <DetailRow
           title='Modified by '
-          value={usersIsLoading ? 'loading...' : users && users.find(u => u.id === credential.modified_by)?.username}
+          value={users && users.find(u => u.id === credential.modified_by)?.username}
         />
         <DetailRow
           title='Created'
@@ -265,7 +265,7 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
         />
         <DetailRow
           title='Created by'
-          value={usersIsLoading ? 'loading...' : users && users.find(u => u.id === credential.created_by)?.username}
+          value={users && users.find(u => u.id === credential.created_by)?.username}
         />
       </Box>
     </Box>
