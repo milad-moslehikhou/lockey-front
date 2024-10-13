@@ -6,7 +6,7 @@ import FormDialog from '../FormDialog/FormDialog'
 import { useAddGroupMutation, useGetPermissionsQuery, useGetUsersQuery } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import { groupActions } from '../../features/groupSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import { AutoCompleteFieldOptionsType } from '../../types/component'
 import { GroupMemberType } from '../../types/group'
 import AutoCompleteField from '../AutoCompleteField/AutoCompleteField'
@@ -86,13 +86,7 @@ const GroupAddForm = () => {
         message: `Group with id ${addedGroup.id} successfully added.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
-      }
+      handleException(e, openSnackbar, setError)
     }
   }
 

@@ -1,25 +1,43 @@
 import _ from 'lodash'
+import { UseFormSetError } from 'react-hook-form'
 
 export const setStringOrNull = (v: unknown) => {
   if (_.isString(v) && _.isEmpty(v)) return undefined
   else return v
 }
 
-export const handleError = (e: any, setError: any) => {
-  const error = e.data || e.error
-  console.log(typeof error, e)
-  if (!error) return 'Something is wrong!'
-  if (typeof error === 'string') return error
-  if ('non_field_errors' in error) return error.non_field_errors.join(' ')
-  if ('errors' in error) return error.errors.map((err: any) => err.detail).join(' ')
-  if ('error' in error) return error.error
-  if ('message' in error) return error.message
-  Object.keys(error).forEach(field => {
-    const messages = error[field]
-    setError(field, {
-      type: 'server',
-      message: Array.isArray(messages) ? messages.join(' ') : messages,
-    })
-  })
+export const handleException = (ex: any, snackbarFn: any, setError?: UseFormSetError<any>) => {
+  console.log(ex)
+  if (ex && ex.data && ex.data.type) {
+    switch (ex.data.type) {
+      case 'validation_error':
+        ex.data.errors.forEach((e: any) => {
+          if (e.code === 'authorization')
+            snackbarFn({
+              severity: 'error',
+              message: e.detail,
+            })
+          else
+            setError &&
+              setError(e.attr, {
+                type: 'server',
+                message: e.detail,
+              })
+        })
+        break
+      case 'client_error':
+        snackbarFn({
+          severity: 'error',
+          message: ex.data.errors.map((e: any) => e.detail).join('\n'),
+        })
+        break
+      case 'server_error':
+        snackbarFn({
+          severity: 'error',
+          message: ex.data.errors.map((e: any) => e.detail).join('\n'),
+        })
+        break
+    }
+  }
   return null
 }

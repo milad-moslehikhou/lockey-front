@@ -7,7 +7,7 @@ import { useAddFolderMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import type { FolderType } from '../../types/folder'
 import { credentialActions } from '../../features/credentialSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 import { folderActions, selectFolderHovered } from '../../features/folderSlice'
 import ColorPickerField from '../ColorPickerField/ColorPickerField'
@@ -51,7 +51,6 @@ const FolderAddForm = () => {
       user: loggedInUser?.id,
     }
     try {
-      console.log(data)
       const addedFolder = await add(data).unwrap()
       handleCloseForm()
       dispatch(credentialActions.setSelected([]))
@@ -60,13 +59,7 @@ const FolderAddForm = () => {
         message: `Folder with id ${addedFolder.id} successfully added.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
-      }
+      handleException(e, openSnackbar, setError)
     }
   }
 

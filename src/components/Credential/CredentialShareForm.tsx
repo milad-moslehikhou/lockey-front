@@ -13,7 +13,7 @@ import {
 } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import { credentialActions } from '../../features/credentialSlice'
-import { handleError } from '../../helpers/form'
+import { handleException } from '../../helpers/form'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 import AutoCompleteField from '../AutoCompleteField/AutoCompleteField'
 import { AutoCompleteFieldOptionsType } from '../../types/component'
@@ -32,13 +32,13 @@ interface CredentialShareFormType {
   shared_with: AutoCompleteFieldOptionsType[]
 }
 
-const CredentialShareForm = ({credential}: CredentialShareFormProps) => {
+const CredentialShareForm = ({ credential }: CredentialShareFormProps) => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
-  const {data: users, isLoading: usersIsLoading} = useGetUsersQuery()
+  const { data: users, isLoading: usersIsLoading } = useGetUsersQuery()
   const loggedInUser = useLoggedInUser()
   const [edit, { isLoading: editCredentialShareIsLoading }] = useEditCredentialShareMutation()
-  const {data: credentialShare, isLoading: credentialShareIsLoading} = useGetCredentialSharesByIdQuery(credential.id)
+  const { data: credentialShare, isLoading: credentialShareIsLoading } = useGetCredentialSharesByIdQuery(credential.id)
   const [userOptions, setUserOptions] = React.useState<AutoCompleteFieldOptionsType[]>([])
   const {
     register,
@@ -59,10 +59,16 @@ const CredentialShareForm = ({credential}: CredentialShareFormProps) => {
   }
 
   const handleOnAutoCompleteValueChange = (newValue: AutoCompleteFieldOptionsType[]) => {
-    if(users) {
+    if (users) {
       const selectOptions = newValue.map(v => v.value)
-      const filteredUsers = users.filter(u => !(loggedInUser && u.id === loggedInUser.id) && !selectOptions.includes(u.id))
-      setUserOptions(filteredUsers.map(f =>{ return { label: f.username, value: f.id } }))
+      const filteredUsers = users.filter(
+        u => !(loggedInUser && u.id === loggedInUser.id) && !selectOptions.includes(u.id)
+      )
+      setUserOptions(
+        filteredUsers.map(f => {
+          return { label: f.username, value: f.id }
+        })
+      )
     }
     setValue('shared_with', newValue)
   }
@@ -74,32 +80,38 @@ const CredentialShareForm = ({credential}: CredentialShareFormProps) => {
   const handelOnDateTimeChange = (newValue: Moment | null) => {
     setValue('until', newValue)
   }
-  
+
   React.useEffect(() => {
     register('shared_with')
     register('until')
   }, [register])
 
   React.useEffect(() => {
-    setUserOptions(users? users.filter(u => !(loggedInUser && u.id === loggedInUser.id)).map(u => {
-        return { label: u.username, value: u.id }
-      }): 
-    [])
+    setUserOptions(
+      users
+        ? users
+            .filter(u => !(loggedInUser && u.id === loggedInUser.id))
+            .map(u => {
+              return { label: u.username, value: u.id }
+            })
+        : []
+    )
   }, [users, loggedInUser])
 
   React.useEffect(() => {
-    if(!usersIsLoading) {
+    if (!usersIsLoading) {
       const ops: AutoCompleteFieldOptionsType[] = []
       credentialShare?.forEach(s => {
-        if(typeof s.shared_with === 'number') {
+        if (typeof s.shared_with === 'number') {
           const filteredUser = users?.find(u => u.id === s.shared_with)
-          filteredUser && ops.push({label: filteredUser.username, value: filteredUser.id} as AutoCompleteFieldOptionsType)
+          filteredUser &&
+            ops.push({ label: filteredUser.username, value: filteredUser.id } as AutoCompleteFieldOptionsType)
         }
       })
       handleOnAutoCompleteValueChange(ops)
     }
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, credentialShare])
 
   const usersSelectedValue = watch('shared_with')
@@ -111,9 +123,9 @@ const CredentialShareForm = ({credential}: CredentialShareFormProps) => {
       credential: credential.id,
       shared_by: loggedInUser?.id,
     }
-    
+
     let newData: CredentialShareType[] = []
-    if(typeof data.shared_with !== 'number') {
+    if (typeof data.shared_with !== 'number') {
       data.shared_with?.forEach(s => {
         newData.push({
           id: data.id,
@@ -126,21 +138,15 @@ const CredentialShareForm = ({credential}: CredentialShareFormProps) => {
     }
 
     try {
-      await edit({id: credential.id, data: newData}).unwrap()
+      await edit({ id: credential.id, data: newData }).unwrap()
       handleCloseForm()
       dispatch(credentialActions.setSelected([]))
       openSnackbar({
         severity: 'success',
-        message: `Credential with id ${credential.id} share successfully.`,
+        message: `Credential [${credential.id}] sharing mode, successfully modified.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
-      }
+      handleException(e, openSnackbar, setError)
     }
   }
 
@@ -172,10 +178,10 @@ const CredentialShareForm = ({credential}: CredentialShareFormProps) => {
             value={dateTimePickerValue}
             onChange={handelOnDateTimeChange}
             slotProps={{
-              textField : {
+              textField: {
                 error: 'until' in errors,
-                helperText: errors.until && (errors.until.message as string)
-              }
+                helperText: errors.until && (errors.until.message as string),
+              },
             }}
           />
         </LocalizationProvider>

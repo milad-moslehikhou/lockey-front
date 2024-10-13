@@ -1,3 +1,4 @@
+import UserSetPasswordForm from '../components/User/UserSetPasswordForm'
 import { AutoCompleteFieldOptionsType, FormsStateType } from './component'
 
 export type UserType = {
@@ -20,4 +21,15 @@ export type UserStateType = {
   forms: FormsStateType
   search: string
   filter: string
+}
+
+export type UserSetPassFromType = {
+  new_password1: string
+  new_password2: string
+}
+
+export type UserChangePassFormType = {
+  old_password: string
+  new_password1: string
+  new_password2: string
 }

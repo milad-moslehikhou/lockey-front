@@ -29,7 +29,7 @@ import {
 } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import { credentialActions } from '../../features/credentialSlice'
-import { handleError } from '../../helpers/form'
+import { handleException } from '../../helpers/form'
 import { CredentialType, CredentialGrantType } from '../../types/credential'
 
 interface CredentialGrantFormProps {
@@ -111,29 +111,13 @@ const CredentialGrantForm = ({ credential }: CredentialGrantFormProps) => {
         message: `Credential with id ${credential.id} grant successfully.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
-      }
+      handleException(e, openSnackbar, setError)
     }
   }
 
   React.useEffect(() => {
     credentialGrants && setGrants(credentialGrants)
   }, [credentialGrants])
-
-  React.useEffect(() => {
-    if (errors) {
-      openSnackbar({
-        severity: 'error',
-        message: 'Something has wrong.',
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [errors])
 
   const form = (
     <>

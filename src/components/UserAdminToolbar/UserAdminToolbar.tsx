@@ -52,7 +52,7 @@ const UserAdminToolbar = () => {
           size='small'
           startIcon={<Password />}
           disabled={userSelected.length !== 1}
-          onClick={() => dispatch(userActions.setShowForms({ setPass: true }))}
+          onClick={() => dispatch(userActions.setShowForms({ resetPass: true }))}
         >
           Set Password
         </Button>

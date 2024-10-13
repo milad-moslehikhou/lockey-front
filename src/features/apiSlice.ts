@@ -7,7 +7,7 @@ import type {
   CredentialGrantType,
 } from '../types/credential'
 import type { FolderType } from '../types/folder'
-import type { UserType } from '../types/user'
+import type { UserChangePassFormType, UserSetPassFromType, UserType } from '../types/user'
 import { GroupMemberType, GroupType } from '../types/group'
 import { serialize } from 'object-to-formdata'
 import { PermissionType } from '../types/permission'
@@ -115,7 +115,7 @@ export const apiSlice = createApi({
         return {
           url: 'users/',
           method: 'POST',
-          body: serialize(data, { allowEmptyArrays: true, dotsForObjectNotation: true }),
+          body: serialize(data, { dotsForObjectNotation: true }),
         }
       },
       invalidatesTags: ['User'],
@@ -124,13 +124,21 @@ export const apiSlice = createApi({
       query: ({ id, data }) => ({
         url: `users/${id}/`,
         method: 'PATCH',
-        body: serialize(data, { allowEmptyArrays: true, dotsForObjectNotation: true }),
+        body: serialize(data, { dotsForObjectNotation: true }),
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'User', id: arg.id }],
     }),
-    setUserPass: builder.mutation<void, { id: number; data: Partial<UserType> }>({
+    resetUserPass: builder.mutation<void, { id: number; data: Partial<UserSetPassFromType> }>({
       query: ({ id, data }) => ({
         url: `users/${id}/set-password/`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'User', id: arg.id }],
+    }),
+    changeUserPass: builder.mutation<void, { id: number; data: Partial<UserChangePassFormType> }>({
+      query: ({ id, data }) => ({
+        url: `users/${id}/change-password/`,
         method: 'POST',
         body: data,
       }),
@@ -306,7 +314,8 @@ export const {
   // User
   useAddUserMutation,
   useEditUserMutation,
-  useSetUserPassMutation,
+  useResetUserPassMutation,
+  useChangeUserPassMutation,
   useGetUsersQuery,
   useGetUserByIdQuery,
   useDeleteUserMutation,

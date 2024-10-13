@@ -8,7 +8,7 @@ import { useEditCredentialMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import type { CredentialType } from '../../types/credential'
 import { credentialActions } from '../../features/credentialSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 
 interface CredentialEditFormProps {
@@ -56,13 +56,7 @@ const CredentialEditForm = ({ credential }: CredentialEditFormProps) => {
         message: `Credential with id ${credential.id} update successfully.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
-      }
+      handleException(e, openSnackbar, setError)
     }
   }
 

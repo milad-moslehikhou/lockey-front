@@ -6,7 +6,7 @@ import FormDialog from '../FormDialog/FormDialog'
 import { useDeleteUserMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import { userActions } from '../../features/userSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import { UserType } from '../../types/user'
 
 interface UserDeleteFormProps {
@@ -46,13 +46,7 @@ const UserDeleteForm = ({ user }: UserDeleteFormProps) => {
           message: `User with id ${user.id} delete successfully.`,
         })
       } catch (e) {
-        const msg = handleError(e, setError)
-        if (msg) {
-          openSnackbar({
-            severity: 'error',
-            message: msg,
-          })
-        }
+        handleException(e, openSnackbar, setError)
       } finally {
         handleCloseForm()
         dispatch(userActions.setSelected([]))

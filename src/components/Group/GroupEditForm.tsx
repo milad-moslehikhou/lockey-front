@@ -12,7 +12,7 @@ import {
 import useSnackbar from '../../hooks/useSnackbar'
 import type { GroupType, GroupMemberType } from '../../types/group'
 import { groupActions } from '../../features/groupSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import AutoCompleteField from '../AutoCompleteField/AutoCompleteField'
 import { AutoCompleteFieldOptionsType } from '../../types/component'
 
@@ -98,13 +98,7 @@ const GroupEditForm = ({ group }: GroupEditFormProps) => {
         message: `Group with id ${group.id} update successfully.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
-      }
+      handleException(e, openSnackbar, setError)
     }
   }
 

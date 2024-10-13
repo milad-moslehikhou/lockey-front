@@ -27,7 +27,7 @@ const UserActionSelector = () => {
       {userShowForms.detail && userIsValid ? <UserDetail user={user} /> : ''}
       {userShowForms.edit && userIsValid ? <UserEditForm user={user} /> : ''}
       {userShowForms.delete && userIsValid ? <UserDeleteForm user={user} /> : ''}
-      {userShowForms.setPass && userIsValid ? <UserSetPasswordForm user={user} /> : ''}
+      {userShowForms.resetPass && userIsValid ? <UserSetPasswordForm user={user} /> : ''}
       {userShowForms.add ? <UserAddForm /> : ''}
     </>
   )

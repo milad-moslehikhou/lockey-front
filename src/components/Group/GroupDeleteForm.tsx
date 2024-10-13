@@ -6,7 +6,7 @@ import FormDialog from '../FormDialog/FormDialog'
 import { useDeleteGroupMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import { groupActions } from '../../features/groupSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import { GroupType } from '../../types/group'
 
 interface GroupDeleteFormProps {
@@ -46,13 +46,7 @@ const GroupDeleteForm = ({ group }: GroupDeleteFormProps) => {
           message: `Group with id ${group.id} delete successfully.`,
         })
       } catch (e) {
-        const msg = handleError(e, setError)
-        if (msg) {
-          openSnackbar({
-            severity: 'error',
-            message: msg,
-          })
-        }
+        handleException(e, openSnackbar, setError)
       } finally {
         handleCloseForm()
         dispatch(groupActions.setSelected([]))

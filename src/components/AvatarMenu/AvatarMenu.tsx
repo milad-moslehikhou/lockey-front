@@ -3,17 +3,26 @@ import { Box, Avatar, Typography, Button, Menu, MenuItem } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { stringToColor } from '../../helpers/common'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectUserShowForms, userActions } from '../../features/userSlice'
+import UserChangePasswordForm from '../User/UserChangePasswordForm'
 
 const AvatarMenu = () => {
   const loggedInUser = useLoggedInUser()
+  const dispatch = useDispatch()
+  const userShowForms = useSelector(selectUserShowForms)
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleOnChangePassowrd = () => {
+    handleClose()
+    dispatch(userActions.setShowForms({ changePass: true }))
   }
 
   let displayName = '  '
@@ -107,8 +116,9 @@ const AvatarMenu = () => {
         }}
       >
         <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>Theme</MenuItem>
+        <MenuItem onClick={handleOnChangePassowrd}>Change Password</MenuItem>
       </Menu>
+      {userShowForms.changePass && loggedInUser ? <UserChangePasswordForm user={loggedInUser} /> : ''}
     </>
   )
 }

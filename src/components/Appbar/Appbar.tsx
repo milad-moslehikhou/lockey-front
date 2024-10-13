@@ -32,7 +32,7 @@ const Appbar = ({ onSearchInputChange }: IAppbarProps) => {
           <img
             src={window.location.origin + '/logo-lg-512.png'}
             alt='logo'
-            height={32}
+            height={56}
           />
         </Link>
       </Box>

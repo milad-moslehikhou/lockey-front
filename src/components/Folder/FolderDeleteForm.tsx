@@ -6,12 +6,16 @@ import FormDialog from '../FormDialog/FormDialog'
 import { useDeleteFolderMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import { folderActions } from '../../features/folderSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import { FolderType } from '../../types/folder'
 import { credentialActions } from '../../features/credentialSlice'
 
 interface FolderDeleteFormProps {
   folder: FolderType
+}
+
+interface DeleteFolderForm {
+  name: string
 }
 
 const FolderDeleteForm = ({ folder }: FolderDeleteFormProps) => {
@@ -23,30 +27,31 @@ const FolderDeleteForm = ({ folder }: FolderDeleteFormProps) => {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm()
+  } = useForm<DeleteFolderForm>()
 
   const handleCloseForm = () => {
     dispatch(folderActions.setShowForms({ delete: false }))
   }
 
-  const onSubmit = async () => {
-    try {
-      await del(folder.id).unwrap()
-      openSnackbar({
-        severity: 'success',
-        message: `Folder with id ${folder.id} delete successfully.`,
+  const onSubmit = async (data: DeleteFolderForm) => {
+    if (folder.name !== data.name) {
+      setError('name', {
+        type: 'server',
+        message: 'Name is not match',
       })
-    } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
+    } else {
+      try {
+        await del(folder.id).unwrap()
         openSnackbar({
-          severity: 'error',
-          message: msg,
+          severity: 'success',
+          message: `Folder with id ${folder.id} delete successfully.`,
         })
+      } catch (e) {
+        handleException(e, openSnackbar, setError)
+      } finally {
+        handleCloseForm()
+        dispatch(credentialActions.setSelected([]))
       }
-    } finally {
-      handleCloseForm()
-      dispatch(credentialActions.setSelected([]))
     }
   }
 

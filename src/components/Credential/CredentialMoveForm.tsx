@@ -11,7 +11,7 @@ import { credentialActions, selectCredentialSelected } from '../../features/cred
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 import FolderTreeView from '../FolderTreeView/FolderTreeView'
 import useLoading from '../../hooks/useLoading'
-import { handleError } from '../../helpers/form'
+import { handleException } from '../../helpers/form'
 
 const CredentialMoveForm = () => {
   const dispatch = useDispatch()
@@ -46,15 +46,9 @@ const CredentialMoveForm = () => {
       credentialsId.forEach(async id => {
         try {
           await edit({ id: _.toInteger(id), data }).unwrap()
-          setMovedCredenrialIds([
-            ...movedCredenrialIds,
-            id
-          ])
+          setMovedCredenrialIds([...movedCredenrialIds, id])
         } catch (e) {
-          setNotMovedCredenrialIds([
-            ...notMovedCredenrialIds,
-            id
-          ])
+          setNotMovedCredenrialIds([...notMovedCredenrialIds, id])
         }
       })
       handleCloseForm()
@@ -69,11 +63,7 @@ const CredentialMoveForm = () => {
         message: `Credential(s) with id ${movedCredenrialIds.join(', ')} moved successfully.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      openSnackbar({
-        severity: 'error',
-        message: msg,
-      })
+      handleException(e, openSnackbar, setError)
     }
   }
 

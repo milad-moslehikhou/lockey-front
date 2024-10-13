@@ -6,7 +6,7 @@ import FormDialog from '../FormDialog/FormDialog'
 import { useDeleteCredentialMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import { credentialActions } from '../../features/credentialSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import { CredentialType } from '../../types/credential'
 
 interface CredentialDeleteFormProps {
@@ -48,13 +48,7 @@ const CredentialDeleteForm = ({ credential }: CredentialDeleteFormProps) => {
           message: `Credential with id ${credential.id} delete successfully.`,
         })
       } catch (e) {
-        const msg = handleError(e, setError)
-        if (msg) {
-          openSnackbar({
-            severity: 'error',
-            message: msg,
-          })
-        }
+        handleException(e, openSnackbar, setError)
       }
     }
   }

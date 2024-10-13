@@ -8,7 +8,7 @@ import { useEditUserMutation, useGetGroupsQuery, useGetPermissionsQuery } from '
 import useSnackbar from '../../hooks/useSnackbar'
 import type { UserType } from '../../types/user'
 import { userActions } from '../../features/userSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 import AutoCompleteField from '../AutoCompleteField/AutoCompleteField'
 import { AutoCompleteFieldOptionsType } from '../../types/component'
@@ -47,11 +47,9 @@ const UserEditForm = ({ user }: UserEditFormPropsType) => {
   const handleOnGroupsValueChange = (newValue: AutoCompleteFieldOptionsType[]) => {
     if (groups) {
       const selectOptions = newValue.map(v => v.value)
-      const filteredUsers = groups.filter(
-        u => !(loggedInUser && u.id === loggedInUser.id) && !selectOptions.includes(u.id)
-      )
+      const filteredGroups = groups.filter(g => !selectOptions.includes(g.id))
       setGroupOptions(
-        filteredUsers.map(g => {
+        filteredGroups.map(g => {
           return { label: g.name, value: g.id }
         })
       )
@@ -61,10 +59,10 @@ const UserEditForm = ({ user }: UserEditFormPropsType) => {
   const handleOnPermsValueChange = (newValue: AutoCompleteFieldOptionsType[]) => {
     if (perms) {
       const selectOptions = newValue.map(v => v.value)
-      const filteredUsers = perms.filter(u => !selectOptions.includes(u.id))
+      const filteredPerms = perms.filter(p => !selectOptions.includes(p.id))
       setPermOptions(
-        filteredUsers.map(f => {
-          return { label: f.codename, value: f.id }
+        filteredPerms.map(p => {
+          return { label: p.codename, value: p.id }
         })
       )
     }
@@ -99,13 +97,7 @@ const UserEditForm = ({ user }: UserEditFormPropsType) => {
         message: `User with id ${editedUser.id} update successfully.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
-      }
+      handleException(e, openSnackbar, setError)
     }
   }
 

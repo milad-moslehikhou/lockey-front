@@ -7,7 +7,7 @@ import { useAddCredentialSecretMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import type { CredentialSecretType, CredentialType } from '../../types/credential'
 import { credentialActions } from '../../features/credentialSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import moment, { Moment } from 'moment'
@@ -18,12 +18,12 @@ interface CredentialNewSecretFormProps {
 }
 
 interface CredentialAddSecretFormType {
-  id: number,
-  credential: number,
-  password: string,
-  expire_at: Moment | null,
-  created_by: number | null,
-  created_at: Moment | null,
+  id: number
+  credential: number
+  password: string
+  expire_at: Moment | null
+  created_by: number | null
+  created_at: Moment | null
 }
 
 const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) => {
@@ -40,8 +40,8 @@ const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) =
     formState: { errors },
   } = useForm<Partial<CredentialAddSecretFormType>>({
     defaultValues: {
-      expire_at: moment().add(90, 'days')
-    }
+      expire_at: moment().add(90, 'days'),
+    },
   })
 
   const handleCloseForm = () => {
@@ -51,11 +51,11 @@ const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) =
   const dateTimePickerValue = watch('expire_at')
 
   const onSubmit = async (data: Partial<CredentialAddSecretFormType>) => {
-    const newData : Partial<CredentialSecretType> = {
+    const newData: Partial<CredentialSecretType> = {
       credential: credential.id,
       password: data.password,
       expire_at: data.expire_at?.toDate(),
-      created_by: loggedInUser? loggedInUser.id: -1,
+      created_by: loggedInUser ? loggedInUser.id : -1,
     }
 
     console.log(newData)
@@ -68,13 +68,7 @@ const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) =
         message: `Secret add successfully.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
-      }
+      handleException(e, openSnackbar, setError)
     }
   }
 
@@ -116,10 +110,10 @@ const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) =
             value={dateTimePickerValue}
             onChange={handelOnDateTimeChange}
             slotProps={{
-              textField : {
+              textField: {
                 error: 'expired_at' in errors,
-                helperText: errors.expire_at && (errors.expire_at.message as string)
-              }
+                helperText: errors.expire_at && (errors.expire_at.message as string),
+              },
             }}
           />
         </LocalizationProvider>

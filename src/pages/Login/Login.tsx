@@ -5,7 +5,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { apiSlice, useLoginMutation } from '../../features/apiSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import useSnackbar from '../../hooks/useSnackbar'
 import useAuth from '../../hooks/useAuth'
 import type { LoginRequestType } from '../../types/auth'
@@ -60,13 +60,7 @@ const Login = () => {
         navigate('/app/credentials', { replace: true })
       } catch (e) {
         handleOnCaptchaRefresh()
-        const msg = handleError(e, setError)
-        if (msg) {
-          openSnackbar({
-            severity: 'error',
-            message: msg,
-          })
-        }
+        handleException(e, openSnackbar, setError)
       }
     } else {
       handleOnCaptchaRefresh()
@@ -87,7 +81,7 @@ const Login = () => {
       <div className='login-wraper'>
         <div className='logo-wraper'>
           <img
-            src={window.location.origin + '/logo-sm-512.png'}
+            src={window.location.origin + '/logo-sm.svg'}
             alt='logo'
           />
           <p className='logo-header'>Lockey secure secret store</p>

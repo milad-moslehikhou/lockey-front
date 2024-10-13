@@ -7,7 +7,7 @@ import { useEditFolderMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
 import type { FolderType } from '../../types/folder'
 import { folderActions } from '../../features/folderSlice'
-import { setStringOrNull, handleError } from '../../helpers/form'
+import { setStringOrNull, handleException } from '../../helpers/form'
 import ColorPickerField from '../ColorPickerField/ColorPickerField'
 import { credentialActions } from '../../features/credentialSlice'
 
@@ -51,13 +51,7 @@ const FolderEditForm = ({ folder }: FolderEditFormProps) => {
         message: `Folder with id ${folder.id} update successfully.`,
       })
     } catch (e) {
-      const msg = handleError(e, setError)
-      if (msg) {
-        openSnackbar({
-          severity: 'error',
-          message: msg,
-        })
-      }
+      handleException(e, openSnackbar, setError)
     }
   }
 

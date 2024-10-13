@@ -10,6 +10,7 @@ import type { FolderType } from '../../types/folder'
 import { folderActions } from '../../features/folderSlice'
 import FolderTreeView from '../FolderTreeView/FolderTreeView'
 import useLoading from '../../hooks/useLoading'
+import { handleException } from '../../helpers/form'
 
 interface FolderMoveFormProps {
   folder: FolderType
@@ -41,10 +42,7 @@ const FolderMoveForm = ({ folder }: FolderMoveFormProps) => {
         message: 'Folders moved successfully.',
       })
     } catch (e) {
-      openSnackbar({
-        severity: 'error',
-        message: 'Somthing has wrong!, could not move folder',
-      })
+      handleException(e, openSnackbar)
     } finally {
       handleCloseForm()
       dispatch(folderActions.setHovered(-1))

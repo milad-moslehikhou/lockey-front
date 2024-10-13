@@ -3,39 +3,38 @@ import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { TextField, FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
-import { useResetUserPassMutation } from '../../features/apiSlice'
+import { useChangeUserPassMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
-import type { UserType, UserSetPassFromType } from '../../types/user'
+import type { UserType, UserChangePassFormType } from '../../types/user'
 import { userActions } from '../../features/userSlice'
 import { handleException } from '../../helpers/form'
 
-interface UserSetPassFormPropsType {
+interface UserChangePassFormPropsType {
   user: UserType
 }
 
-const UserSetPasswordForm = ({ user }: UserSetPassFormPropsType) => {
+const UserChangePasswordForm = ({ user }: UserChangePassFormPropsType) => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
-  const [resetUserPass, { isLoading: resetUserPassIsLoading }] = useResetUserPassMutation()
+  const [changeUserPass, { isLoading: changeUserPassIsLoading }] = useChangeUserPassMutation()
 
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<Partial<UserSetPassFromType>>()
+  } = useForm<Partial<UserChangePassFormType>>()
   const handleCloseForm = () => {
-    dispatch(userActions.setShowForms({ resetPass: false }))
+    dispatch(userActions.setShowForms({ changePass: false }))
   }
 
-  const onSubmit = async (data: Partial<UserSetPassFromType>) => {
+  const onSubmit = async (data: Partial<UserChangePassFormType>) => {
     try {
-      await resetUserPass({ id: user.id, data }).unwrap()
+      await changeUserPass({ id: user.id, data }).unwrap()
       handleCloseForm()
-      dispatch(userActions.setSelected([]))
       openSnackbar({
         severity: 'success',
-        message: `Password set successfully.`,
+        message: `Password change successfully.`,
       })
     } catch (e) {
       handleException(e, openSnackbar, setError)
@@ -44,6 +43,22 @@ const UserSetPasswordForm = ({ user }: UserSetPassFormPropsType) => {
 
   const form = (
     <>
+      <FormControl
+        fullWidth
+        sx={{ mt: 2 }}
+      >
+        <TextField
+          id='old_password'
+          label='Current Password'
+          variant='standard'
+          type='password'
+          autoComplete='current-password'
+          className='form-control'
+          error={'old_password' in errors}
+          helperText={errors.old_password && (errors.old_password.message as string)}
+          {...register('old_password')}
+        />
+      </FormControl>
       <FormControl
         fullWidth
         sx={{ mt: 2 }}
@@ -84,11 +99,11 @@ const UserSetPasswordForm = ({ user }: UserSetPassFormPropsType) => {
       title='Change Password'
       form={form}
       submitLable='Apply'
-      isLoading={resetUserPassIsLoading}
+      isLoading={changeUserPassIsLoading}
       handleSubmit={handleSubmit(onSubmit)}
       handleCloseForm={handleCloseForm}
     />
   )
 }
 
-export default UserSetPasswordForm
+export default UserChangePasswordForm
