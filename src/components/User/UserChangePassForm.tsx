@@ -8,12 +8,13 @@ import useSnackbar from '../../hooks/useSnackbar'
 import type { UserType, UserChangePassFormType } from '../../types/user'
 import { userActions } from '../../features/userSlice'
 import { handleException } from '../../helpers/form'
+import TextWithLineBreaks from '../TextWithLineBreaks/TextWithLineBreaks'
 
 interface UserChangePassFormPropsType {
   user: UserType
 }
 
-const UserChangePasswordForm = ({ user }: UserChangePassFormPropsType) => {
+const UserChangePassForm = ({ user }: UserChangePassFormPropsType) => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
   const [changeUserPass, { isLoading: changeUserPassIsLoading }] = useChangeUserPassMutation()
@@ -55,7 +56,7 @@ const UserChangePasswordForm = ({ user }: UserChangePassFormPropsType) => {
           autoComplete='current-password'
           className='form-control'
           error={'old_password' in errors}
-          helperText={errors.old_password && (errors.old_password.message as string)}
+          helperText={errors.old_password && <TextWithLineBreaks text={errors.old_password.message} />}
           {...register('old_password')}
         />
       </FormControl>
@@ -71,7 +72,7 @@ const UserChangePasswordForm = ({ user }: UserChangePassFormPropsType) => {
           autoComplete='new-password'
           className='form-control'
           error={'new_password1' in errors}
-          helperText={errors.new_password1 && (errors.new_password1.message as string)}
+          helperText={errors.new_password1 && <TextWithLineBreaks text={errors.new_password1.message} />}
           {...register('new_password1')}
         />
       </FormControl>
@@ -87,7 +88,7 @@ const UserChangePasswordForm = ({ user }: UserChangePassFormPropsType) => {
           autoComplete='retype-password'
           className='form-control'
           error={'new_password2' in errors}
-          helperText={errors.new_password2 && (errors.new_password2.message as string)}
+          helperText={errors.new_password2 && <TextWithLineBreaks text={errors.new_password2.message} />}
           {...register('new_password2')}
         />
       </FormControl>
@@ -106,4 +107,4 @@ const UserChangePasswordForm = ({ user }: UserChangePassFormPropsType) => {
   )
 }
 
-export default UserChangePasswordForm
+export default UserChangePassForm

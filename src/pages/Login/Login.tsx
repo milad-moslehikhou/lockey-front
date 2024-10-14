@@ -57,7 +57,8 @@ const Login = () => {
       try {
         const auth = await login(data).unwrap()
         setAuth(auth)
-        navigate('/app/credentials', { replace: true })
+        if (auth.user?.force_change_pass) navigate('/change-password', { state: { from: location } })
+        else navigate('/app/credentials', { replace: true })
       } catch (e) {
         handleOnCaptchaRefresh()
         handleException(e, openSnackbar, setError)

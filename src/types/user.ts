@@ -1,10 +1,10 @@
-import UserSetPasswordForm from '../components/User/UserSetPasswordForm'
 import { AutoCompleteFieldOptionsType, FormsStateType } from './component'
 
 export type UserType = {
   id: number
   username: string
   password: string
+  force_change_pass: boolean
   first_name: string
   last_name: string
   avatar: string | File
@@ -23,9 +23,10 @@ export type UserStateType = {
   filter: string
 }
 
-export type UserSetPassFromType = {
+export type UserResetPassFromType = {
   new_password1: string
   new_password2: string
+  force_change_pass: boolean
 }
 
 export type UserChangePassFormType = {

@@ -6,8 +6,8 @@ import { useGetUserByIdQuery } from '../../features/apiSlice'
 import UserDeleteForm from './UserDeleteForm'
 import UserAddForm from './UserAddForm'
 import UserEditForm from './UserEditForm'
-import UserSetPasswordForm from './UserSetPasswordForm'
 import UserDetail from './UserDetail'
+import UserResetPassForm from './UserResetPassForm'
 
 const UserActionSelector = () => {
   const userSelected = useSelector(selectUserSelected)
@@ -27,7 +27,7 @@ const UserActionSelector = () => {
       {userShowForms.detail && userIsValid ? <UserDetail user={user} /> : ''}
       {userShowForms.edit && userIsValid ? <UserEditForm user={user} /> : ''}
       {userShowForms.delete && userIsValid ? <UserDeleteForm user={user} /> : ''}
-      {userShowForms.resetPass && userIsValid ? <UserSetPasswordForm user={user} /> : ''}
+      {userShowForms.resetPass && userIsValid ? <UserResetPassForm user={user} /> : ''}
       {userShowForms.add ? <UserAddForm /> : ''}
     </>
   )

@@ -153,7 +153,12 @@ const CredentialAddForm = () => {
             <Controller
               name='auto_genpass'
               control={control}
-              render={({ field }) => <Switch {...field} />}
+              render={({ field }) => (
+                <Switch
+                  {...field}
+                  checked={field.value}
+                />
+              )}
             />
           }
         />

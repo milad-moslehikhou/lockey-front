@@ -11,19 +11,19 @@ export const handleException = (ex: any, snackbarFn: any, setError?: UseFormSetE
   if (ex && ex.data && ex.data.type) {
     switch (ex.data.type) {
       case 'validation_error':
+        let errors: any = {}
         ex.data.errors.forEach((e: any) => {
           if (e.code === 'authorization')
             snackbarFn({
               severity: 'error',
               message: e.detail,
             })
-          else
-            setError &&
-              setError(e.attr, {
-                type: 'server',
-                message: e.detail,
-              })
+          else e.attr in errors ? (errors[e.attr] = errors[e.attr] + '\n' + e.detail) : (errors[e.attr] = e.detail)
         })
+        setError &&
+          Object.keys(errors).forEach(ek => {
+            setError(ek, { type: 'server', message: errors[ek] })
+          })
         break
       case 'client_error':
         snackbarFn({

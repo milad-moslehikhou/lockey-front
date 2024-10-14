@@ -2,6 +2,7 @@ import React from 'react'
 import { useRoutes } from 'react-router-dom'
 import { PrivateOutlet } from './utils/PrivateOutlet'
 import useLoggedInUser from './hooks/useLoggedInUser'
+import ChangePassword from './pages/ChangePassword/ChangePassword'
 
 const Login = React.lazy(() => import('./pages/Login/Login'))
 const Credentials = React.lazy(() => import('./pages/Credentials/Credentials'))
@@ -28,6 +29,10 @@ const Routes = () => {
         {
           path: loggedInUser?.is_superuser ? 'app/administration' : '',
           element: loggedInUser?.is_superuser ? <Administration /> : <></>,
+        },
+        {
+          path: '/change-password',
+          element: <ChangePassword />,
         },
       ],
     },

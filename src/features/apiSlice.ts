@@ -7,7 +7,7 @@ import type {
   CredentialGrantType,
 } from '../types/credential'
 import type { FolderType } from '../types/folder'
-import type { UserChangePassFormType, UserSetPassFromType, UserType } from '../types/user'
+import type { UserChangePassFormType, UserResetPassFromType, UserType } from '../types/user'
 import { GroupMemberType, GroupType } from '../types/group'
 import { serialize } from 'object-to-formdata'
 import { PermissionType } from '../types/permission'
@@ -128,7 +128,7 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'User', id: arg.id }],
     }),
-    resetUserPass: builder.mutation<void, { id: number; data: Partial<UserSetPassFromType> }>({
+    resetUserPass: builder.mutation<void, { id: number; data: Partial<UserResetPassFromType> }>({
       query: ({ id, data }) => ({
         url: `users/${id}/set-password/`,
         method: 'POST',

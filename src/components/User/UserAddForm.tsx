@@ -79,6 +79,7 @@ const UserAddForm = () => {
   const onSubmit = async (data: Partial<UserType>) => {
     data = {
       ...data,
+      force_change_pass: true,
       groups: data.groups && data.groups.map(g => (typeof g === 'number' ? g : g.value)),
       user_permissions: data.user_permissions && data.user_permissions.map(p => (typeof p === 'number' ? p : p.value)),
     }
@@ -233,7 +234,12 @@ const UserAddForm = () => {
             <Controller
               name='is_active'
               control={control}
-              render={({ field }) => <Switch {...field} />}
+              render={({ field }) => (
+                <Switch
+                  {...field}
+                  checked={field.value}
+                />
+              )}
             />
           }
         />
