@@ -23,7 +23,7 @@ export type UserStateType = {
   filter: string
 }
 
-export type UserResetPassFromType = {
+export type UserSetPassFormType = {
   new_password1: string
   new_password2: string
   force_change_pass: boolean

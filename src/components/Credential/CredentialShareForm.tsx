@@ -1,4 +1,5 @@
 import * as React from 'react'
+import moment, { Moment } from 'moment'
 import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { FormControl } from '@mui/material'
@@ -18,7 +19,6 @@ import useLoggedInUser from '../../hooks/useLoggedInUser'
 import AutoCompleteField from '../AutoCompleteField/AutoCompleteField'
 import { AutoCompleteFieldOptionsType } from '../../types/component'
 import { CredentialType, CredentialShareType } from '../../types/credential'
-import moment, { Moment } from 'moment'
 
 interface CredentialShareFormProps {
   credential: CredentialType
@@ -38,7 +38,10 @@ const CredentialShareForm = ({ credential }: CredentialShareFormProps) => {
   const { data: users, isLoading: usersIsLoading } = useGetUsersQuery()
   const loggedInUser = useLoggedInUser()
   const [edit, { isLoading: editCredentialShareIsLoading }] = useEditCredentialShareMutation()
-  const { data: credentialShare, isLoading: credentialShareIsLoading } = useGetCredentialSharesByIdQuery(credential.id)
+  const { data: credentialShare, isLoading: credentialShareIsLoading } = useGetCredentialSharesByIdQuery(
+    credential.id,
+    { pollingInterval: 3600 }
+  )
   const [userOptions, setUserOptions] = React.useState<AutoCompleteFieldOptionsType[]>([])
   const {
     register,
@@ -49,8 +52,11 @@ const CredentialShareForm = ({ credential }: CredentialShareFormProps) => {
     formState: { errors },
   } = useForm<Partial<CredentialShareFormType>>({
     defaultValues: {
-      until: moment(),
       shared_with: [],
+      until:
+        credentialShare && credentialShare.length > 0
+          ? moment(credentialShare[0].until)
+          : moment().add(moment.duration(30, 'minute')).set('second', 0),
     },
   })
 
@@ -123,14 +129,15 @@ const CredentialShareForm = ({ credential }: CredentialShareFormProps) => {
       credential: credential.id,
       shared_by: loggedInUser?.id,
     }
-
     let newData: CredentialShareType[] = []
+    const datetime = data.until && moment(data.until.toISOString()).add(data.until.utcOffset(), 'minute')
+
     if (typeof data.shared_with !== 'number') {
       data.shared_with?.forEach(s => {
         newData.push({
           id: data.id,
           credential: credential.id,
-          until: data.until?.toDate(),
+          until: datetime?.toDate(),
           shared_by: loggedInUser?.id,
           shared_with: s.value,
         } as CredentialShareType)
@@ -172,10 +179,11 @@ const CredentialShareForm = ({ credential }: CredentialShareFormProps) => {
       >
         <LocalizationProvider dateAdapter={AdapterMoment}>
           <DateTimePicker
-            disablePast
-            ampm={false}
             label='Share Until'
             value={dateTimePickerValue}
+            disablePast
+            ampm={false}
+            timezone='system'
             onChange={handelOnDateTimeChange}
             slotProps={{
               textField: {

@@ -5,7 +5,7 @@ import { stringToColor } from '../../helpers/common'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectUserShowForms, userActions } from '../../features/userSlice'
-import UserChangePassForm from '../User/UserChangePassForm'
+import UserChangePasswordForm from '../User/UserChangePassForm'
 
 const AvatarMenu = () => {
   const loggedInUser = useLoggedInUser()
@@ -118,7 +118,7 @@ const AvatarMenu = () => {
         <MenuItem onClick={handleClose}>Profile</MenuItem>
         <MenuItem onClick={handleOnChangePassowrd}>Change Password</MenuItem>
       </Menu>
-      {userShowForms.changePass && loggedInUser ? <UserChangePassForm user={loggedInUser} /> : ''}
+      {userShowForms.changePass && loggedInUser ? <UserChangePasswordForm user={loggedInUser} /> : ''}
     </>
   )
 }

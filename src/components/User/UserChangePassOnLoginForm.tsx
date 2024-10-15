@@ -43,6 +43,10 @@ const UserChangePassOnLoginForm = ({ user }: UserChangePassOnLoginFormPropsType)
   const onSubmit = async (data: Partial<UserChangePassFormType>) => {
     try {
       await changeUserPass({ id: user.id, data }).unwrap()
+      openSnackbar({
+        severity: 'success',
+        message: `Password change successfully.`,
+      })
       handleCloseForm()
     } catch (e) {
       handleException(e, openSnackbar, setError)

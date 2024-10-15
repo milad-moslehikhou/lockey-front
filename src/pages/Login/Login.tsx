@@ -133,7 +133,7 @@ const Login = () => {
               LOGIN
             </LoadingButton>
           </form>
-          <div className='form-footer'></div>
+          <div className='form-footer'>v0.0</div>
         </div>
       </div>
     )

@@ -3,39 +3,39 @@ import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { TextField, FormControl } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
-import { useResetUserPassMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
-import type { UserType, UserResetPassFromType } from '../../types/user'
+import type { UserType, UserSetPassFormType } from '../../types/user'
 import { userActions } from '../../features/userSlice'
 import { handleException } from '../../helpers/form'
 import TextWithLineBreaks from '../TextWithLineBreaks/TextWithLineBreaks'
+import { useSetUserPassMutation } from '../../features/apiSlice'
 
-interface UserResetPassFormPropsType {
+interface UserSetPassFormPropsType {
   user: UserType
 }
 
-const UserResetPassForm = ({ user }: UserResetPassFormPropsType) => {
+const UserSetPassForm = ({ user }: UserSetPassFormPropsType) => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
-  const [resetUserPass, { isLoading: resetUserPassIsLoading }] = useResetUserPassMutation()
+  const [setUserPass, { isLoading: setUserPassIsLoading }] = useSetUserPassMutation()
 
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<Partial<UserResetPassFromType>>({
+  } = useForm<Partial<UserSetPassFormType>>({
     defaultValues: {
       force_change_pass: !user.is_superuser,
     },
   })
   const handleCloseForm = () => {
-    dispatch(userActions.setShowForms({ resetPass: false }))
+    dispatch(userActions.setShowForms({ setPass: false }))
   }
 
-  const onSubmit = async (data: Partial<UserResetPassFromType>) => {
+  const onSubmit = async (data: Partial<UserSetPassFormType>) => {
     try {
-      await resetUserPass({ id: user.id, data }).unwrap()
+      await setUserPass({ id: user.id, data }).unwrap()
       handleCloseForm()
       dispatch(userActions.setSelected([]))
       openSnackbar({
@@ -89,11 +89,11 @@ const UserResetPassForm = ({ user }: UserResetPassFormPropsType) => {
       title='Set Password'
       form={form}
       submitLable='Apply'
-      isLoading={resetUserPassIsLoading}
+      isLoading={setUserPassIsLoading}
       handleSubmit={handleSubmit(onSubmit)}
       handleCloseForm={handleCloseForm}
     />
   )
 }
 
-export default UserResetPassForm
+export default UserSetPassForm

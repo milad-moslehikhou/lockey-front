@@ -14,13 +14,14 @@ import {
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 import { formatDate, getComparator } from '../../helpers/common'
-import { userActions, selectUserSearch, selectUserSelected } from '../../features/userSlice'
+import { userActions, selectUserSearch, selectUserSelected, selectUserShowForms } from '../../features/userSlice'
 import useLoading from '../../hooks/useLoading'
 import type { OrderType } from '../../types/component'
-import { useGetUsersQuery } from '../../features/apiSlice'
+import { useGetUserByIdQuery, useGetUsersQuery } from '../../features/apiSlice'
 import { UserType } from '../../types/user'
 import CheckCircle from '@mui/icons-material/CheckCircle'
 import Cancel from '@mui/icons-material/Cancel'
+import UserSetPassForm from './UserSetPassForm'
 
 interface DataTableHeaderType {
   id: string
@@ -33,6 +34,10 @@ const UsersDataTable = () => {
   const loading = useLoading()
   const userSearch = useSelector(selectUserSearch)
   const userSelected = useSelector(selectUserSelected)
+  const userShowForms = useSelector(selectUserShowForms)
+  const { data: user } = useGetUserByIdQuery(_.toInteger(userSelected[0]), {
+    skip: !(userSelected.length === 1),
+  })
   const searchUser = (users: UserType[]) => {
     return users.filter(
       s =>
@@ -303,6 +308,7 @@ const UsersDataTable = () => {
           </Table>
         </TableContainer>
       </Box>
+      {userShowForms.setPass && user ? <UserSetPassForm user={user} /> : ''}
     </Box>
   )
 }

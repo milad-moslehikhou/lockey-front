@@ -33,7 +33,7 @@ export type FormsStateType = {
   share?: boolean
   addSecret?: boolean
   showSecret?: boolean
-  resetPass?: boolean
+  setPass?: boolean
   changePass?: boolean
 }
 

@@ -7,7 +7,6 @@ import UserDeleteForm from './UserDeleteForm'
 import UserAddForm from './UserAddForm'
 import UserEditForm from './UserEditForm'
 import UserDetail from './UserDetail'
-import UserResetPassForm from './UserResetPassForm'
 
 const UserActionSelector = () => {
   const userSelected = useSelector(selectUserSelected)
@@ -17,7 +16,7 @@ const UserActionSelector = () => {
     isUninitialized,
     isFetching,
   } = useGetUserByIdQuery(_.toInteger(userSelected[0]), {
-    skip: userSelected.length === 1 ? false : true,
+    skip: !(userSelected.length === 1),
   })
 
   const userIsValid = user && !isUninitialized && !isFetching
@@ -27,7 +26,6 @@ const UserActionSelector = () => {
       {userShowForms.detail && userIsValid ? <UserDetail user={user} /> : ''}
       {userShowForms.edit && userIsValid ? <UserEditForm user={user} /> : ''}
       {userShowForms.delete && userIsValid ? <UserDeleteForm user={user} /> : ''}
-      {userShowForms.resetPass && userIsValid ? <UserResetPassForm user={user} /> : ''}
       {userShowForms.add ? <UserAddForm /> : ''}
     </>
   )

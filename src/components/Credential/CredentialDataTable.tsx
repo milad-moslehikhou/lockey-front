@@ -49,7 +49,9 @@ const CredentialsDataTable = () => {
   const credentialSearch = useSelector(selectCredentialSearch)
   const credentialFilter = useSelector(selectCredentialFilter)
   const credentialSelected = useSelector(selectCredentialSelected)
-  const { data: credentialShares, isLoading: credentialSharesIsLoading } = useGetCredentialSharesQuery()
+  const { data: credentialShares, isLoading: credentialSharesIsLoading } = useGetCredentialSharesQuery(undefined, {
+    refetchOnFocus: true,
+  })
   const [trigger, { data: credentialSecret, isLoading: credentialSecretIsLoading }] =
     useLazyGetCredentialSecretByIdQuery()
   const [selectedCredential, setSelectedCredential] = React.useState<number>()
