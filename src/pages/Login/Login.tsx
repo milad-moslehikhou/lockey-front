@@ -53,7 +53,7 @@ const Login = () => {
   })
 
   const onSubmit = handleSubmit(async (data: LoginRequestType) => {
-    if (validate(captchaValue)) {
+    if (validate(captchaValue.toLowerCase())) {
       try {
         const auth = await login(data).unwrap()
         setAuth(auth)

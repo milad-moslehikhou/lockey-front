@@ -7,7 +7,6 @@ export const setStringOrNull = (v: unknown) => {
 }
 
 export const handleException = (ex: any, snackbarFn: any, setError?: UseFormSetError<any>) => {
-  console.log(ex)
   if (ex && ex.data && ex.data.type) {
     switch (ex.data.type) {
       case 'validation_error':
@@ -31,13 +30,15 @@ export const handleException = (ex: any, snackbarFn: any, setError?: UseFormSetE
           message: ex.data.errors.map((e: any) => e.detail).join('\n'),
         })
         break
-      case 'server_error':
+      default:
         snackbarFn({
           severity: 'error',
-          message: ex.data.errors.map((e: any) => e.detail).join('\n'),
+          message: "Sorry, something has wrong.",
         })
-        break
     }
-  }
-  return null
+  } else
+    snackbarFn({
+      severity: 'error',
+      message: "Sorry, something has wrong.",
+    })
 }

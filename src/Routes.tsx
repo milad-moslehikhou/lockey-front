@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRoutes } from 'react-router-dom'
+import { Navigate, useRoutes } from 'react-router-dom'
 import { PrivateOutlet } from './utils/PrivateOutlet'
 import useLoggedInUser from './hooks/useLoggedInUser'
 import ChangePassword from './pages/ChangePassword/ChangePassword'
@@ -22,16 +22,20 @@ const Routes = () => {
       element: <PrivateOutlet />,
       children: [
         {
+          path: '',
+          element: <Navigate to="app/credentials" replace />,
+        },
+        {
           path: 'app/credentials',
           element: <Credentials />,
           index: true,
         },
         {
-          path: loggedInUser?.is_superuser ? 'app/administration' : '',
-          element: loggedInUser?.is_superuser ? <Administration /> : <></>,
+          path: 'app/administration',
+          element: loggedInUser?.is_superuser ? <Administration /> : <Navigate to="/app/credentials" replace />,
         },
         {
-          path: '/change-password',
+          path: 'change-password',
           element: <ChangePassword />,
         },
       ],

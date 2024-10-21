@@ -14,7 +14,7 @@ import { PermissionType } from '../types/permission'
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:2000/api/v1/',
+    baseUrl: process.env.API_BASE_URL,
     prepareHeaders: headers => {
       const authString = sessionStorage.getItem('auth')
       if (authString) {
