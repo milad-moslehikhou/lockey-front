@@ -14,7 +14,7 @@ const CredentialShowSecret = () => {
 
   return (
     <InfoDialog
-      title='Warning! The secret is being shown.'
+      title='Warning! The secret is being shown'
       handleCloseForm={handleCloseForm}
     >
       <>

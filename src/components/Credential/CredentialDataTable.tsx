@@ -207,14 +207,13 @@ const CredentialsDataTable = () => {
     setCopyToClipboard(false)
     if (credentialSecret)
       if (credentialSecret.length > 0) {
-        navigator.clipboard.writeText(credentialSecret[credentialSecret.length - 1].password)
+        navigator.clipboard.writeText(credentialSecret[0].password)
         openSnackbar({
           severity: 'success',
           message: 'Secret copied successfully. it will remove from clipbaord after 30s!',
         })
         clearTimeout(timer)
         timer = setTimeout(() => {
-          console.log('timeout')
           navigator.clipboard.writeText('').catch(e => {})
         }, 30000)
       } else {

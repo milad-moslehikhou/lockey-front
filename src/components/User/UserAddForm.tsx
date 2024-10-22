@@ -185,22 +185,6 @@ const UserAddForm = () => {
         sx={{ mt: 2 }}
       >
         <TextField
-          id='password'
-          label='Password'
-          variant='standard'
-          type='password'
-          autoComplete='new-password'
-          className='form-control'
-          error={'password' in errors}
-          helperText={errors.password && (errors.password.message as string)}
-          {...register('password', { setValueAs: setStringOrNull })}
-        />
-      </FormControl>
-      <FormControl
-        fullWidth
-        sx={{ mt: 2 }}
-      >
-        <TextField
           id='firstName'
           label='First Name'
           variant='standard'

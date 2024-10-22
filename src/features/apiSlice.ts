@@ -14,7 +14,7 @@ import { PermissionType } from '../types/permission'
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.API_BASE_URL,
+    baseUrl: window.API_BASE_URL,
     prepareHeaders: headers => {
       const authString = sessionStorage.getItem('auth')
       if (authString) {
@@ -124,7 +124,7 @@ export const apiSlice = createApi({
       query: ({ id, data }) => ({
         url: `users/${id}/`,
         method: 'PATCH',
-        body: serialize(data, { dotsForObjectNotation: true }),
+        body: serialize(data, { dotsForObjectNotation: true, allowEmptyArrays: true }),
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'User', id: arg.id }],
     }),

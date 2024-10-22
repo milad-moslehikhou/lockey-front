@@ -9,7 +9,6 @@ import useSnackbar from '../../hooks/useSnackbar'
 import type { UserType } from '../../types/user'
 import { userActions } from '../../features/userSlice'
 import { setStringOrNull, handleException } from '../../helpers/form'
-import useLoggedInUser from '../../hooks/useLoggedInUser'
 import AutoCompleteField from '../AutoCompleteField/AutoCompleteField'
 import { AutoCompleteFieldOptionsType } from '../../types/component'
 import styled from '@emotion/styled'
@@ -21,7 +20,6 @@ interface UserEditFormPropsType {
 const UserEditForm = ({ user }: UserEditFormPropsType) => {
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
-  const loggedInUser = useLoggedInUser()
   const { data: groups, isLoading: groupsIsLoading } = useGetGroupsQuery()
   const { data: perms, isLoading: permsIsLoading } = useGetPermissionsQuery()
   const [groupOptions, setGroupOptions] = React.useState<AutoCompleteFieldOptionsType[]>([])

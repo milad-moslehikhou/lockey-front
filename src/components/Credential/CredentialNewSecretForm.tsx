@@ -57,8 +57,6 @@ const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) =
       expire_at: data.expire_at?.toDate(),
       created_by: loggedInUser ? loggedInUser.id : -1,
     }
-
-    console.log(newData)
     try {
       await add({ id: credential.id, data: newData }).unwrap()
       handleCloseForm()
