@@ -103,108 +103,100 @@ const GroupsDataTable = () => {
     <Box
       sx={{
         width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
+        height: 'calc(100vh - 300px)',
+        overflowY: 'auto',
       }}
     >
-      <Box
-        sx={{
-          width: '100%',
-          height: '100%',
-        }}
-      >
-        <TableContainer>
-          <Table
-            aria-labelledby='tableTitle'
-            size='small'
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell padding='checkbox'>
-                  <Checkbox
-                    color='primary'
-                    indeterminate={groupSelected.length > 0 && groupSelected.length < groups.length}
-                    checked={groups.length > 0 && groupSelected.length === groups.length}
-                    onChange={handleOnSelectAll}
-                  />
-                </TableCell>
-                {headers.map(header => (
-                  <TableCell
-                    key={header.id}
-                    padding={header.type === 'boolean' ? 'checkbox' : 'normal'}
-                    align={header.type === 'number' ? 'right' : 'left'}
-                    sortDirection={orderBy === header.id ? order : false}
+      <TableContainer>
+        <Table
+          aria-labelledby='tableTitle'
+          size='small'
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell padding='checkbox'>
+                <Checkbox
+                  color='primary'
+                  indeterminate={groupSelected.length > 0 && groupSelected.length < groups.length}
+                  checked={groups.length > 0 && groupSelected.length === groups.length}
+                  onChange={handleOnSelectAll}
+                />
+              </TableCell>
+              {headers.map(header => (
+                <TableCell
+                  key={header.id}
+                  padding={header.type === 'boolean' ? 'checkbox' : 'normal'}
+                  align={header.type === 'number' ? 'right' : 'left'}
+                  sortDirection={orderBy === header.id ? order : false}
+                >
+                  <TableSortLabel
+                    active={orderBy === header.id}
+                    direction={orderBy === header.id ? order : 'asc'}
+                    onClick={createSortHandler(header.id)}
                   >
-                    <TableSortLabel
-                      active={orderBy === header.id}
-                      direction={orderBy === header.id ? order : 'asc'}
-                      onClick={createSortHandler(header.id)}
-                    >
-                      {header.label}
-                      {orderBy === header.id ? (
-                        <Box
-                          component='span'
-                          sx={visuallyHidden}
-                        >
-                          {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                        </Box>
-                      ) : null}
-                    </TableSortLabel>
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
+                    {header.label}
+                    {orderBy === header.id ? (
+                      <Box
+                        component='span'
+                        sx={visuallyHidden}
+                      >
+                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      </Box>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
 
-            <TableBody>
-              {groups
-                .slice()
-                .sort(getComparator(order, orderBy))
-                .map(row => {
-                  const itemIsSelected = isSelected(_.toString(row.id))
+          <TableBody>
+            {groups
+              .slice()
+              .sort(getComparator(order, orderBy))
+              .map(row => {
+                const itemIsSelected = isSelected(_.toString(row.id))
 
-                  return (
-                    <TableRow
-                      key={row.id}
-                      role='checkbox'
-                      aria-checked={itemIsSelected}
-                      tabIndex={-1}
-                      selected={itemIsSelected}
-                      hover
+                return (
+                  <TableRow
+                    key={row.id}
+                    role='checkbox'
+                    aria-checked={itemIsSelected}
+                    tabIndex={-1}
+                    selected={itemIsSelected}
+                    hover
+                  >
+                    <TableCell
+                      padding='checkbox'
+                      sx={{
+                        borderBottom: 0,
+                      }}
                     >
-                      <TableCell
-                        padding='checkbox'
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        <Checkbox
-                          color='primary'
-                          checked={itemIsSelected}
-                          onClick={event => handleOnSelect(event, _.toString(row.id))}
-                        />
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        {row.id}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        {row.name}
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+                      <Checkbox
+                        color='primary'
+                        checked={itemIsSelected}
+                        onClick={event => handleOnSelect(event, _.toString(row.id))}
+                      />
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      {row.id}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      {row.name}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   )
 }

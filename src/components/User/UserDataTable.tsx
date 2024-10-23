@@ -142,18 +142,12 @@ const UsersDataTable = () => {
   }, [loading, usersIsLoading])
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
+    <>
       <Box
         sx={{
           width: '100%',
-          height: '100%',
+          height: 'calc(100vh - 300px)',
+          overflowY: 'auto',
         }}
       >
         <TableContainer>
@@ -309,7 +303,7 @@ const UsersDataTable = () => {
         </TableContainer>
       </Box>
       {userShowForms.setPass && user ? <UserSetPassForm user={user} /> : ''}
-    </Box>
+    </>
   )
 }
 
