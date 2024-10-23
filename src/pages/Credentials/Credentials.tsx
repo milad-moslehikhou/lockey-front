@@ -50,13 +50,7 @@ const Passwords = () => {
           }}
         >
           <FolderBreadcrumbs />
-          <Box
-            sx={{
-              height: 'calc(100% - 48px)',
-            }}
-          >
-            <CredentialsDataTable />
-          </Box>
+          <CredentialsDataTable />
           <CredentialActionSelector />
           <FolderActionSelector />
         </Box>

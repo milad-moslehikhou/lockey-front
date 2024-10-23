@@ -280,17 +280,10 @@ const CredentialsDataTable = () => {
 
   return (
     <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <Box
         sx={{
           width: '100%',
-          height: '100%',
+          height: 'calc(100vh - 300px)',
+          overflowY: 'auto'
         }}
       >
         <TableContainer>
@@ -481,7 +474,6 @@ const CredentialsDataTable = () => {
           </Table>
         </TableContainer>
       </Box>
-    </Box>
   )
 }
 
