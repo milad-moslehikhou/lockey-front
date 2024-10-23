@@ -34,7 +34,7 @@ const FolderDeleteForm = ({ folder }: FolderDeleteFormProps) => {
   }
 
   const onSubmit = async (data: DeleteFolderForm) => {
-    if (folder.name !== data.name) {
+    if (folder.name.toLowerCase() !== data.name) {
       setError('name', {
         type: 'server',
         message: 'Name is not match',
