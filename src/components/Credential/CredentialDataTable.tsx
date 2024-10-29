@@ -58,51 +58,6 @@ const CredentialsDataTable = () => {
   const [selectedCredential, setSelectedCredential] = React.useState<number>()
   const [copyToClipboard, setCopyToClipboard] = React.useState<boolean>(false)
   const [showSecret, setShowSecret] = React.useState<boolean>(false)
-  const searchCredential = (credentials: CredentialType[]) => {
-    return credentials.filter(
-      c =>
-        (c.name && c.name.toLowerCase().includes(credentialSearch)) ||
-        (c.username && c.username.toLowerCase().includes(credentialSearch)) ||
-        (c.tags && c.tags.toLowerCase().includes(credentialSearch))
-    )
-  }
-  const filterCredential = (credentials: CredentialType[]) => {
-    switch (credentialFilter) {
-      case 'list:all_items':
-        return credentials
-      case 'folders':
-        return credentials
-      case 'list:favorites':
-        return credentials.filter(c => c.is_favorite)
-      case 'list:owned_by_me':
-        return credentials.filter(c => loggedInUser && c.created_by === loggedInUser.id)
-      case 'list:shared_by_me':
-        const sharedByMeIds = credentialShares?.filter(s => s.shared_by === loggedInUser?.id).map(s => s.credential)
-        return credentials.filter(c => sharedByMeIds?.includes(c.id))
-      case 'list:shared_with_me':
-        const sharedWithMeIds = credentialShares?.filter(s => s.shared_with === loggedInUser?.id).map(s => s.credential)
-        return credentials.filter(c => sharedWithMeIds?.includes(c.id))
-      default:
-        return credentials.filter(c => c.folder === _.toNumber(credentialFilter))
-    }
-  }
-  const filterOrSearchCredentials = (credentials: CredentialType[]) => {
-    if (credentialSearch && credentialSearch !== '') return searchCredential(credentials)
-    else return filterCredential(credentials)
-  }
-  const { credentials, credentialsIsLoading } = useGetCredentialsQuery(undefined, {
-    selectFromResult: ({ data, isLoading }) => {
-      document.getElementById('datatable')?.scrollIntoView()
-      return {
-        credentialsIsLoading: isLoading,
-        credentials: (data && filterOrSearchCredentials(data)) ?? [],
-      }
-    },
-  })
-  const [addFavoritre, { isLoading: addFavoriteIsLoading }] = useAddCredentialFavoriteMutation()
-  const [delFavoritre, { isLoading: delFavoriteIsLoading }] = useDeleteCredentialFavoriteMutation()
-  const [order, setOrder] = React.useState<OrderType>('asc')
-  const [orderBy, setOrderBy] = React.useState<keyof CredentialType>('name')
   const headers: DataTableHeaderType[] = [
     {
       id: 'name',
@@ -130,6 +85,76 @@ const CredentialsDataTable = () => {
       type: 'string',
     },
   ]
+  const searchCredential = (credentials: CredentialType[]) => {
+    let searchField = ''
+    let searchValue = credentialSearch
+    if (searchValue.startsWith('=')) {
+      const phrase = credentialSearch.replace('=', '').split(':')
+      if (phrase.length === 2) {
+        searchField = phrase[0]
+        searchValue = phrase[1]
+      }
+    }
+    switch (searchField) {
+      case 'name':
+        return credentials.filter(c => c.name && c.name.toLowerCase().includes(searchValue))
+      case 'username':
+        return credentials.filter(c => c.username && c.username.toLowerCase().includes(searchValue))
+      case 'ip':
+        return credentials.filter(c => c.ip && c.ip.includes(searchValue))
+      case 'tags':
+        return credentials.filter(c => c.tags.split(',').every(t => searchValue.split(',').includes(t)))
+      default:
+        return credentials.filter(
+          c =>
+            (c.name && c.name.toLowerCase().includes(credentialSearch)) ||
+            (c.username && c.username.toLowerCase().includes(credentialSearch)) ||
+            (c.ip && c.ip.includes(searchValue)) ||
+            (c.tags && c.tags.toLowerCase().includes(credentialSearch))
+        )
+    }
+  }
+
+  const filterCredential = (credentials: CredentialType[]) => {
+    switch (credentialFilter) {
+      case 'list:all_items':
+        return credentials
+      case 'folders':
+        return credentials
+      case 'list:favorites':
+        return credentials.filter(c => c.is_favorite)
+      case 'list:owned_by_me':
+        return credentials.filter(c => loggedInUser && c.created_by === loggedInUser.id)
+      case 'list:shared_by_me':
+        const sharedByMeIds = credentialShares?.filter(s => s.shared_by === loggedInUser?.id).map(s => s.credential)
+        return credentials.filter(c => sharedByMeIds?.includes(c.id))
+      case 'list:shared_with_me':
+        const sharedWithMeIds = credentialShares?.filter(s => s.shared_with === loggedInUser?.id).map(s => s.credential)
+        return credentials.filter(c => sharedWithMeIds?.includes(c.id))
+      default:
+        return credentials.filter(c => c.folder === _.toNumber(credentialFilter))
+    }
+  }
+
+  const filterOrSearchCredentials = (credentials: CredentialType[]) => {
+    if (credentialSearch && credentialSearch !== '') return searchCredential(credentials)
+    else return filterCredential(credentials)
+  }
+
+  const { credentials, credentialsIsLoading } = useGetCredentialsQuery(undefined, {
+    selectFromResult: ({ data, isLoading }) => {
+      document.getElementById('datatable')?.scrollIntoView()
+      return {
+        credentialsIsLoading: isLoading,
+        credentials: (data && filterOrSearchCredentials(data)) ?? [],
+      }
+    },
+  })
+
+  const [addFavoritre, { isLoading: addFavoriteIsLoading }] = useAddCredentialFavoriteMutation()
+  const [delFavoritre, { isLoading: delFavoriteIsLoading }] = useDeleteCredentialFavoriteMutation()
+  const [order, setOrder] = React.useState<OrderType>('asc')
+  const [orderBy, setOrderBy] = React.useState<keyof CredentialType>('name')
 
   const handleOnSort = (e: React.MouseEvent<unknown>, property: keyof CredentialType) => {
     const isAsc = orderBy === property && order === 'asc'
