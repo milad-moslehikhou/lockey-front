@@ -51,19 +51,17 @@ const UsersDataTable = () => {
     else return users
   }
   const { users, usersIsLoading } = useGetUsersQuery(undefined, {
-    selectFromResult: ({ data, isLoading }) => ({
-      usersIsLoading: isLoading,
-      users: (data && filterOrSearchUsers(data)) ?? [],
-    }),
+    selectFromResult: ({ data, isLoading }) => {
+      document.getElementById('datatable')?.scrollIntoView()
+      return {
+        usersIsLoading: isLoading,
+        users: (data && filterOrSearchUsers(data)) ?? [],
+      }
+    },
   })
   const [order, setOrder] = React.useState<OrderType>('asc')
-  const [orderBy, setOrderBy] = React.useState<string>('id')
+  const [orderBy, setOrderBy] = React.useState<string>('username')
   const headers: DataTableHeaderType[] = [
-    {
-      id: 'id',
-      label: 'ID',
-      type: 'string',
-    },
     {
       id: 'username',
       label: 'Username',
@@ -144,6 +142,7 @@ const UsersDataTable = () => {
   return (
     <>
       <Box
+        id='datatable'
         sx={{
           width: '100%',
           height: 'calc(100vh - 300px)',
@@ -152,6 +151,7 @@ const UsersDataTable = () => {
       >
         <TableContainer>
           <Table
+            stickyHeader
             aria-labelledby='tableTitle'
             size='small'
           >
@@ -196,7 +196,7 @@ const UsersDataTable = () => {
               {users
                 .slice()
                 .sort(getComparator(order, orderBy))
-                .map(row => {
+                .map((row, index) => {
                   const itemIsSelected = isSelected(_.toString(row.id))
 
                   return (
@@ -221,11 +221,12 @@ const UsersDataTable = () => {
                         />
                       </TableCell>
                       <TableCell
+                        padding='checkbox'
                         sx={{
                           borderBottom: 0,
                         }}
                       >
-                        {row.id}
+                        {index}
                       </TableCell>
                       <TableCell
                         sx={{

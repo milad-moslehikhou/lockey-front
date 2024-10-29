@@ -20,7 +20,7 @@ import { visuallyHidden } from '@mui/utils'
 import StarIcon from '@mui/icons-material/Star'
 import StarHalfIcon from '@mui/icons-material/StarHalf'
 import StarBorderIcon from '@mui/icons-material/StarBorder'
-import { getComparator, humanizeDate } from '../../helpers/common'
+import { getComparator } from '../../helpers/common'
 import {
   credentialActions,
   selectCredentialFilter,
@@ -399,6 +399,7 @@ const CredentialsDataTable = () => {
                       )}
                     </TableCell>
                     <TableCell
+                      padding='checkbox'
                       sx={{
                         borderBottom: 0,
                       }}

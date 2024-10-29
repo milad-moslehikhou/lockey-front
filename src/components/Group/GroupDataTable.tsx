@@ -39,19 +39,17 @@ const GroupsDataTable = () => {
     else return groups
   }
   const { groups, groupsIsLoading } = useGetGroupsQuery(undefined, {
-    selectFromResult: ({ data, isLoading }) => ({
-      groupsIsLoading: isLoading,
-      groups: (data && filterOrSearchGroups(data)) ?? [],
-    }),
+    selectFromResult: ({ data, isLoading }) => {
+      document.getElementById('datatable')?.scrollIntoView()
+      return {
+        groupsIsLoading: isLoading,
+        groups: (data && filterOrSearchGroups(data)) ?? [],
+      }
+    },
   })
   const [order, setOrder] = React.useState<OrderType>('asc')
-  const [orderBy, setOrderBy] = React.useState<string>('id')
+  const [orderBy, setOrderBy] = React.useState<string>('name')
   const headers: DataTableHeaderType[] = [
-    {
-      id: 'id',
-      label: 'ID',
-      type: 'string',
-    },
     {
       id: 'name',
       label: 'Name',
@@ -101,6 +99,7 @@ const GroupsDataTable = () => {
 
   return (
     <Box
+      id='datatable'
       sx={{
         width: '100%',
         height: 'calc(100vh - 300px)',
@@ -109,6 +108,7 @@ const GroupsDataTable = () => {
     >
       <TableContainer>
         <Table
+          stickyHeader
           aria-labelledby='tableTitle'
           size='small'
         >
@@ -122,6 +122,7 @@ const GroupsDataTable = () => {
                   onChange={handleOnSelectAll}
                 />
               </TableCell>
+              <TableCell padding='checkbox'>#</TableCell>
               {headers.map(header => (
                 <TableCell
                   key={header.id}
@@ -153,7 +154,7 @@ const GroupsDataTable = () => {
             {groups
               .slice()
               .sort(getComparator(order, orderBy))
-              .map(row => {
+              .map((row, index) => {
                 const itemIsSelected = isSelected(_.toString(row.id))
 
                 return (
@@ -178,11 +179,12 @@ const GroupsDataTable = () => {
                       />
                     </TableCell>
                     <TableCell
+                      padding='checkbox'
                       sx={{
                         borderBottom: 0,
                       }}
                     >
-                      {row.id}
+                      {index}
                     </TableCell>
                     <TableCell
                       sx={{
