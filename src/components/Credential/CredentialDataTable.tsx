@@ -414,6 +414,14 @@ const CredentialsDataTable = () => {
                         borderBottom: 0,
                       }}
                     >
+                      {index + 11}
+                    </TableCell>
+                    <TableCell
+                      padding='checkbox'
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
                       {isShared(row.id) ? (
                         <Share
                           fontSize='inherit'
@@ -422,14 +430,6 @@ const CredentialsDataTable = () => {
                       ) : (
                         <></>
                       )}
-                    </TableCell>
-                    <TableCell
-                      padding='checkbox'
-                      sx={{
-                        borderBottom: 0,
-                      }}
-                    >
-                      {index}
                     </TableCell>
                     <TableCell
                       sx={{

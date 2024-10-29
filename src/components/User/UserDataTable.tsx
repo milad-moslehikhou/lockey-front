@@ -165,6 +165,7 @@ const UsersDataTable = () => {
                     onChange={handleOnSelectAll}
                   />
                 </TableCell>
+                <TableCell padding='checkbox'>#</TableCell>
                 {headers.map(header => (
                   <TableCell
                     key={header.id}
@@ -226,7 +227,7 @@ const UsersDataTable = () => {
                           borderBottom: 0,
                         }}
                       >
-                        {index}
+                        {index + 1}
                       </TableCell>
                       <TableCell
                         sx={{

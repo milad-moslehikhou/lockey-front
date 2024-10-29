@@ -184,7 +184,7 @@ const GroupsDataTable = () => {
                         borderBottom: 0,
                       }}
                     >
-                      {index}
+                      {index + 1}
                     </TableCell>
                     <TableCell
                       sx={{
