@@ -14,6 +14,7 @@ import {
   Tooltip,
   Stack,
   IconButton,
+  Chip,
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 import StarIcon from '@mui/icons-material/Star'
@@ -90,21 +91,19 @@ const CredentialsDataTable = () => {
     else return filterCredential(credentials)
   }
   const { credentials, credentialsIsLoading } = useGetCredentialsQuery(undefined, {
-    selectFromResult: ({ data, isLoading }) => ({
-      credentialsIsLoading: isLoading,
-      credentials: (data && filterOrSearchCredentials(data)) ?? [],
-    }),
+    selectFromResult: ({ data, isLoading }) => {
+      document.getElementById('datatable')?.scrollIntoView()
+      return {
+        credentialsIsLoading: isLoading,
+        credentials: (data && filterOrSearchCredentials(data)) ?? [],
+      }
+    },
   })
   const [addFavoritre, { isLoading: addFavoriteIsLoading }] = useAddCredentialFavoriteMutation()
   const [delFavoritre, { isLoading: delFavoriteIsLoading }] = useDeleteCredentialFavoriteMutation()
   const [order, setOrder] = React.useState<OrderType>('asc')
   const [orderBy, setOrderBy] = React.useState<keyof CredentialType>('name')
   const headers: DataTableHeaderType[] = [
-    {
-      id: 'id',
-      label: 'ID',
-      type: 'string',
-    },
     {
       id: 'name',
       label: 'Name',
@@ -126,8 +125,8 @@ const CredentialsDataTable = () => {
       type: 'string',
     },
     {
-      id: 'modified_at',
-      label: 'Modified',
+      id: 'tags',
+      label: 'Tags',
       type: 'string',
     },
   ]
@@ -280,6 +279,7 @@ const CredentialsDataTable = () => {
 
   return (
     <Box
+      id='datatable'
       sx={{
         width: '100%',
         height: 'calc(100vh - 300px)',
@@ -288,6 +288,7 @@ const CredentialsDataTable = () => {
     >
       <TableContainer>
         <Table
+          stickyHeader
           aria-labelledby='tableTitle'
           size='small'
         >
@@ -311,6 +312,7 @@ const CredentialsDataTable = () => {
                   checked={credentials.length > 0 && numFavorited === credentials.length}
                 />
               </TableCell>
+              <TableCell padding='checkbox'>#</TableCell>
               <TableCell padding='checkbox' />
               {headers.map(header => (
                 <TableCell
@@ -343,7 +345,7 @@ const CredentialsDataTable = () => {
             {credentials
               .slice()
               .sort(getComparator(order, orderBy))
-              .map(row => {
+              .map((row, index) => {
                 const itemIsSelected = isSelected(_.toString(row.id))
 
                 return (
@@ -401,7 +403,7 @@ const CredentialsDataTable = () => {
                         borderBottom: 0,
                       }}
                     >
-                      {row.id}
+                      {index}
                     </TableCell>
                     <TableCell
                       sx={{
@@ -436,7 +438,22 @@ const CredentialsDataTable = () => {
                         borderBottom: 0,
                       }}
                     >
-                      {humanizeDate(row.modified_at)}
+                      <Stack
+                        direction='row'
+                        spacing={0.5}
+                      >
+                        {row.tags &&
+                          row.tags.split(',').map(t => {
+                            return (
+                              <Chip
+                                key={t}
+                                label={t}
+                                size='small'
+                                variant='outlined'
+                              />
+                            )
+                          })}
+                      </Stack>
                     </TableCell>
                     <TableCell
                       padding='checkbox'
