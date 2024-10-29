@@ -19,8 +19,10 @@ const Passwords = () => {
   const handleOnSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.currentTarget.value.toLowerCase()
     dispatch(credentialActions.setSearch(search))
-    if (search === '' || search === undefined) dispatch(breadcrumbsActions.setItems([]))
-    else dispatch(breadcrumbsActions.setItems([{ id: 'search', name: `Search: ${search}` }]))
+    if (search === '' || search === undefined) {
+      dispatch(breadcrumbsActions.setItems([]))
+      dispatch(credentialActions.setFilter('list:all_items'))
+    } else dispatch(breadcrumbsActions.setItems([{ id: 'search', name: `Search: ${search}` }]))
   }
 
   return (

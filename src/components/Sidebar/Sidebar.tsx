@@ -34,6 +34,7 @@ const Sidebar = () => {
   }
 
   const handleOnSelectedItemsChange = (e: React.SyntheticEvent, itemId: string | null) => {
+    dispatch(credentialActions.setSearch(''))
     itemId && dispatch(breadcrumbsActions.setItems(getLocation(_.toInteger(itemId)).reverse()))
     itemId && dispatch(credentialActions.setFilter(itemId))
   }

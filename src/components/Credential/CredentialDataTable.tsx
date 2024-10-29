@@ -98,7 +98,7 @@ const CredentialsDataTable = () => {
   const [addFavoritre, { isLoading: addFavoriteIsLoading }] = useAddCredentialFavoriteMutation()
   const [delFavoritre, { isLoading: delFavoriteIsLoading }] = useDeleteCredentialFavoriteMutation()
   const [order, setOrder] = React.useState<OrderType>('asc')
-  const [orderBy, setOrderBy] = React.useState<keyof CredentialType>('id')
+  const [orderBy, setOrderBy] = React.useState<keyof CredentialType>('name')
   const headers: DataTableHeaderType[] = [
     {
       id: 'id',
@@ -280,200 +280,200 @@ const CredentialsDataTable = () => {
 
   return (
     <Box
-        sx={{
-          width: '100%',
-          height: 'calc(100vh - 300px)',
-          overflowY: 'auto'
-        }}
-      >
-        <TableContainer>
-          <Table
-            aria-labelledby='tableTitle'
-            size='small'
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell padding='checkbox'>
-                  <Checkbox
-                    color='primary'
-                    indeterminate={credentialSelected.length > 0 && credentialSelected.length < credentials.length}
-                    checked={credentials.length > 0 && credentialSelected.length === credentials.length}
-                    onChange={handleOnSelectAll}
-                  />
-                </TableCell>
-                <TableCell padding='checkbox'>
-                  <Checkbox
-                    icon={<StarBorderIcon />}
-                    checkedIcon={<StarIcon color='action' />}
-                    indeterminateIcon={<StarHalfIcon color='action' />}
-                    color='primary'
-                    indeterminate={numFavorited > 0 && numFavorited < credentials.length}
-                    checked={credentials.length > 0 && numFavorited === credentials.length}
-                  />
-                </TableCell>
-                <TableCell padding='checkbox' />
-                {headers.map(header => (
-                  <TableCell
-                    key={header.id}
-                    align={header.type === 'number' ? 'right' : 'left'}
-                    sortDirection={orderBy === header.id ? order : false}
+      sx={{
+        width: '100%',
+        height: 'calc(100vh - 300px)',
+        overflowY: 'auto',
+      }}
+    >
+      <TableContainer>
+        <Table
+          aria-labelledby='tableTitle'
+          size='small'
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell padding='checkbox'>
+                <Checkbox
+                  color='primary'
+                  indeterminate={credentialSelected.length > 0 && credentialSelected.length < credentials.length}
+                  checked={credentials.length > 0 && credentialSelected.length === credentials.length}
+                  onChange={handleOnSelectAll}
+                />
+              </TableCell>
+              <TableCell padding='checkbox'>
+                <Checkbox
+                  icon={<StarBorderIcon />}
+                  checkedIcon={<StarIcon color='action' />}
+                  indeterminateIcon={<StarHalfIcon color='action' />}
+                  color='primary'
+                  indeterminate={numFavorited > 0 && numFavorited < credentials.length}
+                  checked={credentials.length > 0 && numFavorited === credentials.length}
+                />
+              </TableCell>
+              <TableCell padding='checkbox' />
+              {headers.map(header => (
+                <TableCell
+                  key={header.id}
+                  align={header.type === 'number' ? 'right' : 'left'}
+                  sortDirection={orderBy === header.id ? order : false}
+                >
+                  <TableSortLabel
+                    active={orderBy === header.id}
+                    direction={orderBy === header.id ? order : 'asc'}
+                    onClick={createSortHandler(header.id)}
                   >
-                    <TableSortLabel
-                      active={orderBy === header.id}
-                      direction={orderBy === header.id ? order : 'asc'}
-                      onClick={createSortHandler(header.id)}
-                    >
-                      {header.label}
-                      {orderBy === header.id ? (
-                        <Box
-                          component='span'
-                          sx={visuallyHidden}
-                        >
-                          {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                        </Box>
-                      ) : null}
-                    </TableSortLabel>
-                  </TableCell>
-                ))}
-                <TableCell padding='checkbox' />
-              </TableRow>
-            </TableHead>
+                    {header.label}
+                    {orderBy === header.id ? (
+                      <Box
+                        component='span'
+                        sx={visuallyHidden}
+                      >
+                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      </Box>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
+              <TableCell padding='checkbox' />
+            </TableRow>
+          </TableHead>
 
-            <TableBody>
-              {credentials
-                .slice()
-                .sort(getComparator(order, orderBy))
-                .map(row => {
-                  const itemIsSelected = isSelected(_.toString(row.id))
+          <TableBody>
+            {credentials
+              .slice()
+              .sort(getComparator(order, orderBy))
+              .map(row => {
+                const itemIsSelected = isSelected(_.toString(row.id))
 
-                  return (
-                    <TableRow
-                      key={row.id}
-                      role='checkbox'
-                      aria-checked={itemIsSelected}
-                      tabIndex={-1}
-                      selected={itemIsSelected}
-                      hover
+                return (
+                  <TableRow
+                    key={row.id}
+                    role='checkbox'
+                    aria-checked={itemIsSelected}
+                    tabIndex={-1}
+                    selected={itemIsSelected}
+                    hover
+                  >
+                    <TableCell
+                      padding='checkbox'
+                      sx={{
+                        borderBottom: 0,
+                      }}
                     >
-                      <TableCell
-                        padding='checkbox'
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        <Checkbox
-                          color='primary'
-                          checked={itemIsSelected}
-                          onClick={event => handleOnSelect(event, _.toString(row.id))}
+                      <Checkbox
+                        color='primary'
+                        checked={itemIsSelected}
+                        onClick={event => handleOnSelect(event, _.toString(row.id))}
+                      />
+                    </TableCell>
+                    <TableCell
+                      padding='checkbox'
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      <Checkbox
+                        icon={<StarBorderIcon />}
+                        checkedIcon={<StarIcon color='action' />}
+                        color='primary'
+                        checked={row.is_favorite}
+                        onChange={event => handleOnFavorite(event, row.id)}
+                      />
+                    </TableCell>
+                    <TableCell
+                      padding='checkbox'
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      {isShared(row.id) ? (
+                        <Share
+                          fontSize='inherit'
+                          sx={{ marginTop: '5px' }}
                         />
-                      </TableCell>
-                      <TableCell
-                        padding='checkbox'
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        <Checkbox
-                          icon={<StarBorderIcon />}
-                          checkedIcon={<StarIcon color='action' />}
-                          color='primary'
-                          checked={row.is_favorite}
-                          onChange={event => handleOnFavorite(event, row.id)}
-                        />
-                      </TableCell>
-                      <TableCell
-                        padding='checkbox'
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        {isShared(row.id) ? (
-                          <Share
-                            fontSize='inherit'
-                            sx={{ marginTop: '5px' }}
-                          />
-                        ) : (
-                          <></>
-                        )}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        {row.id}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        {row.name}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        {row.username}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        {row.ip}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        {row.uri}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        {humanizeDate(row.modified_at)}
-                      </TableCell>
-                      <TableCell
-                        padding='checkbox'
-                        sx={{
-                          borderBottom: 0,
-                        }}
-                      >
-                        <Stack direction='row'>
-                          <Tooltip title='Show secret'>
-                            <IconButton
-                              aria-label='reveal'
-                              size='small'
-                              color='primary'
-                              onClick={event => handleOnShowSecret(event, row.id)}
-                            >
-                              <Visibility fontSize='inherit' />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title='Copy to clipboard'>
-                            <IconButton
-                              aria-label='copy'
-                              size='small'
-                              color='primary'
-                              onClick={event => handleOnCopySecret(event, row.id)}
-                            >
-                              <FileCopy fontSize='inherit' />
-                            </IconButton>
-                          </Tooltip>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+                      ) : (
+                        <></>
+                      )}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      {row.id}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      {row.name}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      {row.username}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      {row.ip}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      {row.uri}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      {humanizeDate(row.modified_at)}
+                    </TableCell>
+                    <TableCell
+                      padding='checkbox'
+                      sx={{
+                        borderBottom: 0,
+                      }}
+                    >
+                      <Stack direction='row'>
+                        <Tooltip title='Show secret'>
+                          <IconButton
+                            aria-label='reveal'
+                            size='small'
+                            color='primary'
+                            onClick={event => handleOnShowSecret(event, row.id)}
+                          >
+                            <Visibility fontSize='inherit' />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title='Copy to clipboard'>
+                          <IconButton
+                            aria-label='copy'
+                            size='small'
+                            color='primary'
+                            onClick={event => handleOnCopySecret(event, row.id)}
+                          >
+                            <FileCopy fontSize='inherit' />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   )
 }
 

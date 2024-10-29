@@ -34,6 +34,7 @@ const Administration = () => {
   }
 
   const handleOnSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(actions.setSelected([]))
     const search = e.currentTarget.value.toLowerCase()
     setSearchText(search)
     dispatch(actions.setSearch(search))
