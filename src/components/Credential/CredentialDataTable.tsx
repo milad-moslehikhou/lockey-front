@@ -87,13 +87,15 @@ const CredentialsDataTable = () => {
   ]
   const searchCredential = (credentials: CredentialType[]) => {
     let searchField = ''
-    let searchValue = credentialSearch
-    if (searchValue.startsWith('=')) {
+    let searchValue = ''
+    if (credentialSearch.startsWith('=')) {
       const phrase = credentialSearch.replace('=', '').split(':')
       if (phrase.length === 2) {
         searchField = phrase[0]
         searchValue = phrase[1]
       }
+    } else {
+      searchValue = credentialSearch
     }
     switch (searchField) {
       case 'name':
@@ -103,15 +105,16 @@ const CredentialsDataTable = () => {
       case 'ip':
         return credentials.filter(c => c.ip && c.ip.includes(searchValue))
       case 'tags':
-        return credentials.filter(c => c.tags.split(',').every(t => searchValue.split(',').includes(t)))
+        return credentials.filter(c => c.tags && c.tags.split(',').every(t => searchValue.split(',').includes(t)))
       default:
-        return credentials.filter(
-          c =>
-            (c.name && c.name.toLowerCase().includes(credentialSearch)) ||
-            (c.username && c.username.toLowerCase().includes(credentialSearch)) ||
-            (c.ip && c.ip.includes(searchValue)) ||
-            (c.tags && c.tags.toLowerCase().includes(credentialSearch))
-        )
+        if (searchValue !== '')
+          return credentials.filter(
+            c =>
+              (c.name && c.name.toLowerCase().includes(searchValue)) ||
+              (c.username && c.username.toLowerCase().includes(searchValue)) ||
+              (c.ip && c.ip.includes(searchValue)) ||
+              (c.tags && c.tags.toLowerCase().includes(searchValue))
+          )
     }
   }
 
@@ -143,7 +146,7 @@ const CredentialsDataTable = () => {
 
   const { credentials, credentialsIsLoading } = useGetCredentialsQuery(undefined, {
     selectFromResult: ({ data, isLoading }) => {
-      document.getElementById('datatable')?.scrollIntoView()
+      document.getElementById('datatable')?.scroll({ top: 0, left: 0 })
       return {
         credentialsIsLoading: isLoading,
         credentials: (data && filterOrSearchCredentials(data)) ?? [],
@@ -304,14 +307,15 @@ const CredentialsDataTable = () => {
 
   return (
     <Box
-      id='datatable'
       sx={{
         width: '100%',
-        height: 'calc(100vh - 300px)',
-        overflowY: 'auto',
+        overflow: 'hidden',
       }}
     >
-      <TableContainer>
+      <TableContainer
+        id='datatable'
+        sx={{ maxHeight: 'calc(100vh - 300px)' }}
+      >
         <Table
           stickyHeader
           aria-labelledby='tableTitle'
@@ -414,7 +418,7 @@ const CredentialsDataTable = () => {
                         borderBottom: 0,
                       }}
                     >
-                      {index + 11}
+                      {index + 1}
                     </TableCell>
                     <TableCell
                       padding='checkbox'

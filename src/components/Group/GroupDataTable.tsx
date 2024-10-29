@@ -40,7 +40,7 @@ const GroupsDataTable = () => {
   }
   const { groups, groupsIsLoading } = useGetGroupsQuery(undefined, {
     selectFromResult: ({ data, isLoading }) => {
-      document.getElementById('datatable')?.scrollIntoView()
+      document.getElementById('datatable')?.scroll({ top: 0, left: 0 })
       return {
         groupsIsLoading: isLoading,
         groups: (data && filterOrSearchGroups(data)) ?? [],
@@ -99,14 +99,15 @@ const GroupsDataTable = () => {
 
   return (
     <Box
-      id='datatable'
       sx={{
         width: '100%',
-        height: 'calc(100vh - 300px)',
-        overflowY: 'auto',
+        overflow: 'hidden',
       }}
     >
-      <TableContainer>
+      <TableContainer
+        id='datatable'
+        sx={{ maxHeight: 'calc(100vh - 300px)' }}
+      >
         <Table
           stickyHeader
           aria-labelledby='tableTitle'

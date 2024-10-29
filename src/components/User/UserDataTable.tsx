@@ -35,32 +35,6 @@ const UsersDataTable = () => {
   const userSearch = useSelector(selectUserSearch)
   const userSelected = useSelector(selectUserSelected)
   const userShowForms = useSelector(selectUserShowForms)
-  const { data: user } = useGetUserByIdQuery(_.toInteger(userSelected[0]), {
-    skip: !(userSelected.length === 1),
-  })
-  const searchUser = (users: UserType[]) => {
-    return users.filter(
-      s =>
-        (s.username && s.username.toLowerCase().includes(userSearch)) ||
-        (s.first_name && s.first_name.toLowerCase().includes(userSearch)) ||
-        (s.last_name && s.last_name.toLowerCase().includes(userSearch))
-    )
-  }
-  const filterOrSearchUsers = (users: UserType[]) => {
-    if (userSearch && userSearch !== '') return searchUser(users)
-    else return users
-  }
-  const { users, usersIsLoading } = useGetUsersQuery(undefined, {
-    selectFromResult: ({ data, isLoading }) => {
-      document.getElementById('datatable')?.scrollIntoView()
-      return {
-        usersIsLoading: isLoading,
-        users: (data && filterOrSearchUsers(data)) ?? [],
-      }
-    },
-  })
-  const [order, setOrder] = React.useState<OrderType>('asc')
-  const [orderBy, setOrderBy] = React.useState<string>('username')
   const headers: DataTableHeaderType[] = [
     {
       id: 'username',
@@ -98,6 +72,37 @@ const UsersDataTable = () => {
       type: 'string',
     },
   ]
+
+  const { data: user } = useGetUserByIdQuery(_.toInteger(userSelected[0]), {
+    skip: !(userSelected.length === 1),
+  })
+
+  const searchUser = (users: UserType[]) => {
+    return users.filter(
+      s =>
+        (s.username && s.username.toLowerCase().includes(userSearch)) ||
+        (s.first_name && s.first_name.toLowerCase().includes(userSearch)) ||
+        (s.last_name && s.last_name.toLowerCase().includes(userSearch))
+    )
+  }
+
+  const filterOrSearchUsers = (users: UserType[]) => {
+    if (userSearch && userSearch !== '') return searchUser(users)
+    else return users
+  }
+
+  const { users, usersIsLoading } = useGetUsersQuery(undefined, {
+    selectFromResult: ({ data, isLoading }) => {
+      document.getElementById('datatable')?.scroll({ top: 0, left: 0 })
+      return {
+        usersIsLoading: isLoading,
+        users: (data && filterOrSearchUsers(data)) ?? [],
+      }
+    },
+  })
+
+  const [order, setOrder] = React.useState<OrderType>('asc')
+  const [orderBy, setOrderBy] = React.useState<string>('username')
 
   const handleOnSort = (e: React.MouseEvent<unknown>, property: string) => {
     const isAsc = orderBy === property && order === 'asc'
@@ -142,14 +147,15 @@ const UsersDataTable = () => {
   return (
     <>
       <Box
-        id='datatable'
         sx={{
           width: '100%',
-          height: 'calc(100vh - 300px)',
-          overflowY: 'auto',
+          overflow: 'hidden',
         }}
       >
-        <TableContainer>
+        <TableContainer
+          id='datatable'
+          sx={{ maxHeight: 'calc(100vh - 300px)' }}
+        >
           <Table
             stickyHeader
             aria-labelledby='tableTitle'
