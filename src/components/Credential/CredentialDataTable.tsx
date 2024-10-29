@@ -85,38 +85,6 @@ const CredentialsDataTable = () => {
       type: 'string',
     },
   ]
-  const searchCredential = (credentials: CredentialType[]) => {
-    let searchField = ''
-    let searchValue = ''
-    if (credentialSearch.startsWith('=')) {
-      const phrase = credentialSearch.replace('=', '').split(':')
-      if (phrase.length === 2) {
-        searchField = phrase[0]
-        searchValue = phrase[1]
-      }
-    } else {
-      searchValue = credentialSearch
-    }
-    switch (searchField) {
-      case 'name':
-        return credentials.filter(c => c.name && c.name.toLowerCase().includes(searchValue))
-      case 'username':
-        return credentials.filter(c => c.username && c.username.toLowerCase().includes(searchValue))
-      case 'ip':
-        return credentials.filter(c => c.ip && c.ip.includes(searchValue))
-      case 'tags':
-        return credentials.filter(c => c.tags && c.tags.split(',').every(t => searchValue.split(',').includes(t)))
-      default:
-        if (searchValue !== '')
-          return credentials.filter(
-            c =>
-              (c.name && c.name.toLowerCase().includes(searchValue)) ||
-              (c.username && c.username.toLowerCase().includes(searchValue)) ||
-              (c.ip && c.ip.includes(searchValue)) ||
-              (c.tags && c.tags.toLowerCase().includes(searchValue))
-          )
-    }
-  }
 
   const filterCredential = (credentials: CredentialType[]) => {
     switch (credentialFilter) {
@@ -139,8 +107,42 @@ const CredentialsDataTable = () => {
     }
   }
 
+  const searchCredential = (credentials: CredentialType[]) => {
+    let searchField = ''
+    let searchValue = ''
+    if (credentialSearch.startsWith('=')) {
+      const phrase = credentialSearch.replace('=', '').split(':')
+      if (phrase.length === 2) {
+        searchField = phrase[0]
+        searchValue = phrase[1]
+      } else {
+        return filterCredential(credentials)
+      }
+    } else {
+      searchValue = credentialSearch
+    }
+    switch (searchField) {
+      case 'name':
+        return credentials.filter(c => c.name && c.name.toLowerCase().includes(searchValue))
+      case 'username':
+        return credentials.filter(c => c.username && c.username.toLowerCase().includes(searchValue))
+      case 'ip':
+        return credentials.filter(c => c.ip && c.ip.includes(searchValue))
+      case 'tags':
+        return credentials.filter(c => c.tags && c.tags.split(',').every(t => searchValue.split(',').includes(t)))
+      default:
+        return credentials.filter(
+          c =>
+            (c.name && c.name.toLowerCase().includes(searchValue)) ||
+            (c.username && c.username.toLowerCase().includes(searchValue)) ||
+            (c.ip && c.ip.includes(searchValue)) ||
+            (c.tags && c.tags.toLowerCase().includes(searchValue))
+        )
+    }
+  }
+
   const filterOrSearchCredentials = (credentials: CredentialType[]) => {
-    if (credentialSearch && credentialSearch !== '') return searchCredential(credentials)
+    if (credentialSearch && credentialSearch.length > 1) return searchCredential(credentials)
     else return filterCredential(credentials)
   }
 
