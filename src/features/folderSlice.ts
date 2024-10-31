@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { RootStateType } from '../app/store'
+import type { RootStateType } from '../app/reducers'
 import type { FormsStateType } from '../types/component'
 import type { FolderStateType } from '../types/folder'
 

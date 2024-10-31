@@ -5,7 +5,8 @@ import App from './App'
 import './index.css'
 declare global {
   interface Window {
-    API_BASE_URL?: any
+    API_BASE_URL?: string
+    MAX_USER_INACTIVITY_TIME?: number
   }
 }
 require('typeface-roboto')

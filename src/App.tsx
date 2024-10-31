@@ -1,3 +1,4 @@
+import './App.css'
 import * as React from 'react'
 import { Provider } from 'react-redux'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -8,9 +9,7 @@ import { AuthProvider } from './context/Auth'
 import { LoadingProvider } from './context/Loading'
 import { store } from './app/store'
 import { SnackbarProvider } from './context/Snackbar'
-import Routes from './Routes'
-
-import './App.css'
+import MainPage from './pages/MainPage/MainPage'
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
@@ -33,7 +32,7 @@ function App() {
           <SnackbarProvider>
             <LoadingProvider>
               <BrowserRouter>
-                <Routes />
+                <MainPage />
               </BrowserRouter>
             </LoadingProvider>
           </SnackbarProvider>

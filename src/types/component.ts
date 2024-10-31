@@ -59,3 +59,8 @@ export type IUserOpt = {
   fontColor?: string
   background?: string
 }
+
+export type CommonStateType = {
+  userInactivityTime: number
+  isLastChanceTobeActive: boolean
+}

@@ -1,24 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
+import rootReducer from './reducers'
 import { apiSlice } from '../features/apiSlice'
-import folderReducer from '../features/folderSlice'
-import credentialReducer from '../features/credentialSlice'
-import breadcrumbsReducer from '../features/breadcrumbsSlice'
-import userReducer from '../features/userSlice'
-import groupReducer from '../features/groupSlice'
+import userInactivityMiddleware from '../middleware/userInactivityMiddleware'
+
 
 export const store = configureStore({
-  reducer: {
-    [apiSlice.reducerPath]: apiSlice.reducer,
-    folder: folderReducer,
-    credential: credentialReducer,
-    user: userReducer,
-    group: groupReducer,
-    breadcrumbs: breadcrumbsReducer,
-  },
-  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(apiSlice.middleware),
+  reducer: rootReducer,
+  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(apiSlice.middleware).prepend(userInactivityMiddleware),
   devTools: process.env.NODE_ENV !== 'production',
   preloadedState: {},
 })
 
-export type RootStateType = ReturnType<typeof store.getState>
 export type AppDispatchType = typeof store.dispatch
