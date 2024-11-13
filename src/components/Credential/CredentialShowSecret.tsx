@@ -3,13 +3,32 @@ import { useDispatch, useSelector } from 'react-redux'
 import { credentialActions, selectCredentialSecret } from '../../features/credentialSlice'
 import InfoDialog from '../InfoDialog/InfoDialog'
 import { formatDate } from '../../helpers/common'
+import { IconButton, Tooltip } from '@mui/material'
+import { FileCopy } from '@mui/icons-material'
+import useSnackbar from '../../hooks/useSnackbar'
 
 const CredentialShowSecret = () => {
   const dispatch = useDispatch()
+  const openSnackbar = useSnackbar()
   const secret = useSelector(selectCredentialSecret)
 
   const handleCloseForm = () => {
     dispatch(credentialActions.setShowForms({ showSecret: false }))
+  }
+
+  const handleOnCopySecret = (event: React.MouseEvent<HTMLButtonElement>, secret: string) => {
+    try {
+      navigator.clipboard.writeText(secret)
+      openSnackbar({
+        severity: 'success',
+        message: 'Secret copied successfully.',
+      })
+    } catch {
+      openSnackbar({
+        severity: 'error',
+        message: 'Something went wrong.',
+      })
+    }
   }
 
   return (
@@ -20,10 +39,11 @@ const CredentialShowSecret = () => {
       <>
         {secret.map(s => {
           return (
-            <p
+            <div
               key={s.id}
               style={{
                 width: '100%',
+                margin: '32px 0',
               }}
             >
               {formatDate(s.created_at, 'YYYY-MM-DD')}:{' '}
@@ -37,7 +57,19 @@ const CredentialShowSecret = () => {
               >
                 {s.password}
               </code>
-            </p>
+              <div style={{ float: 'right' }}>
+                <Tooltip title='Copy to clipboard'>
+                  <IconButton
+                    aria-label='copy'
+                    size='small'
+                    color='primary'
+                    onClick={event => handleOnCopySecret(event, s.password)}
+                  >
+                    <FileCopy fontSize='inherit' />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </div>
           )
         })}
       </>
