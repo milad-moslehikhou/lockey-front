@@ -90,7 +90,7 @@ const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) =
         <InputLabel htmlFor='password'>Secret</InputLabel>
         <Input
           id='password'
-          type='password'
+          type={showPassword ? 'text' : 'password'}
           className='form-control'
           autoComplete='new-password'
           error={'password' in errors}
