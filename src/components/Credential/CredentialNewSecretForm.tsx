@@ -91,7 +91,6 @@ const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) =
         <Input
           id='password'
           type={showPassword ? 'text' : 'password'}
-          className='form-control'
           autoComplete='new-password'
           error={'password' in errors}
           aria-describedby='password-error-text'
