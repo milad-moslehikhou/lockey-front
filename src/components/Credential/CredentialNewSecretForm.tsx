@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
-import { TextField, FormControl } from '@mui/material'
+import { TextField, FormControl, InputLabel, Input, InputAdornment, IconButton, FormHelperText } from '@mui/material'
 import FormDialog from '../FormDialog/FormDialog'
 import { useAddCredentialSecretMutation } from '../../features/apiSlice'
 import useSnackbar from '../../hooks/useSnackbar'
@@ -12,6 +12,7 @@ import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import moment, { Moment } from 'moment'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
 
 interface CredentialNewSecretFormProps {
   credential: CredentialType
@@ -30,6 +31,7 @@ const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) =
   const dispatch = useDispatch()
   const openSnackbar = useSnackbar()
   const loggedInUser = useLoggedInUser()
+  const [showPassword, setShowPassword] = React.useState(false)
   const [add, { isLoading: editCredentialIsLoading }] = useAddCredentialSecretMutation()
   const {
     register,
@@ -82,19 +84,33 @@ const CredentialNewSecretForm = ({ credential }: CredentialNewSecretFormProps) =
     <>
       <FormControl
         fullWidth
+        variant='standard'
         sx={{ mt: 2 }}
       >
-        <TextField
+        <InputLabel htmlFor='password'>Secret</InputLabel>
+        <Input
           id='password'
-          label='Secret'
           type='password'
-          variant='standard'
           className='form-control'
           autoComplete='new-password'
           error={'password' in errors}
-          helperText={errors.password && (errors.password.message as string)}
+          aria-describedby='password-error-text'
           {...register('password', { setValueAs: setStringOrNull })}
+          endAdornment={
+            <InputAdornment position='end'>
+              <IconButton
+                aria-label={showPassword ? 'hide the password' : 'display the password'}
+                onMouseDown={() => setShowPassword(true)}
+                onMouseUp={() => setShowPassword(false)}
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          }
         />
+        <FormHelperText id='password-error-text'>
+          {errors.password && (errors.password.message as string)}
+        </FormHelperText>
       </FormControl>
       <FormControl
         fullWidth

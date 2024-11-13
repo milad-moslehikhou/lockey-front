@@ -43,7 +43,7 @@ const CredentialShowSecret = () => {
               key={s.id}
               style={{
                 width: '100%',
-                margin: '32px 0',
+                margin: '1rem 0',
               }}
             >
               {formatDate(s.created_at, 'YYYY-MM-DD')}:{' '}
