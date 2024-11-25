@@ -80,7 +80,7 @@ const MainPage = () => {
           sx={{ width: '100%' }}
           onClose={handleOnCloseSnackbar}
         >
-          {`You dont have any interact with this page, you will logout automatically after ${countdownTimer}s.`}
+          {`You dont have any interaction with this page, you will logout automatically after ${countdownTimer}s.`}
         </Alert>
       </Snackbar>
     </>

@@ -481,7 +481,11 @@ const CredentialsDataTable = () => {
                                 key={t}
                                 label={t}
                                 size='small'
-                                variant='outlined'
+                                sx={{
+                                  '& .MuiChip-sizeSmall': {
+                                    height: '20px',
+                                  },
+                                }}
                               />
                             )
                           })}
