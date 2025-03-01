@@ -138,14 +138,6 @@ const Sidebar = () => {
           id='list:owned_by_me'
           text='Owned by me'
         />
-        <SidebarListItem
-          id='list:shared_by_me'
-          text='Shared by me'
-        />
-        <SidebarListItem
-          id='list:shared_with_me'
-          text='Shared with me'
-        />
       </List>
       <Divider />
       {folders && (

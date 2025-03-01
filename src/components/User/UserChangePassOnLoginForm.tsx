@@ -8,6 +8,7 @@ import type { UserType, UserChangePassFormType } from '../../types/user'
 import { handleException } from '../../helpers/form'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
+import { getEmptyAuthState } from '../../helpers/auth'
 
 interface UserChangePassOnLoginFormPropsType {
   user: UserType
@@ -30,8 +31,8 @@ const UserChangePassOnLoginForm = ({ user }: UserChangePassOnLoginFormPropsType)
   const handleCloseForm = async () => {
     try {
       await logout().unwrap()
-      setAuth({ user: null, token: null, expiry: null })
-      navigate('/login')
+      setAuth(getEmptyAuthState())
+      navigate('/auth')
     } catch {
       openSnackbar({
         severity: 'error',

@@ -2,7 +2,8 @@
     display: flex;
     margin: auto;
     width: 800px;
-    margin-top: calc((100vh - 500px)  / 2);
+    height: 500px;
+    margin-top: calc((100vh - 500px) / 2);
 }
 
 .logo-wraper {
@@ -23,6 +24,10 @@
     margin: 1rem 0;
     border-radius: 0 .5rem .5rem 0;
     box-shadow: 10px 10px 20px 0px #dddddd;
+}
+
+.form-container {
+    height: 100%;
 }
 
 .form-control,

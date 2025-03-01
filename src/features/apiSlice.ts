@@ -1,8 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { AuthType, LoginRequestType } from '../types/auth'
+import type { AuthType, LoginRequestType, Enable2faRequestType, Enable2faResponseType, Verify2faRequestType, Verify2faResponseType } from '../types/auth'
 import type {
   CredentialType,
-  CredentialShareType,
   CredentialSecretType,
   CredentialGrantType,
 } from '../types/credential'
@@ -19,7 +18,7 @@ export const apiSlice = createApi({
       const authString = sessionStorage.getItem('auth')
       if (authString) {
         const auth = JSON.parse(authString) as AuthType
-        if (auth.token) headers.set('Authorization', `Token ${auth.token}`)
+        if (auth.token) headers.set('Authorization', `Bearer ${auth.token}`)
       }
       return headers
     },
@@ -31,7 +30,6 @@ export const apiSlice = createApi({
     'Credential',
     'CredentialSecret',
     'CredentialGrant',
-    'CredentialShare',
     'Folder',
   ],
   endpoints: builder => ({
@@ -47,6 +45,20 @@ export const apiSlice = createApi({
       query: () => ({
         url: 'auth/logout/',
         method: 'POST',
+      }),
+    }),
+    enable2fa: builder.mutation<Enable2faResponseType, Enable2faRequestType>({
+      query: body => ({
+        url: 'auth/enable-2fa/',
+        method: 'POST',
+        body,
+      }),
+    }),
+    verify2fa: builder.mutation<Verify2faResponseType, Verify2faRequestType>({
+      query: body => ({
+        url: 'auth/verify-2fa/',
+        method: 'POST',
+        body,
       }),
     }),
 
@@ -227,20 +239,6 @@ export const apiSlice = createApi({
       query: id => `credentials/${id}/`,
       providesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
     }),
-    getCredentialSharesById: builder.query<CredentialShareType[], number>({
-      query: id => `credentials/${id}/share/`,
-      providesTags: (result, error, arg) => [{ type: 'CredentialShare', id: arg }],
-    }),
-    getCredentialShares: builder.query<CredentialShareType[], void>({
-      query: () => `credentials/all-shared/`,
-      providesTags: result =>
-        result
-          ? [
-              ...result.map(({ id }) => ({ type: 'CredentialShare' as const, id })),
-              { type: 'CredentialShare', id: 'LIST' },
-            ]
-          : [{ type: 'CredentialShare', id: 'LIST' }],
-    }),
     getCredentialSecretById: builder.query<CredentialSecretType[], number>({
       query: id => `credentials/${id}/secret/`,
       providesTags: (result, error, arg) => [{ type: 'CredentialSecret', id: arg }],
@@ -278,14 +276,6 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'Credential', id: arg }],
     }),
-    editCredentialShare: builder.mutation<CredentialShareType, { id: number; data: Partial<CredentialShareType[]> }>({
-      query: ({ id, data }) => ({
-        url: `credentials/${id}/share/`,
-        method: 'PATCH',
-        body: data,
-      }),
-      invalidatesTags: ['CredentialShare'],
-    }),
     editCredentialGrant: builder.mutation<CredentialGrantType, { id: number; data: Partial<CredentialGrantType>[] }>({
       query: ({ id, data }) => ({
         url: `credentials/${id}/grant/`,
@@ -301,6 +291,8 @@ export const {
   // Auth
   useLoginMutation,
   useLogoutMutation,
+  useEnable2faMutation,
+  useVerify2faMutation,
   // Permission
   useGetPermissionsQuery,
   // Group
@@ -331,8 +323,6 @@ export const {
   useGetCredentialsQuery,
   useLazyGetCredentialsQuery,
   useGetCredentialByIdQuery,
-  useGetCredentialSharesQuery,
-  useGetCredentialSharesByIdQuery,
   useGetCredentialSecretByIdQuery,
   useGetCredentialGrantsByIdQuery,
   useLazyGetCredentialSecretByIdQuery,
@@ -340,6 +330,5 @@ export const {
   useDeleteCredentialMutation,
   useAddCredentialFavoriteMutation,
   useDeleteCredentialFavoriteMutation,
-  useEditCredentialShareMutation,
   useEditCredentialGrantMutation,
 } = apiSlice

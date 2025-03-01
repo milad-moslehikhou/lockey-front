@@ -9,7 +9,7 @@ export function PrivateOutlet() {
     <Outlet />
   ) : (
     <Navigate
-      to='/login'
+      to='/auth'
       state={{ from: location }}
     />
   )

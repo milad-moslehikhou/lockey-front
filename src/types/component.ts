@@ -30,7 +30,6 @@ export type FormsStateType = {
   move?: boolean
   detail?: boolean
   grant?: boolean
-  share?: boolean
   addSecret?: boolean
   showSecret?: boolean
   setPass?: boolean

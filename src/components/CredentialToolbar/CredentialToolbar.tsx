@@ -4,7 +4,6 @@ import { Box, Button, IconButton, Tooltip, Stack, Typography, Menu, MenuItem } f
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state'
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
-import ShareIcon from '@mui/icons-material/Share'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import InfoIcon from '@mui/icons-material/Info'
@@ -101,15 +100,6 @@ const CredentialToolbar = () => {
           onClick={() => dispatch(credentialActions.setShowForms({ grant: true }))}
         >
           Grant
-        </Button>
-        <Button
-          variant='outlined'
-          size='small'
-          startIcon={<ShareIcon />}
-          disabled={credentialSelected.length !== 1}
-          onClick={() => dispatch(credentialActions.setShowForms({ share: true }))}
-        >
-          Share
         </Button>
         <Button
           variant='outlined'

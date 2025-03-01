@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import useSnackbar from '../../hooks/useSnackbar'
 import useAuth from '../../hooks/useAuth'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
+import { getEmptyAuthState } from '../../helpers/auth'
 
 const Menubar = () => {
   const [logout] = useLogoutMutation()
@@ -19,8 +20,8 @@ const Menubar = () => {
     setLogoutIsPending(true)
     try {
       await logout().unwrap()
-      setAuth({ user: null, token: null, expiry: null })
-      navigate('/login')
+      setAuth(getEmptyAuthState())
+      navigate('/auth')
     } catch {
       openSnackbar({
         severity: 'error',

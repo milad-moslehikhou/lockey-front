@@ -28,21 +28,6 @@ export type CredentialStateType = {
   secret: CredentialSecretType[]
 }
 
-export type CredentialShareType = {
-  id: number
-  credential: number
-  until: Date
-  shared_by: number
-  shared_with: number | number[]
-}
-
-export type CredentialShareStateType = {
-  selected: string[]
-  forms: FormsStateType
-  search: string
-  filter: string
-}
-
 export type CredentialSecretType = {
   id: number
   credential: number

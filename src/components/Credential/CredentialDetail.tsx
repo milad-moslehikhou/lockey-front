@@ -5,7 +5,6 @@ import ForwardIcon from '@mui/icons-material/Forward'
 import { formatDate } from '../../helpers/common'
 import {
   useGetCredentialGrantsByIdQuery,
-  useGetCredentialSharesByIdQuery,
   useGetFoldersQuery,
   useGetGroupsQuery,
   useGetUsersQuery,
@@ -21,7 +20,6 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
   const { data: folders, isLoading: foldersIsLoading } = useGetFoldersQuery()
   const { data: users } = useGetUsersQuery()
   const { data: groups } = useGetGroupsQuery()
-  const { data: credentialShares } = useGetCredentialSharesByIdQuery(credential.id, { refetchOnFocus: true })
   const { data: credentialGrants } = useGetCredentialGrantsByIdQuery(credential.id)
 
   const getLocation = (id: number, location: string[] = []) => {
@@ -211,27 +209,6 @@ const CredentialDetail = ({ credential }: CredentialDetailProps) => {
               })}
           </Stack>
         </Box>
-        {users && credentialShares && credentialShares.length > 0 && (
-          <>
-            <Divider sx={{ margin: '1rem 0' }} />
-            <DetailRow
-              title='Shared by'
-              value={users.find(u => u.id === credentialShares[0].shared_by)?.username}
-            />
-            <DetailRow
-              title='Shared with'
-              value={credentialShares
-                .map(s => {
-                  return users && users.find(u => u.id === s.shared_with)?.username
-                })
-                .join(', ')}
-            />
-            <DetailRow
-              title='Until'
-              value={formatDate(credentialShares[0].until)}
-            />
-          </>
-        )}
         {groups && credentialGrants && credentialGrants.length > 0 && (
           <>
             <Divider sx={{ margin: '1rem 0' }} />

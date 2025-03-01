@@ -30,7 +30,6 @@ import {
 import {
   useAddCredentialFavoriteMutation,
   useDeleteCredentialFavoriteMutation,
-  useGetCredentialSharesQuery,
   useGetCredentialsQuery,
   useLazyGetCredentialSecretByIdQuery,
 } from '../../features/apiSlice'
@@ -40,7 +39,6 @@ import type { CredentialType } from '../../types/credential'
 import type { DataTableHeaderType, OrderType } from '../../types/component'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
 import { FileCopy, Visibility } from '@mui/icons-material'
-import Share from '@mui/icons-material/Share'
 
 const CredentialsDataTable = () => {
   const dispatch = useDispatch()
@@ -50,9 +48,6 @@ const CredentialsDataTable = () => {
   const credentialSearch = useSelector(selectCredentialSearch)
   const credentialFilter = useSelector(selectCredentialFilter)
   const credentialSelected = useSelector(selectCredentialSelected)
-  const { data: credentialShares, isLoading: credentialSharesIsLoading } = useGetCredentialSharesQuery(undefined, {
-    refetchOnFocus: true,
-  })
   const [trigger, { data: credentialSecret, isLoading: credentialSecretIsLoading }] =
     useLazyGetCredentialSecretByIdQuery()
   const [selectedCredential, setSelectedCredential] = React.useState<number>()
@@ -96,12 +91,6 @@ const CredentialsDataTable = () => {
         return credentials.filter(c => c.is_favorite)
       case 'list:owned_by_me':
         return credentials.filter(c => loggedInUser && c.created_by === loggedInUser.id)
-      case 'list:shared_by_me':
-        const sharedByMeIds = credentialShares?.filter(s => s.shared_by === loggedInUser?.id).map(s => s.credential)
-        return credentials.filter(c => sharedByMeIds?.includes(c.id))
-      case 'list:shared_with_me':
-        const sharedWithMeIds = credentialShares?.filter(s => s.shared_with === loggedInUser?.id).map(s => s.credential)
-        return credentials.filter(c => sharedWithMeIds?.includes(c.id))
       default:
         return credentials.filter(c => c.folder === _.toNumber(credentialFilter))
     }
@@ -266,10 +255,6 @@ const CredentialsDataTable = () => {
     setCopyToClipboard(true)
   }
 
-  const isShared = (credentialId: number) => {
-    const sharedIds = credentialShares?.map(s => s.credential)
-    return sharedIds?.includes(credentialId)
-  }
   const isSelected = (id: string) => credentialSelected.indexOf(id) !== -1
   const numFavorited = credentials.filter(item => item.is_favorite === true).length
 
@@ -278,7 +263,6 @@ const CredentialsDataTable = () => {
       credentialsIsLoading ||
         addFavoriteIsLoading ||
         delFavoriteIsLoading ||
-        credentialSharesIsLoading ||
         credentialSecretIsLoading
     )
   }, [
@@ -286,7 +270,6 @@ const CredentialsDataTable = () => {
     credentialsIsLoading,
     addFavoriteIsLoading,
     delFavoriteIsLoading,
-    credentialSharesIsLoading,
     credentialSecretIsLoading,
   ])
 
@@ -428,14 +411,7 @@ const CredentialsDataTable = () => {
                         borderBottom: 0,
                       }}
                     >
-                      {isShared(row.id) ? (
-                        <Share
-                          fontSize='inherit'
-                          sx={{ marginTop: '5px' }}
-                        />
-                      ) : (
-                        <></>
-                      )}
+                      
                     </TableCell>
                     <TableCell
                       sx={{

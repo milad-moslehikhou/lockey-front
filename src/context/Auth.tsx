@@ -3,8 +3,9 @@ import type { AuthContextType, AuthType } from '../types/auth'
 
 const initState = {
   user: null,
+  otp_session: null,
   token: null,
-  expiry: null,
+  state: null,
 }
 
 const AuthContext = React.createContext<AuthContextType>({
@@ -18,10 +19,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const authString = sessionStorage.getItem('auth')
     if (authString) {
       const auth = JSON.parse(authString) as AuthType
-      const now = new Date()
-      const exp = new Date(auth.expiry || '')
-      if (exp < now) sessionStorage.removeItem('auth')
-      else authState = auth
+      authState = auth
     }
     return authState
   })

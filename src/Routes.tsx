@@ -4,7 +4,7 @@ import { PrivateOutlet } from './utils/PrivateOutlet'
 import useLoggedInUser from './hooks/useLoggedInUser'
 import ChangePassword from './pages/ChangePassword/ChangePassword'
 
-const Login = React.lazy(() => import('./pages/Login/Login'))
+const Auth = React.lazy(() => import('./pages/Auth/Auth'))
 const Credentials = React.lazy(() => import('./pages/Credentials/Credentials'))
 const Administration = React.lazy(() => import('./pages/Administration/Administration'))
 const NotFound = React.lazy(() => import('./pages/NotFound/NotFound'))
@@ -14,8 +14,8 @@ const Routes = () => {
 
   return useRoutes([
     {
-      path: '/login',
-      element: <Login />,
+      path: '/auth',
+      element: <Auth />,
     },
     {
       path: '/',

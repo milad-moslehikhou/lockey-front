@@ -1,6 +1,6 @@
 import * as React from 'react'
 import Routes from '../../Routes'
-import { useLogoutMutation } from '../../features/apiSlice'
+import { apiSlice, useLogoutMutation } from '../../features/apiSlice'
 import useAuth from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
 import useLoggedInUser from '../../hooks/useLoggedInUser'
@@ -8,6 +8,7 @@ import { Alert, Slide, Snackbar, SnackbarCloseReason } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { commonActions, selectIsLastChanceTobeActive, selectUserInactivityTime } from '../../features/commonSlice'
 import { folderActions } from '../../features/folderSlice'
+import { getEmptyAuthState } from '../../helpers/auth'
 
 const MainPage = () => {
   const [logout] = useLogoutMutation()
@@ -21,10 +22,11 @@ const MainPage = () => {
 
   const handleLogout = React.useCallback(async () => {
     await logout().then(() => {
-      setAuth({ user: null, token: null, expiry: null })
-      navigate('/login')
+      dispatch(apiSlice.util.resetApiState())
+      setAuth(getEmptyAuthState())
+      navigate('/auth')
     })
-  }, [logout, navigate, setAuth])
+  }, [logout, navigate, setAuth, dispatch])
 
   const handleOnCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
     if (reason === 'clickaway' || countdownTimer <= 1) {

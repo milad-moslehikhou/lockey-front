@@ -24,6 +24,7 @@ export const handleException = (ex: any, snackbarFn: any, setError?: UseFormSetE
             setError(ek, { type: 'server', message: errors[ek] })
           })
         break
+      case 'server_error':
       case 'client_error':
         snackbarFn({
           severity: 'error',

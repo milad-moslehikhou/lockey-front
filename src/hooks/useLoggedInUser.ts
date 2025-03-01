@@ -3,7 +3,9 @@ import { AuthContext } from '../context/Auth'
 
 const useLoggedInUser = () => {
   const { auth } = useContext(AuthContext)
-  return auth.user
+  if (auth.token)
+    return auth.user
+  return null
 }
 
 export default useLoggedInUser
